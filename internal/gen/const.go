@@ -7,8 +7,7 @@ import (
 )
 
 var (
-	UrlxPackage = protogen.GoImportPath("github.com/go-leo/gox/netx/urlx")
-
+	UrlxPackage                    = protogen.GoImportPath("github.com/go-leo/gox/netx/urlx")
 	ProtoJsonPackage               = protogen.GoImportPath("google.golang.org/protobuf/encoding/protojson")
 	ProtoJsonMarshalOptionsIdent   = ProtoJsonPackage.Ident("MarshalOptions")
 	ProtoJsonUnmarshalOptionsIdent = ProtoJsonPackage.Ident("UnmarshalOptions")
@@ -37,7 +36,7 @@ var (
 	ProtoPackage     = protogen.GoImportPath("google.golang.org/protobuf/proto")
 	ProtoStringIdent = ProtoPackage.Ident("String")
 
-	GorsPackage              = protogen.GoImportPath("github.com/go-leo/protogorilla")
+	GorsPackage              = protogen.GoImportPath("github.com/go-leo/gorilla")
 	ErrorEncoderIdent        = GorsPackage.Ident("ErrorEncoder")
 	ResponseTransformerIdent = GorsPackage.Ident("ResponseTransformer")
 	DefaultErrorEncoderIdent = GorsPackage.Ident("DefaultErrorEncoder")

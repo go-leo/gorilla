@@ -1,6 +1,6 @@
 syntax = "proto3";
 package leo.gors.example.query.v1;
-option go_package = "github.com/go-leo/protogorilla/example/query/v1;query";
+option go_package = "github.com/go-leo/gorilla/example/query/v1;query";
 
 import "google/protobuf/empty.proto";
 import "google/api/annotations.proto";

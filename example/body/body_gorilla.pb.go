@@ -4,13 +4,14 @@ package body
 
 import (
 	context "context"
-	proto_gorilla "github.com/go-leo/protogorilla"
+	http1 "net/http"
+
+	gorilla "github.com/go-leo/gorilla"
 	mux "github.com/gorilla/mux"
 	httpbody "google.golang.org/genproto/googleapis/api/httpbody"
 	http "google.golang.org/genproto/googleapis/rpc/http"
 	protojson "google.golang.org/protobuf/encoding/protojson"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
-	http1 "net/http"
 )
 
 type BodyGorsService interface {
@@ -22,8 +23,8 @@ type BodyGorsService interface {
 	HttpRequest(ctx context.Context, request *http.HttpRequest) (*emptypb.Empty, error)
 }
 
-func AppendBodyGorsRoute(router *mux.Router, service BodyGorsService, opts ...proto_gorilla.Option) *mux.Router {
-	options := proto_gorilla.NewOptions(opts...)
+func AppendBodyGorsRoute(router *mux.Router, service BodyGorsService, opts ...gorilla.Option) *mux.Router {
+	options := gorilla.NewOptions(opts...)
 	handler := bodyGorsHandler{
 		service: service,
 		decoder: bodyGorsRequestDecoder{
@@ -34,7 +35,7 @@ func AppendBodyGorsRoute(router *mux.Router, service BodyGorsService, opts ...pr
 			unmarshalOptions:    options.UnmarshalOptions(),
 			responseTransformer: options.ResponseTransformer(),
 		},
-		errorEncoder: proto_gorilla.DefaultErrorEncoder,
+		errorEncoder: gorilla.DefaultErrorEncoder,
 	}
 	router.NewRoute().
 		Name("/leo.gors.example.body.v1.Body/StarBody").
@@ -73,7 +74,7 @@ type bodyGorsHandler struct {
 	service      BodyGorsService
 	decoder      bodyGorsRequestDecoder
 	encoder      bodyGorsResponseEncoder
-	errorEncoder proto_gorilla.ErrorEncoder
+	errorEncoder gorilla.ErrorEncoder
 }
 
 func (h bodyGorsHandler) StarBody() http1.Handler {
@@ -202,45 +203,50 @@ type bodyGorsRequestDecoder struct {
 
 func (decoder bodyGorsRequestDecoder) StarBody(ctx context.Context, r *http1.Request) (*BodyRequest, error) {
 	req := &BodyRequest{}
-	if err := proto_gorilla.RequestDecoder(ctx, r, req, decoder.unmarshalOptions); err != nil {
+	if err := gorilla.RequestDecoder(ctx, r, req, decoder.unmarshalOptions); err != nil {
 		return nil, err
 	}
 	return req, nil
 }
+
 func (decoder bodyGorsRequestDecoder) NamedBody(ctx context.Context, r *http1.Request) (*BodyRequest, error) {
 	req := &BodyRequest{}
 	if req.User == nil {
 		req.User = &BodyRequest_User{}
 	}
-	if err := proto_gorilla.RequestDecoder(ctx, r, req.User, decoder.unmarshalOptions); err != nil {
+	if err := gorilla.RequestDecoder(ctx, r, req.User, decoder.unmarshalOptions); err != nil {
 		return nil, err
 	}
 	return req, nil
 }
+
 func (decoder bodyGorsRequestDecoder) NonBody(ctx context.Context, r *http1.Request) (*emptypb.Empty, error) {
 	req := &emptypb.Empty{}
 	return req, nil
 }
+
 func (decoder bodyGorsRequestDecoder) HttpBodyStarBody(ctx context.Context, r *http1.Request) (*httpbody.HttpBody, error) {
 	req := &httpbody.HttpBody{}
-	if err := proto_gorilla.HttpBodyDecoder(ctx, r, req); err != nil {
+	if err := gorilla.HttpBodyDecoder(ctx, r, req); err != nil {
 		return nil, err
 	}
 	return req, nil
 }
+
 func (decoder bodyGorsRequestDecoder) HttpBodyNamedBody(ctx context.Context, r *http1.Request) (*HttpBodyRequest, error) {
 	req := &HttpBodyRequest{}
 	if req.Body == nil {
 		req.Body = &httpbody.HttpBody{}
 	}
-	if err := proto_gorilla.HttpBodyDecoder(ctx, r, req.Body); err != nil {
+	if err := gorilla.HttpBodyDecoder(ctx, r, req.Body); err != nil {
 		return nil, err
 	}
 	return req, nil
 }
+
 func (decoder bodyGorsRequestDecoder) HttpRequest(ctx context.Context, r *http1.Request) (*http.HttpRequest, error) {
 	req := &http.HttpRequest{}
-	if err := proto_gorilla.HttpRequestDecoder(ctx, r, req); err != nil {
+	if err := gorilla.HttpRequestDecoder(ctx, r, req); err != nil {
 		return nil, err
 	}
 	return req, nil
@@ -249,24 +255,29 @@ func (decoder bodyGorsRequestDecoder) HttpRequest(ctx context.Context, r *http1.
 type bodyGorsResponseEncoder struct {
 	marshalOptions      protojson.MarshalOptions
 	unmarshalOptions    protojson.UnmarshalOptions
-	responseTransformer proto_gorilla.ResponseTransformer
+	responseTransformer gorilla.ResponseTransformer
 }
 
 func (encoder bodyGorsResponseEncoder) StarBody(ctx context.Context, w http1.ResponseWriter, resp *emptypb.Empty) error {
-	return proto_gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
+	return gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
+
 func (encoder bodyGorsResponseEncoder) NamedBody(ctx context.Context, w http1.ResponseWriter, resp *emptypb.Empty) error {
-	return proto_gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
+	return gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
+
 func (encoder bodyGorsResponseEncoder) NonBody(ctx context.Context, w http1.ResponseWriter, resp *emptypb.Empty) error {
-	return proto_gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
+	return gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
+
 func (encoder bodyGorsResponseEncoder) HttpBodyStarBody(ctx context.Context, w http1.ResponseWriter, resp *emptypb.Empty) error {
-	return proto_gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
+	return gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
+
 func (encoder bodyGorsResponseEncoder) HttpBodyNamedBody(ctx context.Context, w http1.ResponseWriter, resp *emptypb.Empty) error {
-	return proto_gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
+	return gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
+
 func (encoder bodyGorsResponseEncoder) HttpRequest(ctx context.Context, w http1.ResponseWriter, resp *emptypb.Empty) error {
-	return proto_gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
+	return gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }

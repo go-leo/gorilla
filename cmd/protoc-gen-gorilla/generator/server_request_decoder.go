@@ -3,7 +3,7 @@ package generator
 import (
 	"strconv"
 
-	"github.com/go-leo/protogorilla/internal/gen"
+	"github.com/go-leo/gorilla/internal/gen"
 	"google.golang.org/protobuf/compiler/protogen"
 	"google.golang.org/protobuf/reflect/protoreflect"
 )
@@ -15,7 +15,7 @@ func (f *Generator) GenerateServerRequestDecoder(service *gen.Service, g *protog
 	for _, endpoint := range service.Endpoints {
 		g.P("func (decoder ", service.Unexported(service.RequestDecoderName()), ")", endpoint.Name(), "(ctx ", gen.ContextIdent, ", r *", gen.RequestIdent, ") (*", endpoint.InputGoIdent(), ", error){")
 		g.P("req := &", endpoint.InputGoIdent(), "{}")
-		bodyMessage, bodyField, namedPathFields, pathFields, queryFields, err := endpoint.ParseParameters()
+		bodyMessage, bodyField, pathFields, queryFields, err := endpoint.ParseParameters()
 		if err != nil {
 			return err
 		}
@@ -45,9 +45,8 @@ func (f *Generator) GenerateServerRequestDecoder(service *gen.Service, g *protog
 			}
 		}
 
-		if len(namedPathFields)+len(pathFields) > 0 {
+		if len(pathFields) > 0 {
 			g.P("vars := ", gen.UrlxPackage.Ident("FormFromMap"), "(", gen.VarsIdent, "(r)", ")")
-			f.PrintNamedPathField(g, namedPathFields, endpoint.HttpRule())
 			f.PrintPathField(g, pathFields)
 		}
 
@@ -83,32 +82,6 @@ func (f *Generator) PrintRequestDecodeBlock(g *protogen.GeneratedFile, tgtValue 
 	g.P(append(append([]any{"if err := ", gen.RequestDecoderIdent, "(ctx, r, "}, tgtValue...), ", decoder.unmarshalOptions); err != nil {")...)
 	g.P("return nil, err")
 	g.P("}")
-}
-
-func (f *Generator) PrintNamedPathField(g *protogen.GeneratedFile, namedPathFields []*protogen.Field, httpRule *gen.HttpRule) {
-	for i, namedPathField := range namedPathFields {
-		fullFieldName := gen.FullFieldName(namedPathFields[:i+1])
-		if i < len(namedPathFields)-1 {
-			g.P("if req.", fullFieldName, " == nil {")
-			g.P("req.", fullFieldName, " = &", namedPathField.Message.GoIdent, "{}")
-			g.P("}")
-		} else {
-			_, _, namedPathTemplate, namedPathParameters := httpRule.RegularizePath(httpRule.Path())
-			tgtValue := []any{"req.", fullFieldName, " = "}
-			srcValue := []any{gen.SprintfIdent, "(", strconv.Quote(namedPathTemplate)}
-			for _, namedPathParameter := range namedPathParameters {
-				srcValue = append(srcValue, ", vars.Get(", strconv.Quote(namedPathParameter), ")")
-			}
-			srcValue = append(srcValue, ")")
-
-			switch namedPathField.Desc.Kind() {
-			case protoreflect.StringKind:
-				f.PrintStringValueAssign(g, tgtValue, srcValue, namedPathField.Desc.HasPresence())
-			case protoreflect.MessageKind:
-				f.PrintWrapStringValueAssign(g, tgtValue, srcValue)
-			}
-		}
-	}
 }
 
 func (f *Generator) PrintPathField(g *protogen.GeneratedFile, pathFields []*protogen.Field) {

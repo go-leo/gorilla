@@ -1,6 +1,6 @@
 syntax = "proto3";
 package leo.gors.example.path.v1;
-option go_package = "github.com/go-leo/protogorilla/example/path/v1;path";
+option go_package = "github.com/go-leo/gorilla/example/path/v1;path";
 
 import "google/protobuf/empty.proto";
 import "google/api/annotations.proto";

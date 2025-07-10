@@ -6,7 +6,7 @@ import (
 	context "context"
 	fmt "fmt"
 	urlx "github.com/go-leo/gox/netx/urlx"
-	proto_gorilla "github.com/go-leo/protogorilla"
+	proto_gorilla "github.com/go-leo/gorilla"
 	mux "github.com/gorilla/mux"
 	protojson "google.golang.org/protobuf/encoding/protojson"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"

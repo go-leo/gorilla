@@ -4,7 +4,7 @@ package response
 
 import (
 	context "context"
-	proto_gorilla "github.com/go-leo/protogorilla"
+	proto_gorilla "github.com/go-leo/gorilla"
 	mux "github.com/gorilla/mux"
 	httpbody "google.golang.org/genproto/googleapis/api/httpbody"
 	http "google.golang.org/genproto/googleapis/rpc/http"

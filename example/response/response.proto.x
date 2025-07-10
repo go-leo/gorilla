@@ -1,6 +1,6 @@
 syntax = "proto3";
 package leo.gors.example.response.v1;
-option go_package = "github.com/go-leo/protogorilla/example/response/v1;response";
+option go_package = "github.com/go-leo/gorilla/example/response/v1;response";
 
 import "google/protobuf/empty.proto";
 import "google/api/annotations.proto";

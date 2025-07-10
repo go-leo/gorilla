@@ -3,7 +3,7 @@ package generator
 import (
 	"fmt"
 
-	"github.com/go-leo/protogorilla/internal/gen"
+	"github.com/go-leo/gorilla/internal/gen"
 	"google.golang.org/protobuf/compiler/protogen"
 	"google.golang.org/protobuf/reflect/protoreflect"
 )
@@ -15,9 +15,8 @@ func (f *Generator) GenerateServerResponseEncoder(service *gen.Service, g *proto
 	g.P("responseTransformer ", gen.ResponseTransformerIdent)
 	g.P("}")
 	for _, endpoint := range service.Endpoints {
-		httpRule := endpoint.HttpRule()
 		g.P("func (encoder ", service.Unexported(service.ResponseEncoderName()), ")", endpoint.Name(), "(ctx ", gen.ContextIdent, ", w ", gen.ResponseWriterIdent, ", resp *", endpoint.OutputGoIdent(), ") error {")
-		bodyParameter := httpRule.ResponseBody()
+		bodyParameter := endpoint.ResponseBody()
 		switch bodyParameter {
 		case "", "*":
 			message := endpoint.Output()
