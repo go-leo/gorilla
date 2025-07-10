@@ -62,15 +62,15 @@ func NewServices(file *protogen.File) ([]*Service, error) {
 				protoMethod: pbMethod,
 			}
 			if endpoint.IsStreaming() {
-				return nil, fmt.Errorf("gors: unsupport stream method, %s", endpoint.FullName())
+				return nil, fmt.Errorf("gorilla: unsupport stream method, %s", endpoint.FullName())
 			}
 			endpoint.SetHttpRule()
 			route := router.NewRoute()
-			route.Methods(endpoint.HttpRule().Method()).Path(endpoint.HttpRule().Path())
-			err := route.GetError()
-			if err != nil {
-				return nil, fmt.Errorf("gors: %s", err)
+			route.Methods(endpoint.Method()).Path(endpoint.Path())
+			if err := route.GetError(); err != nil {
+				return nil, fmt.Errorf("gorilla: %s", err)
 			}
+			endpoint.SetRoute(route)
 			endpoints = append(endpoints, endpoint)
 		}
 		service.Endpoints = endpoints

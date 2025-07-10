@@ -5,7 +5,7 @@ package query
 import (
 	context "context"
 	urlx "github.com/go-leo/gox/netx/urlx"
-	proto_gorilla "github.com/go-leo/protogorilla"
+	proto_gorilla "github.com/go-leo/gorilla"
 	mux "github.com/gorilla/mux"
 	protojson "google.golang.org/protobuf/encoding/protojson"
 	proto "google.golang.org/protobuf/proto"

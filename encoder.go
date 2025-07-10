@@ -3,12 +3,13 @@ package gors
 import (
 	"context"
 	"encoding/json"
+	"log"
+	"net/http"
+
 	"google.golang.org/genproto/googleapis/api/httpbody"
 	rpchttp "google.golang.org/genproto/googleapis/rpc/http"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
-	"log"
-	"net/http"
 )
 
 type ErrorEncoder func(ctx context.Context, err error, w http.ResponseWriter)
@@ -39,7 +40,7 @@ func DefaultErrorEncoder(ctx context.Context, err error, w http.ResponseWriter) 
 	w.WriteHeader(code)
 	_, err = w.Write(body)
 	if err != nil {
-		log.Default().Println("gors: response write error: ", err)
+		log.Default().Println("gorilla: response write error: ", err)
 	}
 }
 
