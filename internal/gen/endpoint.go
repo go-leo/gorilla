@@ -2,14 +2,15 @@ package gen
 
 import (
 	"fmt"
+	"net/http"
+	"strings"
+
 	"github.com/go-leo/gox/slicex"
 	"golang.org/x/exp/slices"
 	"google.golang.org/genproto/googleapis/api/annotations"
 	"google.golang.org/protobuf/compiler/protogen"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
-	"net/http"
-	"strings"
 )
 
 type Endpoint struct {

@@ -1,9 +1,10 @@
 package generator
 
 import (
-	"github.com/go-leo/gors/v2/internal/gen"
-	"google.golang.org/protobuf/compiler/protogen"
 	"strconv"
+
+	"github.com/go-leo/proto-gorilla/internal/gen"
+	"google.golang.org/protobuf/compiler/protogen"
 )
 
 type Generator struct {

@@ -7,14 +7,14 @@ gors 底层基于 [gorilla](http://github.com/gorilla/mux) 管理http路由。
 
 # 安装
 ```
-go install github.com/go-leo/gors/v2/cmd/protoc-gen-gors@latest
+go install github.com/go-leo/proto-gorilla/cmd/protoc-gen-gors@latest
 ```
 
 # Example
 ```protobuf
 syntax = "proto3";
 package leo.gors.demo.v1;
-option go_package = "github.com/go-leo/gors/v2/example/demo/v1;demo";
+option go_package = "github.com/go-leo/proto-gorilla/example/demo/v1;demo";
 
 import "google/protobuf/empty.proto";
 import "google/api/annotations.proto";
