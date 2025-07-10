@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/go-leo/gox/slicex"
+	"github.com/gorilla/mux"
 	"golang.org/x/exp/slices"
 	"google.golang.org/genproto/googleapis/api/annotations"
 	"google.golang.org/protobuf/compiler/protogen"
@@ -56,13 +57,14 @@ func (e *Endpoint) HttpRule() *HttpRule {
 
 func (e *Endpoint) ParseParameters() (*protogen.Message, *protogen.Field, []*protogen.Field, []*protogen.Field, []*protogen.Field, error) {
 	httpRule := e.httpRule
-	bodyParameter := httpRule.Body()
 	path, namedPathName, _, namedPathParameters := httpRule.RegularizePath(httpRule.Path())
-	pathParameters := slicex.Difference(httpRule.PathParameters(path), namedPathParameters)
+	pathParameters := httpRule.PathParameters(path)
+	pathParameters = slicex.Difference(pathParameters, namedPathParameters)
 
 	// body arguments
 	var bodyMessage *protogen.Message
 	var bodyField *protogen.Field
+	bodyParameter := httpRule.Body()
 	switch bodyParameter {
 	case "":
 		// ignore
@@ -96,10 +98,10 @@ func (e *Endpoint) ParseParameters() (*protogen.Message, *protogen.Field, []*pro
 					switch field.Message.Desc.FullName() {
 					case "google.protobuf.StringValue":
 					default:
-						return nil, nil, nil, nil, nil, fmt.Errorf("%s, named path parameters do not support %s", field.Message.Desc.FullName())
+						return nil, nil, nil, nil, nil, fmt.Errorf("%s, named path parameters do not support %s", field.Message.Desc.FullName(), field.Message.GoIdent)
 					}
 				default:
-					return nil, nil, nil, nil, nil, fmt.Errorf("%s, named path parameters do not support %s", field.Desc.Kind())
+					return nil, nil, nil, nil, nil, fmt.Errorf("%s, named path parameters do not support %s", field.Message.Desc.FullName(), field.Message.GoIdent)
 				}
 			}
 			namedPathFields = append(namedPathFields, field)
@@ -259,12 +261,12 @@ func (r *HttpRule) Path() string {
 }
 
 func (r *HttpRule) RegularizePath(path string) (string, string, string, []string) {
-	var name string
-	var parameters []string
+	var namedPathName string
+	var namedPathParameters []string
 	var template string
-	// Find named path parameters like {name=shelves/*}
+	// Find named path parameters like {name=things/*/otherthings/*}
 	if matches := namedPathPattern.FindStringSubmatch(path); matches != nil {
-		name = matches[1]
+		namedPathName = matches[1]
 		starredPath := matches[2]
 		parts := strings.Split(starredPath, "/")
 		newParts := slices.Clone(parts)
@@ -274,13 +276,13 @@ func (r *HttpRule) RegularizePath(path string) (string, string, string, []string
 			namedPathParameter := singular(newParts[i])
 			newParts[i+1] = "{" + namedPathParameter + "}"
 			templateParts[i+1] = "%s"
-			parameters = append(parameters, namedPathParameter)
+			namedPathParameters = append(namedPathParameters, namedPathParameter)
 		}
 		newPath := strings.Join(newParts, "/")
 		template = strings.Join(templateParts, "/")
 		path = strings.Replace(path, matches[0], newPath, 1)
 	}
-	return path, name, template, parameters
+	return path, namedPathName, template, namedPathParameters
 }
 
 func (r *HttpRule) PathParameters(path string) []string {
