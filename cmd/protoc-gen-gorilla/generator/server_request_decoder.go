@@ -1,10 +1,11 @@
 package generator
 
 import (
-	"github.com/go-leo/gors/v2/internal/gen"
+	"strconv"
+
+	"github.com/go-leo/proto-gorilla/internal/gen"
 	"google.golang.org/protobuf/compiler/protogen"
 	"google.golang.org/protobuf/reflect/protoreflect"
-	"strconv"
 )
 
 func (f *Generator) GenerateServerRequestDecoder(service *gen.Service, g *protogen.GeneratedFile) error {
@@ -365,7 +366,6 @@ func (f *Generator) PrintQueryField(g *protogen.GeneratedFile, queryFields []*pr
 			}
 		}
 	}
-
 }
 
 func (f *Generator) PrintFieldAssign(g *protogen.GeneratedFile, tgtValue []any, goType []any, getter protogen.GoIdent, key string, form string, errName string) {

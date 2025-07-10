@@ -1,8 +1,9 @@
 package gen
 
 import (
-	"google.golang.org/protobuf/compiler/protogen"
 	"regexp"
+
+	"google.golang.org/protobuf/compiler/protogen"
 )
 
 var (
@@ -36,7 +37,7 @@ var (
 	ProtoPackage     = protogen.GoImportPath("google.golang.org/protobuf/proto")
 	ProtoStringIdent = ProtoPackage.Ident("String")
 
-	GorsPackage              = protogen.GoImportPath("github.com/go-leo/gors/v2")
+	GorsPackage              = protogen.GoImportPath("github.com/go-leo/proto-gorilla")
 	ErrorEncoderIdent        = GorsPackage.Ident("ErrorEncoder")
 	ResponseTransformerIdent = GorsPackage.Ident("ResponseTransformer")
 	DefaultErrorEncoderIdent = GorsPackage.Ident("DefaultErrorEncoder")

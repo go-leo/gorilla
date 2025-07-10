@@ -2,7 +2,8 @@ package generator
 
 import (
 	"fmt"
-	"github.com/go-leo/gors/v2/internal/gen"
+
+	"github.com/go-leo/proto-gorilla/internal/gen"
 	"google.golang.org/protobuf/compiler/protogen"
 	"google.golang.org/protobuf/reflect/protoreflect"
 )
