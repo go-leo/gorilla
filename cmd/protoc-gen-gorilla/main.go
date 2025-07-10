@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 
-	"github.com/go-leo/proto-gorilla/cmd/protoc-gen-gorilla/generator"
+	"github.com/go-leo/protogorilla/cmd/protoc-gen-gorilla/generator"
 	"google.golang.org/protobuf/compiler/protogen"
 	"google.golang.org/protobuf/types/pluginpb"
 )

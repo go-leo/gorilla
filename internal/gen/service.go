@@ -2,8 +2,10 @@ package gen
 
 import (
 	"fmt"
-	"google.golang.org/protobuf/compiler/protogen"
 	"strings"
+
+	"github.com/gorilla/mux"
+	"google.golang.org/protobuf/compiler/protogen"
 )
 
 type Service struct {
@@ -54,6 +56,7 @@ func NewServices(file *protogen.File) ([]*Service, error) {
 			ProtoService: pbService,
 		}
 		var endpoints []*Endpoint
+		router := mux.NewRouter()
 		for _, pbMethod := range pbService.Methods {
 			endpoint := &Endpoint{
 				protoMethod: pbMethod,
@@ -62,6 +65,12 @@ func NewServices(file *protogen.File) ([]*Service, error) {
 				return nil, fmt.Errorf("gors: unsupport stream method, %s", endpoint.FullName())
 			}
 			endpoint.SetHttpRule()
+			route := router.NewRoute()
+			route.Methods(endpoint.HttpRule().Method()).Path(endpoint.HttpRule().Path())
+			err := route.GetError()
+			if err != nil {
+				return nil, fmt.Errorf("gors: %s", err)
+			}
 			endpoints = append(endpoints, endpoint)
 		}
 		service.Endpoints = endpoints

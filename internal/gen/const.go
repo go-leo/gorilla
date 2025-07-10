@@ -37,7 +37,7 @@ var (
 	ProtoPackage     = protogen.GoImportPath("google.golang.org/protobuf/proto")
 	ProtoStringIdent = ProtoPackage.Ident("String")
 
-	GorsPackage              = protogen.GoImportPath("github.com/go-leo/proto-gorilla")
+	GorsPackage              = protogen.GoImportPath("github.com/go-leo/protogorilla")
 	ErrorEncoderIdent        = GorsPackage.Ident("ErrorEncoder")
 	ResponseTransformerIdent = GorsPackage.Ident("ResponseTransformer")
 	DefaultErrorEncoderIdent = GorsPackage.Ident("DefaultErrorEncoder")

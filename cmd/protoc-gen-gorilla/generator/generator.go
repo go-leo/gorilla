@@ -3,7 +3,7 @@ package generator
 import (
 	"strconv"
 
-	"github.com/go-leo/proto-gorilla/internal/gen"
+	"github.com/go-leo/protogorilla/internal/gen"
 	"google.golang.org/protobuf/compiler/protogen"
 )
 
