@@ -1,27 +1,11 @@
 package gen
 
 import (
+	"strings"
+
 	"google.golang.org/protobuf/compiler/protogen"
 	"google.golang.org/protobuf/reflect/protoreflect"
-	"strings"
 )
-
-// singular produces the singular form of a collection name.
-func singular(plural string) string {
-	if strings.HasSuffix(plural, "ves") {
-		return strings.TrimSuffix(plural, "ves") + "f"
-	}
-	if strings.HasSuffix(plural, "ies") {
-		return strings.TrimSuffix(plural, "ies") + "y"
-	}
-	if strings.HasSuffix(plural, "es") {
-		return strings.TrimSuffix(plural, "es")
-	}
-	if strings.HasSuffix(plural, "s") {
-		return strings.TrimSuffix(plural, "s")
-	}
-	return plural
-}
 
 func FindField(name string, inMessage *protogen.Message) *protogen.Field {
 	for _, field := range inMessage.Fields {

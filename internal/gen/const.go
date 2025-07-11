@@ -1,8 +1,6 @@
 package gen
 
 import (
-	"regexp"
-
 	"google.golang.org/protobuf/compiler/protogen"
 )
 
@@ -15,26 +13,38 @@ var (
 var (
 	ContextPackage = protogen.GoImportPath("context")
 	ContextIdent   = ContextPackage.Ident("Context")
+)
 
+var (
 	HttpPackage          = protogen.GoImportPath("net/http")
 	HttpHandlerIdent     = HttpPackage.Ident("Handler")
 	HttpHandlerFuncIdent = HttpPackage.Ident("HandlerFunc")
 	ResponseWriterIdent  = HttpPackage.Ident("ResponseWriter")
 	RequestIdent         = HttpPackage.Ident("Request")
+)
 
+var (
 	FmtPackage   = protogen.GoImportPath("fmt")
 	SprintfIdent = FmtPackage.Ident("Sprintf")
+)
 
+var (
 	MuxPackage  = protogen.GoImportPath("github.com/gorilla/mux")
 	RouterIdent = MuxPackage.Ident("Router")
 	VarsIdent   = MuxPackage.Ident("Vars")
+)
 
+var (
 	ProtoxPackage        = protogen.GoImportPath("github.com/go-leo/gox/protox")
 	WrapStringSliceIdent = ProtoxPackage.Ident("WrapStringSlice")
+)
 
+var (
 	ProtoPackage     = protogen.GoImportPath("google.golang.org/protobuf/proto")
 	ProtoStringIdent = ProtoPackage.Ident("String")
+)
 
+var (
 	GorillaPackage           = protogen.GoImportPath("github.com/go-leo/gorilla")
 	ErrorEncoderIdent        = GorillaPackage.Ident("ErrorEncoder")
 	ResponseTransformerIdent = GorillaPackage.Ident("ResponseTransformer")
@@ -48,12 +58,9 @@ var (
 	FormDecoderIdent         = GorillaPackage.Ident("FormDecoder")
 	OptionIdent              = GorillaPackage.Ident("Option")
 	NewOptionsIdent          = GorillaPackage.Ident("NewOptions")
-
-	WrapperspbPackage     = protogen.GoImportPath("google.golang.org/protobuf/types/known/wrapperspb")
-	WrapperspbStringIdent = WrapperspbPackage.Ident("String")
 )
 
 var (
-	namedPathPattern = regexp.MustCompile("{([^{}]+)=([^{}]+)}")
-	pathPattern      = regexp.MustCompile("{([^=}]+)}")
+	WrapperspbPackage     = protogen.GoImportPath("google.golang.org/protobuf/types/known/wrapperspb")
+	WrapperspbStringIdent = WrapperspbPackage.Ident("String")
 )
