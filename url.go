@@ -4,7 +4,6 @@ import (
 	"net/url"
 	"strconv"
 
-	"golang.org/x/exp/constraints"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
@@ -93,27 +92,6 @@ func GetBoolValueSlice(form url.Values, key string) ([]*wrapperspb.BoolValue, er
 	return WrapBoolSlice(v), err
 }
 
-func GetInt[Signed constraints.Signed](form url.Values, key string) (Signed, error) {
-	if _, ok := form[key]; !ok {
-		var v Signed
-		return v, nil
-	}
-	return ParseInt[Signed](form.Get(key), 10, 64)
-}
-
-func GetIntPtr[Signed constraints.Signed](form url.Values, key string) (*Signed, error) {
-	v, err := GetInt[Signed](form, key)
-	return &v, err
-}
-
-func GetIntSlice[Signed constraints.Signed](form url.Values, key string) ([]Signed, error) {
-	if _, ok := form[key]; !ok {
-		var v []Signed
-		return v, nil
-	}
-	return ParseIntSlice[Signed](form[key], 10, 64)
-}
-
 func GetInt32Value(form url.Values, key string) (*wrapperspb.Int32Value, error) {
 	v, err := GetInt[int32](form, key)
 	return wrapperspb.Int32(v), err
@@ -134,27 +112,6 @@ func GetInt64ValueSlice(form url.Values, key string) ([]*wrapperspb.Int64Value, 
 	return WrapInt64Slice(v), err
 }
 
-func GetUint[Unsigned constraints.Unsigned](form url.Values, key string) (Unsigned, error) {
-	if _, ok := form[key]; !ok {
-		var v Unsigned
-		return v, nil
-	}
-	return ParseUint[Unsigned](form.Get(key), 10, 64)
-}
-
-func GetUintPtr[Unsigned constraints.Unsigned](form url.Values, key string) (*Unsigned, error) {
-	v, err := GetUint[Unsigned](form, key)
-	return &v, err
-}
-
-func GetUintSlice[Unsigned constraints.Unsigned](form url.Values, key string) ([]Unsigned, error) {
-	if _, ok := form[key]; !ok {
-		var v []Unsigned
-		return v, nil
-	}
-	return ParseUintSlice[Unsigned](form[key], 10, 64)
-}
-
 func GetUint32Value(form url.Values, key string) (*wrapperspb.UInt32Value, error) {
 	v, err := GetUint[uint32](form, key)
 	return wrapperspb.UInt32(v), err
@@ -173,27 +130,6 @@ func GetUint64Value(form url.Values, key string) (*wrapperspb.UInt64Value, error
 func GetUint64ValueSlice(form url.Values, key string) ([]*wrapperspb.UInt64Value, error) {
 	v, err := GetUintSlice[uint64](form, key)
 	return WrapUint64Slice(v), err
-}
-
-func GetFloat[Float constraints.Float](form url.Values, key string) (Float, error) {
-	if _, ok := form[key]; !ok {
-		var v Float
-		return v, nil
-	}
-	return ParseFloat[Float](form.Get(key), 64)
-}
-
-func GetFloatPtr[Float constraints.Float](form url.Values, key string) (*Float, error) {
-	v, err := GetFloat[Float](form, key)
-	return &v, err
-}
-
-func GetFloatSlice[Float constraints.Float](form url.Values, key string) ([]Float, error) {
-	if _, ok := form[key]; !ok {
-		var v []Float
-		return v, nil
-	}
-	return ParseFloatSlice[Float](form[key], 64)
 }
 
 func GetFloat32Value(form url.Values, key string) (*wrapperspb.FloatValue, error) {
