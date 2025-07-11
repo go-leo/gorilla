@@ -175,3 +175,26 @@ func WrapFloat64Slice(s []float64) []*wrapperspb.DoubleValue {
 	}
 	return r
 }
+
+// WrapStringSlice converts a slice of string values into a slice of StringValue wrappers.
+//
+// Parameters:
+//   - s: The input string slice to be wrapped. If nil, the function returns nil.
+//
+// Returns:
+//   - []*wrapperspb.StringValue: A new slice containing StringValue wrappers for each input string,
+//     or nil if the input was nil.
+func WrapStringSlice(s []string) []*wrapperspb.StringValue {
+	if s == nil {
+		return nil
+	}
+
+	// Pre-allocate result slice with capacity matching input length
+	r := make([]*wrapperspb.StringValue, 0, len(s))
+
+	// Convert each string to its StringValue wrapper
+	for _, v := range s {
+		r = append(r, wrapperspb.String(v))
+	}
+	return r
+}

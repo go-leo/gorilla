@@ -22,6 +22,19 @@ func GetInt32(form url.Values, key string) (int32, error) {
 	return GetInt[int32](form, key)
 }
 
+// GetInt32Slice retrieves a slice of int32 values from the given url.Values by key.
+//
+// Parameters:
+//   - form: url.Values containing the form data to retrieve values from
+//   - key:  string key to look up in the form values
+//
+// Returns:
+//   - []int32: slice of int32 values if successful
+//   - error:   any error that occurred during parsing or retrieval
+func GetInt32Slice(form url.Values, key string) ([]int32, error) {
+	return GetIntSlice[int32](form, key)
+}
+
 // GetInt32Ptr retrieves an int32 value from form and returns its pointer.
 //
 // Parameters:
@@ -50,6 +63,19 @@ func GetInt32Ptr(form url.Values, key string) (*int32, error) {
 //	error - parsing error if any
 func GetInt64(form url.Values, key string) (int64, error) {
 	return GetInt[int64](form, key)
+}
+
+// GetInt64Slice retrieves a slice of int64 values from the given url.Values by the specified key.
+//
+// Parameters:
+//   - form: The url.Values containing the form data to be parsed.
+//   - key: The key used to lookup the values in the form data.
+//
+// Returns:
+//   - []int64: The parsed slice of int64 values if successful.
+//   - error: An error if the parsing fails or if the key is not found.
+func GetInt64Slice(form url.Values, key string) ([]int64, error) {
+	return GetIntSlice[int64](form, key)
 }
 
 // GetInt64Ptr retrieves an int64 value from form and returns its pointer.
@@ -82,6 +108,19 @@ func GetUint32(form url.Values, key string) (uint32, error) {
 	return GetUint[uint32](form, key)
 }
 
+// GetUint32Slice retrieves a slice of uint32 values from the given url.Values by key.
+//
+// Parameters:
+//   - form: url.Values containing the form data to parse
+//   - key: string key to look up in the form values
+//
+// Returns:
+//   - []uint32: slice of parsed uint32 values if successful
+//   - error: any error that occurred during parsing, such as invalid format
+func GetUint32Slice(form url.Values, key string) ([]uint32, error) {
+	return GetUintSlice[uint32](form, key)
+}
+
 // GetUint32Ptr retrieves a uint32 value from form and returns its pointer.
 //
 // Parameters:
@@ -110,6 +149,21 @@ func GetUint32Ptr(form url.Values, key string) (*uint32, error) {
 //	error - parsing error if any
 func GetUint64(form url.Values, key string) (uint64, error) {
 	return GetUint[uint64](form, key)
+}
+
+// GetUint64Slice parses a URL form value as a slice of uint64 integers.
+//
+// Parameters:
+//   - form: The URL form values containing the target key-value pairs.
+//   - key: The form field key whose value should be parsed as a []uint64.
+//
+// Returns:
+//   - []uint64: The parsed slice of uint64 integers if successful.
+//   - error: An error if the parsing fails (e.g., invalid format or empty key).
+//
+// Note: This is a convenience wrapper around GetUintSlice[uint64] for uint64-specific parsing.
+func GetUint64Slice(form url.Values, key string) ([]uint64, error) {
+	return GetUintSlice[uint64](form, key)
 }
 
 // GetUint64Ptr retrieves a uint64 value from form and returns its pointer.

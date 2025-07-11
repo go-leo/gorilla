@@ -35,11 +35,6 @@ var (
 )
 
 var (
-	ProtoxPackage        = protogen.GoImportPath("github.com/go-leo/gox/protox")
-	WrapStringSliceIdent = ProtoxPackage.Ident("WrapStringSlice")
-)
-
-var (
 	ProtoPackage     = protogen.GoImportPath("google.golang.org/protobuf/proto")
 	ProtoStringIdent = ProtoPackage.Ident("String")
 )
