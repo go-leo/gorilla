@@ -1,11 +1,11 @@
 syntax = "proto3";
-package leo.gors.example.demo.v1;
-option go_package = "github.com/go-leo/gorilla/example/demo/v1;demo";
+package leo.gorilla.example.user.v1;
+option go_package = "github.com/go-leo/gorilla/example/user/v1;user";
 
 import "google/protobuf/empty.proto";
 import "google/api/annotations.proto";
 
-service Demo {
+service User {
 
   // CreateUser 创建用户
   // `POST /v1/user { "name": "Leo" }` | `CreateUserRequest(name: "Leo")`
@@ -50,7 +50,7 @@ service Demo {
   }
 }
 
-message User {
+message UserItem {
   int64 id = 1;
   string name = 2;
 }
@@ -60,7 +60,7 @@ message CreateUserRequest {
 }
 
 message CreateUserResponse {
-  User item = 1;
+  UserItem item = 1;
 }
 
 message DeleteUserRequest {
@@ -77,7 +77,7 @@ message GetUserRequest {
 }
 
 message GetUserResponse {
-  User item = 1;
+  UserItem item = 1;
 }
 
 message ListUserRequest {
@@ -86,5 +86,5 @@ message ListUserRequest {
 }
 
 message ListUserResponse {
-  repeated User list = 1;
+  repeated UserItem list = 1;
 }

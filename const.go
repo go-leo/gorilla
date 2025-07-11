@@ -1,4 +1,4 @@
-package gors
+package gorilla
 
 const (
 	ContentTypeKey  = "Content-Type"

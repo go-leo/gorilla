@@ -52,11 +52,6 @@ func (e *Endpoint) OutputGoIdent() protogen.GoIdent {
 }
 
 func (e *Endpoint) ParseParameters() (*protogen.Message, *protogen.Field, []*protogen.Field, []*protogen.Field, error) {
-	// httpRule := e.httpRule
-	// path, namedPathName, _, namedPathParameters := httpRule.RegularizePath(httpRule.Path())
-	// pathParameters := httpRule.PathParameters(path)
-	// pathParameters = slicex.Difference(pathParameters, namedPathParameters)
-
 	// body arguments
 	var bodyMessage *protogen.Message
 	var bodyField *protogen.Field
@@ -78,7 +73,7 @@ func (e *Endpoint) ParseParameters() (*protogen.Message, *protogen.Field, []*pro
 	for _, pathParameter := range pathParameters {
 		field := FindField(pathParameter, e.Input())
 		if field == nil {
-			return nil, nil, nil, nil, fmt.Errorf("%s, failed to find path field %s", e.FullName(), bodyParameter)
+			return nil, nil, nil, nil, fmt.Errorf("%s, failed to find path field %s", e.FullName(), pathParameter)
 		}
 		if field.Desc.IsList() || field.Desc.IsMap() {
 			return nil, nil, nil, nil, fmt.Errorf("%s, path parameters do not support list or map", e.FullName())

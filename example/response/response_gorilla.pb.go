@@ -4,7 +4,7 @@ package response
 
 import (
 	context "context"
-	proto_gorilla "github.com/go-leo/gorilla"
+	gorilla "github.com/go-leo/gorilla"
 	mux "github.com/gorilla/mux"
 	httpbody "google.golang.org/genproto/googleapis/api/httpbody"
 	http "google.golang.org/genproto/googleapis/rpc/http"
@@ -22,8 +22,8 @@ type ResponseGorsService interface {
 	HttpResponse(ctx context.Context, request *emptypb.Empty) (*http.HttpResponse, error)
 }
 
-func AppendResponseGorsRoute(router *mux.Router, service ResponseGorsService, opts ...proto_gorilla.Option) *mux.Router {
-	options := proto_gorilla.NewOptions(opts...)
+func AppendResponseGorsRoute(router *mux.Router, service ResponseGorsService, opts ...gorilla.Option) *mux.Router {
+	options := gorilla.NewOptions(opts...)
 	handler := responseGorsHandler{
 		service: service,
 		decoder: responseGorsRequestDecoder{
@@ -34,35 +34,35 @@ func AppendResponseGorsRoute(router *mux.Router, service ResponseGorsService, op
 			unmarshalOptions:    options.UnmarshalOptions(),
 			responseTransformer: options.ResponseTransformer(),
 		},
-		errorEncoder: proto_gorilla.DefaultErrorEncoder,
+		errorEncoder: gorilla.DefaultErrorEncoder,
 	}
 	router.NewRoute().
-		Name("/leo.gors.example.response.v1.Response/OmittedResponse").
+		Name("/leo.gorilla.example.response.v1.Response/OmittedResponse").
 		Methods("POST").
 		Path("/v1/omitted/response").
 		Handler(handler.OmittedResponse())
 	router.NewRoute().
-		Name("/leo.gors.example.response.v1.Response/StarResponse").
+		Name("/leo.gorilla.example.response.v1.Response/StarResponse").
 		Methods("POST").
 		Path("/v1/star/response").
 		Handler(handler.StarResponse())
 	router.NewRoute().
-		Name("/leo.gors.example.response.v1.Response/NamedResponse").
+		Name("/leo.gorilla.example.response.v1.Response/NamedResponse").
 		Methods("POST").
 		Path("/v1/named/response").
 		Handler(handler.NamedResponse())
 	router.NewRoute().
-		Name("/leo.gors.example.response.v1.Response/HttpBodyResponse").
+		Name("/leo.gorilla.example.response.v1.Response/HttpBodyResponse").
 		Methods("PUT").
 		Path("/v1/http/body/omitted/response").
 		Handler(handler.HttpBodyResponse())
 	router.NewRoute().
-		Name("/leo.gors.example.response.v1.Response/HttpBodyNamedResponse").
+		Name("/leo.gorilla.example.response.v1.Response/HttpBodyNamedResponse").
 		Methods("PUT").
 		Path("/v1/http/body/named/response").
 		Handler(handler.HttpBodyNamedResponse())
 	router.NewRoute().
-		Name("/leo.gors.example.response.v1.Response/HttpResponse").
+		Name("/leo.gorilla.example.response.v1.Response/HttpResponse").
 		Methods("GET").
 		Path("/v1/http/response").
 		Handler(handler.HttpResponse())
@@ -73,7 +73,7 @@ type responseGorsHandler struct {
 	service      ResponseGorsService
 	decoder      responseGorsRequestDecoder
 	encoder      responseGorsResponseEncoder
-	errorEncoder proto_gorilla.ErrorEncoder
+	errorEncoder gorilla.ErrorEncoder
 }
 
 func (h responseGorsHandler) OmittedResponse() http1.Handler {
@@ -228,24 +228,24 @@ func (decoder responseGorsRequestDecoder) HttpResponse(ctx context.Context, r *h
 type responseGorsResponseEncoder struct {
 	marshalOptions      protojson.MarshalOptions
 	unmarshalOptions    protojson.UnmarshalOptions
-	responseTransformer proto_gorilla.ResponseTransformer
+	responseTransformer gorilla.ResponseTransformer
 }
 
 func (encoder responseGorsResponseEncoder) OmittedResponse(ctx context.Context, w http1.ResponseWriter, resp *UserResponse) error {
-	return proto_gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
+	return gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
 func (encoder responseGorsResponseEncoder) StarResponse(ctx context.Context, w http1.ResponseWriter, resp *UserResponse) error {
-	return proto_gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
+	return gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
 func (encoder responseGorsResponseEncoder) NamedResponse(ctx context.Context, w http1.ResponseWriter, resp *UserResponse) error {
-	return proto_gorilla.ResponseEncoder(ctx, w, resp.GetUser(), encoder.marshalOptions)
+	return gorilla.ResponseEncoder(ctx, w, resp.GetUser(), encoder.marshalOptions)
 }
 func (encoder responseGorsResponseEncoder) HttpBodyResponse(ctx context.Context, w http1.ResponseWriter, resp *httpbody.HttpBody) error {
-	return proto_gorilla.HttpBodyEncoder(ctx, w, resp)
+	return gorilla.HttpBodyEncoder(ctx, w, resp)
 }
 func (encoder responseGorsResponseEncoder) HttpBodyNamedResponse(ctx context.Context, w http1.ResponseWriter, resp *HttpBody) error {
-	return proto_gorilla.HttpBodyEncoder(ctx, w, resp.GetBody())
+	return gorilla.HttpBodyEncoder(ctx, w, resp.GetBody())
 }
 func (encoder responseGorsResponseEncoder) HttpResponse(ctx context.Context, w http1.ResponseWriter, resp *http.HttpResponse) error {
-	return proto_gorilla.HttpResponseEncoder(ctx, w, resp)
+	return gorilla.HttpResponseEncoder(ctx, w, resp)
 }

@@ -1,8 +1,9 @@
-package gors
+package gorilla
 
 import (
-	"google.golang.org/protobuf/encoding/protojson"
 	"testing"
+
+	"google.golang.org/protobuf/encoding/protojson"
 )
 
 func TestNewOption(t *testing.T) {
