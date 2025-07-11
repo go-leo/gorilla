@@ -238,7 +238,7 @@ func (encoder responseGorillaResponseEncoder) StarResponse(ctx context.Context, 
 	return gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
 func (encoder responseGorillaResponseEncoder) NamedResponse(ctx context.Context, w http1.ResponseWriter, resp *UserResponse) error {
-	return gorilla.ResponseEncoder(ctx, w, resp.GetUser(), encoder.marshalOptions)
+	return gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp.GetUser()), encoder.marshalOptions)
 }
 func (encoder responseGorillaResponseEncoder) HttpBodyResponse(ctx context.Context, w http1.ResponseWriter, resp *httpbody.HttpBody) error {
 	return gorilla.HttpBodyEncoder(ctx, w, resp)
