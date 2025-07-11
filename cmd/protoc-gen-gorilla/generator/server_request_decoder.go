@@ -46,7 +46,7 @@ func (f *Generator) GenerateServerRequestDecoder(service *gen.Service, g *protog
 		}
 
 		if len(pathFields) > 0 {
-			g.P("vars := ", gen.UrlxPackage.Ident("FormFromMap"), "(", gen.VarsIdent, "(r)", ")")
+			g.P("vars := ", gen.GorillaPackage.Ident("FormFromMap"), "(", gen.VarsIdent, "(r)", ")")
 			f.PrintPathField(g, pathFields)
 		}
 
@@ -106,70 +106,70 @@ func (f *Generator) PrintPathField(g *protogen.GeneratedFile, pathFields []*prot
 		switch field.Desc.Kind() {
 		case protoreflect.BoolKind: // bool
 			if pointer {
-				f.PrintFieldAssign(g, tgtErrValue, goType, gen.UrlxPackage.Ident("GetBoolPtr"), fieldName, form, errName)
+				f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetBoolPtr"), fieldName, form, errName)
 			} else {
-				f.PrintFieldAssign(g, tgtErrValue, goType, gen.UrlxPackage.Ident("GetBool"), fieldName, form, errName)
+				f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetBool"), fieldName, form, errName)
 			}
 		case protoreflect.Int32Kind, protoreflect.Sint32Kind, protoreflect.Sfixed32Kind: // int32
 			if pointer {
-				f.PrintFieldAssign(g, tgtErrValue, goType, gen.UrlxPackage.Ident("GetIntPtr"), fieldName, form, errName)
+				f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetInt32Ptr"), fieldName, form, errName)
 			} else {
-				f.PrintFieldAssign(g, tgtErrValue, goType, gen.UrlxPackage.Ident("GetInt"), fieldName, form, errName)
+				f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetInt32"), fieldName, form, errName)
 			}
 		case protoreflect.Uint32Kind, protoreflect.Fixed32Kind: // uint32
 			if pointer {
-				f.PrintFieldAssign(g, tgtErrValue, goType, gen.UrlxPackage.Ident("GetUintPtr"), fieldName, form, errName)
+				f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetUint32Ptr"), fieldName, form, errName)
 			} else {
-				f.PrintFieldAssign(g, tgtErrValue, goType, gen.UrlxPackage.Ident("GetUint"), fieldName, form, errName)
+				f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetUint32"), fieldName, form, errName)
 			}
 		case protoreflect.Int64Kind, protoreflect.Sint64Kind, protoreflect.Sfixed64Kind: // int64
 			if pointer {
-				f.PrintFieldAssign(g, tgtErrValue, goType, gen.UrlxPackage.Ident("GetIntPtr"), fieldName, form, errName)
+				f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetInt64Ptr"), fieldName, form, errName)
 			} else {
-				f.PrintFieldAssign(g, tgtErrValue, goType, gen.UrlxPackage.Ident("GetInt"), fieldName, form, errName)
+				f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetInt64"), fieldName, form, errName)
 			}
 		case protoreflect.Uint64Kind, protoreflect.Fixed64Kind: // uint64
 			if pointer {
-				f.PrintFieldAssign(g, tgtErrValue, goType, gen.UrlxPackage.Ident("GetUintPtr"), fieldName, form, errName)
+				f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetUint64Ptr"), fieldName, form, errName)
 			} else {
-				f.PrintFieldAssign(g, tgtErrValue, goType, gen.UrlxPackage.Ident("GetUint"), fieldName, form, errName)
+				f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetUint64"), fieldName, form, errName)
 			}
 		case protoreflect.FloatKind: // float32
 			if pointer {
-				f.PrintFieldAssign(g, tgtErrValue, goType, gen.UrlxPackage.Ident("GetFloatPtr"), fieldName, form, errName)
+				f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetFloat32Ptr"), fieldName, form, errName)
 			} else {
-				f.PrintFieldAssign(g, tgtErrValue, goType, gen.UrlxPackage.Ident("GetFloat"), fieldName, form, errName)
+				f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetFloat32"), fieldName, form, errName)
 			}
 		case protoreflect.DoubleKind: // float64
 			if pointer {
-				f.PrintFieldAssign(g, tgtErrValue, goType, gen.UrlxPackage.Ident("GetFloatPtr"), fieldName, form, errName)
+				f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetFloat64Ptr"), fieldName, form, errName)
 			} else {
-				f.PrintFieldAssign(g, tgtErrValue, goType, gen.UrlxPackage.Ident("GetFloat"), fieldName, form, errName)
+				f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetFloat64"), fieldName, form, errName)
 			}
 		case protoreflect.StringKind: // string
 			f.PrintStringValueAssign(g, tgtValue, srcValue, pointer)
 		case protoreflect.EnumKind: // enum int32
 			if pointer {
-				f.PrintFieldAssign(g, tgtErrValue, goType, gen.UrlxPackage.Ident("GetIntPtr["+g.QualifiedGoIdent(goType[1].(protogen.GoIdent))+"]"), fieldName, form, errName)
+				f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetIntPtr["+g.QualifiedGoIdent(goType[1].(protogen.GoIdent))+"]"), fieldName, form, errName)
 			} else {
-				f.PrintFieldAssign(g, tgtErrValue, goType, gen.UrlxPackage.Ident("GetInt["+g.QualifiedGoIdent(goType[0].(protogen.GoIdent))+"]"), fieldName, form, errName)
+				f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetInt["+g.QualifiedGoIdent(goType[0].(protogen.GoIdent))+"]"), fieldName, form, errName)
 			}
 		case protoreflect.MessageKind:
 			switch field.Message.Desc.FullName() {
 			case "google.protobuf.DoubleValue":
-				f.PrintFieldAssign(g, tgtErrValue, goType, gen.UrlxPackage.Ident("GetFloat64Value"), fieldName, form, errName)
+				f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetFloat64Value"), fieldName, form, errName)
 			case "google.protobuf.FloatValue":
-				f.PrintFieldAssign(g, tgtErrValue, goType, gen.UrlxPackage.Ident("GetFloat32Value"), fieldName, form, errName)
+				f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetFloat32Value"), fieldName, form, errName)
 			case "google.protobuf.Int64Value":
-				f.PrintFieldAssign(g, tgtErrValue, goType, gen.UrlxPackage.Ident("GetInt64Value"), fieldName, form, errName)
+				f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetInt64Value"), fieldName, form, errName)
 			case "google.protobuf.UInt64Value":
-				f.PrintFieldAssign(g, tgtErrValue, goType, gen.UrlxPackage.Ident("GetUint64Value"), fieldName, form, errName)
+				f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetUint64Value"), fieldName, form, errName)
 			case "google.protobuf.Int32Value":
-				f.PrintFieldAssign(g, tgtErrValue, goType, gen.UrlxPackage.Ident("GetInt32Value"), fieldName, form, errName)
+				f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetInt32Value"), fieldName, form, errName)
 			case "google.protobuf.UInt32Value":
-				f.PrintFieldAssign(g, tgtErrValue, goType, gen.UrlxPackage.Ident("GetUint32Value"), fieldName, form, errName)
+				f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetUint32Value"), fieldName, form, errName)
 			case "google.protobuf.BoolValue":
-				f.PrintFieldAssign(g, tgtErrValue, goType, gen.UrlxPackage.Ident("GetBoolValue"), fieldName, form, errName)
+				f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetBoolValue"), fieldName, form, errName)
 			case "google.protobuf.StringValue":
 				f.PrintWrapStringValueAssign(g, tgtValue, srcValue)
 			}
@@ -202,72 +202,72 @@ func (f *Generator) PrintQueryField(g *protogen.GeneratedFile, queryFields []*pr
 		switch field.Desc.Kind() {
 		case protoreflect.BoolKind: // bool
 			if field.Desc.IsList() {
-				f.PrintFieldAssign(g, tgtErrValue, goType, gen.UrlxPackage.Ident("GetBoolSlice"), fieldName, form, errName)
+				f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetBoolSlice"), fieldName, form, errName)
 			} else {
 				if pointer {
-					f.PrintFieldAssign(g, tgtErrValue, goType, gen.UrlxPackage.Ident("GetBoolPtr"), fieldName, form, errName)
+					f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetBoolPtr"), fieldName, form, errName)
 				} else {
-					f.PrintFieldAssign(g, tgtErrValue, goType, gen.UrlxPackage.Ident("GetBool"), fieldName, form, errName)
+					f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetBool"), fieldName, form, errName)
 				}
 			}
 		case protoreflect.Int32Kind, protoreflect.Sint32Kind, protoreflect.Sfixed32Kind: // int32
 			if field.Desc.IsList() {
-				f.PrintFieldAssign(g, tgtErrValue, goType, gen.UrlxPackage.Ident("GetIntSlice"), fieldName, form, errName)
+				f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetInt32Slice"), fieldName, form, errName)
 			} else {
 				if pointer {
-					f.PrintFieldAssign(g, tgtErrValue, goType, gen.UrlxPackage.Ident("GetIntPtr"), fieldName, form, errName)
+					f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetInt32Ptr"), fieldName, form, errName)
 				} else {
-					f.PrintFieldAssign(g, tgtErrValue, goType, gen.UrlxPackage.Ident("GetInt"), fieldName, form, errName)
+					f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetInt32"), fieldName, form, errName)
 				}
 			}
 		case protoreflect.Uint32Kind, protoreflect.Fixed32Kind: // uint32
 			if field.Desc.IsList() {
-				f.PrintFieldAssign(g, tgtErrValue, goType, gen.UrlxPackage.Ident("GetUintSlice"), fieldName, form, errName)
+				f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetUint32Slice"), fieldName, form, errName)
 			} else {
 				if pointer {
-					f.PrintFieldAssign(g, tgtErrValue, goType, gen.UrlxPackage.Ident("GetUintPtr"), fieldName, form, errName)
+					f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetUint32Ptr"), fieldName, form, errName)
 				} else {
-					f.PrintFieldAssign(g, tgtErrValue, goType, gen.UrlxPackage.Ident("GetUint"), fieldName, form, errName)
+					f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetUint32"), fieldName, form, errName)
 				}
 			}
 		case protoreflect.Int64Kind, protoreflect.Sint64Kind, protoreflect.Sfixed64Kind: // int64
 			if field.Desc.IsList() {
-				f.PrintFieldAssign(g, tgtErrValue, goType, gen.UrlxPackage.Ident("GetIntSlice"), fieldName, form, errName)
+				f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetIntSlice"), fieldName, form, errName)
 			} else {
 				if pointer {
-					f.PrintFieldAssign(g, tgtErrValue, goType, gen.UrlxPackage.Ident("GetIntPtr"), fieldName, form, errName)
+					f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetInt64Ptr"), fieldName, form, errName)
 				} else {
-					f.PrintFieldAssign(g, tgtErrValue, goType, gen.UrlxPackage.Ident("GetInt"), fieldName, form, errName)
+					f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetInt64"), fieldName, form, errName)
 				}
 			}
 		case protoreflect.Uint64Kind, protoreflect.Fixed64Kind: // uint64
 			if field.Desc.IsList() {
-				f.PrintFieldAssign(g, tgtErrValue, goType, gen.UrlxPackage.Ident("GetUintSlice"), fieldName, form, errName)
+				f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetUint64Slice"), fieldName, form, errName)
 			} else {
 				if pointer {
-					f.PrintFieldAssign(g, tgtErrValue, goType, gen.UrlxPackage.Ident("GetUintPtr"), fieldName, form, errName)
+					f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetUint64Ptr"), fieldName, form, errName)
 				} else {
-					f.PrintFieldAssign(g, tgtErrValue, goType, gen.UrlxPackage.Ident("GetUint"), fieldName, form, errName)
+					f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetUint64"), fieldName, form, errName)
 				}
 			}
 		case protoreflect.FloatKind: // float32
 			if field.Desc.IsList() {
-				f.PrintFieldAssign(g, tgtErrValue, goType, gen.UrlxPackage.Ident("GetFloatSlice"), fieldName, form, errName)
+				f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetFloat32Slice"), fieldName, form, errName)
 			} else {
 				if pointer {
-					f.PrintFieldAssign(g, tgtErrValue, goType, gen.UrlxPackage.Ident("GetFloatPtr"), fieldName, form, errName)
+					f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetFloat32Ptr"), fieldName, form, errName)
 				} else {
-					f.PrintFieldAssign(g, tgtErrValue, goType, gen.UrlxPackage.Ident("GetFloat"), fieldName, form, errName)
+					f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetFloat32"), fieldName, form, errName)
 				}
 			}
 		case protoreflect.DoubleKind: // float64
 			if field.Desc.IsList() {
-				f.PrintFieldAssign(g, tgtErrValue, goType, gen.UrlxPackage.Ident("GetFloatSlice"), fieldName, form, errName)
+				f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetFloat64Slice"), fieldName, form, errName)
 			} else {
 				if pointer {
-					f.PrintFieldAssign(g, tgtErrValue, goType, gen.UrlxPackage.Ident("GetFloatPtr"), fieldName, form, errName)
+					f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetFloat64Ptr"), fieldName, form, errName)
 				} else {
-					f.PrintFieldAssign(g, tgtErrValue, goType, gen.UrlxPackage.Ident("GetFloat"), fieldName, form, errName)
+					f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetFloat64"), fieldName, form, errName)
 				}
 			}
 		case protoreflect.StringKind: // string
@@ -278,57 +278,57 @@ func (f *Generator) PrintQueryField(g *protogen.GeneratedFile, queryFields []*pr
 			}
 		case protoreflect.EnumKind: // enum int32
 			if field.Desc.IsList() {
-				f.PrintFieldAssign(g, tgtErrValue, goType, gen.UrlxPackage.Ident("GetIntSlice["+g.QualifiedGoIdent(goType[1].(protogen.GoIdent))+"]"), fieldName, form, errName)
+				f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetIntSlice["+g.QualifiedGoIdent(goType[1].(protogen.GoIdent))+"]"), fieldName, form, errName)
 			} else {
 				if pointer {
-					f.PrintFieldAssign(g, tgtErrValue, goType, gen.UrlxPackage.Ident("GetIntPtr["+g.QualifiedGoIdent(goType[1].(protogen.GoIdent))+"]"), fieldName, form, errName)
+					f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetIntPtr["+g.QualifiedGoIdent(goType[1].(protogen.GoIdent))+"]"), fieldName, form, errName)
 				} else {
-					f.PrintFieldAssign(g, tgtErrValue, goType, gen.UrlxPackage.Ident("GetInt["+g.QualifiedGoIdent(goType[0].(protogen.GoIdent))+"]"), fieldName, form, errName)
+					f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetInt["+g.QualifiedGoIdent(goType[0].(protogen.GoIdent))+"]"), fieldName, form, errName)
 				}
 			}
 		case protoreflect.MessageKind:
 			switch field.Message.Desc.FullName() {
 			case "google.protobuf.DoubleValue":
 				if field.Desc.IsList() {
-					f.PrintFieldAssign(g, tgtErrValue, goType, gen.UrlxPackage.Ident("GetFloat64ValueSlice"), fieldName, form, errName)
+					f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetFloat64ValueSlice"), fieldName, form, errName)
 				} else {
-					f.PrintFieldAssign(g, tgtErrValue, goType, gen.UrlxPackage.Ident("GetFloat64Value"), fieldName, form, errName)
+					f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetFloat64Value"), fieldName, form, errName)
 				}
 			case "google.protobuf.FloatValue":
 				if field.Desc.IsList() {
-					f.PrintFieldAssign(g, tgtErrValue, goType, gen.UrlxPackage.Ident("GetFloat32ValueSlice"), fieldName, form, errName)
+					f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetFloat32ValueSlice"), fieldName, form, errName)
 				} else {
-					f.PrintFieldAssign(g, tgtErrValue, goType, gen.UrlxPackage.Ident("GetFloat32Value"), fieldName, form, errName)
+					f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetFloat32Value"), fieldName, form, errName)
 				}
 			case "google.protobuf.Int64Value":
 				if field.Desc.IsList() {
-					f.PrintFieldAssign(g, tgtErrValue, goType, gen.UrlxPackage.Ident("GetInt64ValueSlice"), fieldName, form, errName)
+					f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetInt64ValueSlice"), fieldName, form, errName)
 				} else {
-					f.PrintFieldAssign(g, tgtErrValue, goType, gen.UrlxPackage.Ident("GetInt64Value"), fieldName, form, errName)
+					f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetInt64Value"), fieldName, form, errName)
 				}
 			case "google.protobuf.UInt64Value":
 				if field.Desc.IsList() {
-					f.PrintFieldAssign(g, tgtErrValue, goType, gen.UrlxPackage.Ident("GetUint64ValueSlice"), fieldName, form, errName)
+					f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetUint64ValueSlice"), fieldName, form, errName)
 				} else {
-					f.PrintFieldAssign(g, tgtErrValue, goType, gen.UrlxPackage.Ident("GetUint64Value"), fieldName, form, errName)
+					f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetUint64Value"), fieldName, form, errName)
 				}
 			case "google.protobuf.Int32Value":
 				if field.Desc.IsList() {
-					f.PrintFieldAssign(g, tgtErrValue, goType, gen.UrlxPackage.Ident("GetInt32ValueSlice"), fieldName, form, errName)
+					f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetInt32ValueSlice"), fieldName, form, errName)
 				} else {
-					f.PrintFieldAssign(g, tgtErrValue, goType, gen.UrlxPackage.Ident("GetInt32Value"), fieldName, form, errName)
+					f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetInt32Value"), fieldName, form, errName)
 				}
 			case "google.protobuf.UInt32Value":
 				if field.Desc.IsList() {
-					f.PrintFieldAssign(g, tgtErrValue, goType, gen.UrlxPackage.Ident("GetUint32ValueSlice"), fieldName, form, errName)
+					f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetUint32ValueSlice"), fieldName, form, errName)
 				} else {
-					f.PrintFieldAssign(g, tgtErrValue, goType, gen.UrlxPackage.Ident("GetUint32Value"), fieldName, form, errName)
+					f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetUint32Value"), fieldName, form, errName)
 				}
 			case "google.protobuf.BoolValue":
 				if field.Desc.IsList() {
-					f.PrintFieldAssign(g, tgtErrValue, goType, gen.UrlxPackage.Ident("GetBoolValueSlice"), fieldName, form, errName)
+					f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetBoolValueSlice"), fieldName, form, errName)
 				} else {
-					f.PrintFieldAssign(g, tgtErrValue, goType, gen.UrlxPackage.Ident("GetBoolValue"), fieldName, form, errName)
+					f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetBoolValue"), fieldName, form, errName)
 				}
 			case "google.protobuf.StringValue":
 				if field.Desc.IsList() {

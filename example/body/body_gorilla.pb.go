@@ -4,14 +4,13 @@ package body
 
 import (
 	context "context"
-	http1 "net/http"
-
 	gorilla "github.com/go-leo/gorilla"
 	mux "github.com/gorilla/mux"
 	httpbody "google.golang.org/genproto/googleapis/api/httpbody"
 	http "google.golang.org/genproto/googleapis/rpc/http"
 	protojson "google.golang.org/protobuf/encoding/protojson"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
+	http1 "net/http"
 )
 
 type BodyGorsService interface {
@@ -38,32 +37,32 @@ func AppendBodyGorsRoute(router *mux.Router, service BodyGorsService, opts ...go
 		errorEncoder: gorilla.DefaultErrorEncoder,
 	}
 	router.NewRoute().
-		Name("/leo.gors.example.body.v1.Body/StarBody").
+		Name("/leo.gorilla.example.body.v1.Body/StarBody").
 		Methods("POST").
 		Path("/v1/star/body").
 		Handler(handler.StarBody())
 	router.NewRoute().
-		Name("/leo.gors.example.body.v1.Body/NamedBody").
+		Name("/leo.gorilla.example.body.v1.Body/NamedBody").
 		Methods("POST").
 		Path("/v1/named/body").
 		Handler(handler.NamedBody())
 	router.NewRoute().
-		Name("/leo.gors.example.body.v1.Body/NonBody").
+		Name("/leo.gorilla.example.body.v1.Body/NonBody").
 		Methods("GET").
 		Path("/v1/user_body").
 		Handler(handler.NonBody())
 	router.NewRoute().
-		Name("/leo.gors.example.body.v1.Body/HttpBodyStarBody").
+		Name("/leo.gorilla.example.body.v1.Body/HttpBodyStarBody").
 		Methods("PUT").
 		Path("/v1/http/body/star/body").
 		Handler(handler.HttpBodyStarBody())
 	router.NewRoute().
-		Name("/leo.gors.example.body.v1.Body/HttpBodyNamedBody").
+		Name("/leo.gorilla.example.body.v1.Body/HttpBodyNamedBody").
 		Methods("PUT").
 		Path("/v1/http/body/named/body").
 		Handler(handler.HttpBodyNamedBody())
 	router.NewRoute().
-		Name("/leo.gors.example.body.v1.Body/HttpRequest").
+		Name("/leo.gorilla.example.body.v1.Body/HttpRequest").
 		Methods("PUT").
 		Path("/v1/http/request").
 		Handler(handler.HttpRequest())
@@ -208,7 +207,6 @@ func (decoder bodyGorsRequestDecoder) StarBody(ctx context.Context, r *http1.Req
 	}
 	return req, nil
 }
-
 func (decoder bodyGorsRequestDecoder) NamedBody(ctx context.Context, r *http1.Request) (*BodyRequest, error) {
 	req := &BodyRequest{}
 	if req.User == nil {
@@ -219,12 +217,10 @@ func (decoder bodyGorsRequestDecoder) NamedBody(ctx context.Context, r *http1.Re
 	}
 	return req, nil
 }
-
 func (decoder bodyGorsRequestDecoder) NonBody(ctx context.Context, r *http1.Request) (*emptypb.Empty, error) {
 	req := &emptypb.Empty{}
 	return req, nil
 }
-
 func (decoder bodyGorsRequestDecoder) HttpBodyStarBody(ctx context.Context, r *http1.Request) (*httpbody.HttpBody, error) {
 	req := &httpbody.HttpBody{}
 	if err := gorilla.HttpBodyDecoder(ctx, r, req); err != nil {
@@ -232,7 +228,6 @@ func (decoder bodyGorsRequestDecoder) HttpBodyStarBody(ctx context.Context, r *h
 	}
 	return req, nil
 }
-
 func (decoder bodyGorsRequestDecoder) HttpBodyNamedBody(ctx context.Context, r *http1.Request) (*HttpBodyRequest, error) {
 	req := &HttpBodyRequest{}
 	if req.Body == nil {
@@ -243,7 +238,6 @@ func (decoder bodyGorsRequestDecoder) HttpBodyNamedBody(ctx context.Context, r *
 	}
 	return req, nil
 }
-
 func (decoder bodyGorsRequestDecoder) HttpRequest(ctx context.Context, r *http1.Request) (*http.HttpRequest, error) {
 	req := &http.HttpRequest{}
 	if err := gorilla.HttpRequestDecoder(ctx, r, req); err != nil {
@@ -261,23 +255,18 @@ type bodyGorsResponseEncoder struct {
 func (encoder bodyGorsResponseEncoder) StarBody(ctx context.Context, w http1.ResponseWriter, resp *emptypb.Empty) error {
 	return gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
-
 func (encoder bodyGorsResponseEncoder) NamedBody(ctx context.Context, w http1.ResponseWriter, resp *emptypb.Empty) error {
 	return gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
-
 func (encoder bodyGorsResponseEncoder) NonBody(ctx context.Context, w http1.ResponseWriter, resp *emptypb.Empty) error {
 	return gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
-
 func (encoder bodyGorsResponseEncoder) HttpBodyStarBody(ctx context.Context, w http1.ResponseWriter, resp *emptypb.Empty) error {
 	return gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
-
 func (encoder bodyGorsResponseEncoder) HttpBodyNamedBody(ctx context.Context, w http1.ResponseWriter, resp *emptypb.Empty) error {
 	return gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
-
 func (encoder bodyGorsResponseEncoder) HttpRequest(ctx context.Context, w http1.ResponseWriter, resp *emptypb.Empty) error {
 	return gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }

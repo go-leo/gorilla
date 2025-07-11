@@ -1,4 +1,4 @@
-package gors
+package gorilla
 
 import (
 	"google.golang.org/protobuf/encoding/protojson"

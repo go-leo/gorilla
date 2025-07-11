@@ -4,8 +4,7 @@ package query
 
 import (
 	context "context"
-	urlx "github.com/go-leo/gox/netx/urlx"
-	proto_gorilla "github.com/go-leo/gorilla"
+	gorilla "github.com/go-leo/gorilla"
 	mux "github.com/gorilla/mux"
 	protojson "google.golang.org/protobuf/encoding/protojson"
 	proto "google.golang.org/protobuf/proto"
@@ -18,8 +17,8 @@ type BoolQueryGorsService interface {
 	BoolQuery(ctx context.Context, request *BoolQueryRequest) (*emptypb.Empty, error)
 }
 
-func AppendBoolQueryGorsRoute(router *mux.Router, service BoolQueryGorsService, opts ...proto_gorilla.Option) *mux.Router {
-	options := proto_gorilla.NewOptions(opts...)
+func AppendBoolQueryGorsRoute(router *mux.Router, service BoolQueryGorsService, opts ...gorilla.Option) *mux.Router {
+	options := gorilla.NewOptions(opts...)
 	handler := boolQueryGorsHandler{
 		service: service,
 		decoder: boolQueryGorsRequestDecoder{
@@ -30,10 +29,10 @@ func AppendBoolQueryGorsRoute(router *mux.Router, service BoolQueryGorsService, 
 			unmarshalOptions:    options.UnmarshalOptions(),
 			responseTransformer: options.ResponseTransformer(),
 		},
-		errorEncoder: proto_gorilla.DefaultErrorEncoder,
+		errorEncoder: gorilla.DefaultErrorEncoder,
 	}
 	router.NewRoute().
-		Name("/leo.gors.example.query.v1.BoolQuery/BoolQuery").
+		Name("/leo.gorilla.example.query.v1.BoolQuery/BoolQuery").
 		Methods("GET").
 		Path("/v1/bool").
 		Handler(handler.BoolQuery())
@@ -44,7 +43,7 @@ type boolQueryGorsHandler struct {
 	service      BoolQueryGorsService
 	decoder      boolQueryGorsRequestDecoder
 	encoder      boolQueryGorsResponseEncoder
-	errorEncoder proto_gorilla.ErrorEncoder
+	errorEncoder gorilla.ErrorEncoder
 }
 
 func (h boolQueryGorsHandler) BoolQuery() http.Handler {
@@ -75,9 +74,9 @@ func (decoder boolQueryGorsRequestDecoder) BoolQuery(ctx context.Context, r *htt
 	req := &BoolQueryRequest{}
 	queries := r.URL.Query()
 	var queryErr error
-	req.Bool, queryErr = proto_gorilla.FormDecoder[bool](queryErr, queries, "bool", urlx.GetBool)
-	req.OptBool, queryErr = proto_gorilla.FormDecoder[*bool](queryErr, queries, "opt_bool", urlx.GetBoolPtr)
-	req.WrapBool, queryErr = proto_gorilla.FormDecoder[*wrapperspb.BoolValue](queryErr, queries, "wrap_bool", urlx.GetBoolValue)
+	req.Bool, queryErr = gorilla.FormDecoder[bool](queryErr, queries, "bool", gorilla.GetBool)
+	req.OptBool, queryErr = gorilla.FormDecoder[*bool](queryErr, queries, "opt_bool", gorilla.GetBoolPtr)
+	req.WrapBool, queryErr = gorilla.FormDecoder[*wrapperspb.BoolValue](queryErr, queries, "wrap_bool", gorilla.GetBoolValue)
 	if queryErr != nil {
 		return nil, queryErr
 	}
@@ -87,19 +86,19 @@ func (decoder boolQueryGorsRequestDecoder) BoolQuery(ctx context.Context, r *htt
 type boolQueryGorsResponseEncoder struct {
 	marshalOptions      protojson.MarshalOptions
 	unmarshalOptions    protojson.UnmarshalOptions
-	responseTransformer proto_gorilla.ResponseTransformer
+	responseTransformer gorilla.ResponseTransformer
 }
 
 func (encoder boolQueryGorsResponseEncoder) BoolQuery(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return proto_gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
+	return gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
 
 type Int32QueryGorsService interface {
 	Int32Query(ctx context.Context, request *Int32QueryRequest) (*emptypb.Empty, error)
 }
 
-func AppendInt32QueryGorsRoute(router *mux.Router, service Int32QueryGorsService, opts ...proto_gorilla.Option) *mux.Router {
-	options := proto_gorilla.NewOptions(opts...)
+func AppendInt32QueryGorsRoute(router *mux.Router, service Int32QueryGorsService, opts ...gorilla.Option) *mux.Router {
+	options := gorilla.NewOptions(opts...)
 	handler := int32QueryGorsHandler{
 		service: service,
 		decoder: int32QueryGorsRequestDecoder{
@@ -110,10 +109,10 @@ func AppendInt32QueryGorsRoute(router *mux.Router, service Int32QueryGorsService
 			unmarshalOptions:    options.UnmarshalOptions(),
 			responseTransformer: options.ResponseTransformer(),
 		},
-		errorEncoder: proto_gorilla.DefaultErrorEncoder,
+		errorEncoder: gorilla.DefaultErrorEncoder,
 	}
 	router.NewRoute().
-		Name("/leo.gors.example.query.v1.Int32Query/Int32Query").
+		Name("/leo.gorilla.example.query.v1.Int32Query/Int32Query").
 		Methods("GET").
 		Path("/v1/int32").
 		Handler(handler.Int32Query())
@@ -124,7 +123,7 @@ type int32QueryGorsHandler struct {
 	service      Int32QueryGorsService
 	decoder      int32QueryGorsRequestDecoder
 	encoder      int32QueryGorsResponseEncoder
-	errorEncoder proto_gorilla.ErrorEncoder
+	errorEncoder gorilla.ErrorEncoder
 }
 
 func (h int32QueryGorsHandler) Int32Query() http.Handler {
@@ -155,13 +154,13 @@ func (decoder int32QueryGorsRequestDecoder) Int32Query(ctx context.Context, r *h
 	req := &Int32QueryRequest{}
 	queries := r.URL.Query()
 	var queryErr error
-	req.Int32, queryErr = proto_gorilla.FormDecoder[int32](queryErr, queries, "int32", urlx.GetInt)
-	req.Sint32, queryErr = proto_gorilla.FormDecoder[int32](queryErr, queries, "sint32", urlx.GetInt)
-	req.Sfixed32, queryErr = proto_gorilla.FormDecoder[int32](queryErr, queries, "sfixed32", urlx.GetInt)
-	req.OptInt32, queryErr = proto_gorilla.FormDecoder[*int32](queryErr, queries, "opt_int32", urlx.GetIntPtr)
-	req.OptSint32, queryErr = proto_gorilla.FormDecoder[*int32](queryErr, queries, "opt_sint32", urlx.GetIntPtr)
-	req.OptSfixed32, queryErr = proto_gorilla.FormDecoder[*int32](queryErr, queries, "opt_sfixed32", urlx.GetIntPtr)
-	req.WrapInt32, queryErr = proto_gorilla.FormDecoder[*wrapperspb.Int32Value](queryErr, queries, "wrap_int32", urlx.GetInt32Value)
+	req.Int32, queryErr = gorilla.FormDecoder[int32](queryErr, queries, "int32", gorilla.GetInt32)
+	req.Sint32, queryErr = gorilla.FormDecoder[int32](queryErr, queries, "sint32", gorilla.GetInt32)
+	req.Sfixed32, queryErr = gorilla.FormDecoder[int32](queryErr, queries, "sfixed32", gorilla.GetInt32)
+	req.OptInt32, queryErr = gorilla.FormDecoder[*int32](queryErr, queries, "opt_int32", gorilla.GetInt32Ptr)
+	req.OptSint32, queryErr = gorilla.FormDecoder[*int32](queryErr, queries, "opt_sint32", gorilla.GetInt32Ptr)
+	req.OptSfixed32, queryErr = gorilla.FormDecoder[*int32](queryErr, queries, "opt_sfixed32", gorilla.GetInt32Ptr)
+	req.WrapInt32, queryErr = gorilla.FormDecoder[*wrapperspb.Int32Value](queryErr, queries, "wrap_int32", gorilla.GetInt32Value)
 	if queryErr != nil {
 		return nil, queryErr
 	}
@@ -171,19 +170,19 @@ func (decoder int32QueryGorsRequestDecoder) Int32Query(ctx context.Context, r *h
 type int32QueryGorsResponseEncoder struct {
 	marshalOptions      protojson.MarshalOptions
 	unmarshalOptions    protojson.UnmarshalOptions
-	responseTransformer proto_gorilla.ResponseTransformer
+	responseTransformer gorilla.ResponseTransformer
 }
 
 func (encoder int32QueryGorsResponseEncoder) Int32Query(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return proto_gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
+	return gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
 
 type Int64QueryGorsService interface {
 	Int64Query(ctx context.Context, request *Int64QueryRequest) (*emptypb.Empty, error)
 }
 
-func AppendInt64QueryGorsRoute(router *mux.Router, service Int64QueryGorsService, opts ...proto_gorilla.Option) *mux.Router {
-	options := proto_gorilla.NewOptions(opts...)
+func AppendInt64QueryGorsRoute(router *mux.Router, service Int64QueryGorsService, opts ...gorilla.Option) *mux.Router {
+	options := gorilla.NewOptions(opts...)
 	handler := int64QueryGorsHandler{
 		service: service,
 		decoder: int64QueryGorsRequestDecoder{
@@ -194,10 +193,10 @@ func AppendInt64QueryGorsRoute(router *mux.Router, service Int64QueryGorsService
 			unmarshalOptions:    options.UnmarshalOptions(),
 			responseTransformer: options.ResponseTransformer(),
 		},
-		errorEncoder: proto_gorilla.DefaultErrorEncoder,
+		errorEncoder: gorilla.DefaultErrorEncoder,
 	}
 	router.NewRoute().
-		Name("/leo.gors.example.query.v1.Int64Query/Int64Query").
+		Name("/leo.gorilla.example.query.v1.Int64Query/Int64Query").
 		Methods("GET").
 		Path("/v1/int64").
 		Handler(handler.Int64Query())
@@ -208,7 +207,7 @@ type int64QueryGorsHandler struct {
 	service      Int64QueryGorsService
 	decoder      int64QueryGorsRequestDecoder
 	encoder      int64QueryGorsResponseEncoder
-	errorEncoder proto_gorilla.ErrorEncoder
+	errorEncoder gorilla.ErrorEncoder
 }
 
 func (h int64QueryGorsHandler) Int64Query() http.Handler {
@@ -239,13 +238,13 @@ func (decoder int64QueryGorsRequestDecoder) Int64Query(ctx context.Context, r *h
 	req := &Int64QueryRequest{}
 	queries := r.URL.Query()
 	var queryErr error
-	req.Int64, queryErr = proto_gorilla.FormDecoder[int64](queryErr, queries, "int64", urlx.GetInt)
-	req.Sint64, queryErr = proto_gorilla.FormDecoder[int64](queryErr, queries, "sint64", urlx.GetInt)
-	req.Sfixed64, queryErr = proto_gorilla.FormDecoder[int64](queryErr, queries, "sfixed64", urlx.GetInt)
-	req.OptInt64, queryErr = proto_gorilla.FormDecoder[*int64](queryErr, queries, "opt_int64", urlx.GetIntPtr)
-	req.OptSint64, queryErr = proto_gorilla.FormDecoder[*int64](queryErr, queries, "opt_sint64", urlx.GetIntPtr)
-	req.OptSfixed64, queryErr = proto_gorilla.FormDecoder[*int64](queryErr, queries, "opt_sfixed64", urlx.GetIntPtr)
-	req.WrapInt64, queryErr = proto_gorilla.FormDecoder[*wrapperspb.Int64Value](queryErr, queries, "wrap_int64", urlx.GetInt64Value)
+	req.Int64, queryErr = gorilla.FormDecoder[int64](queryErr, queries, "int64", gorilla.GetInt64)
+	req.Sint64, queryErr = gorilla.FormDecoder[int64](queryErr, queries, "sint64", gorilla.GetInt64)
+	req.Sfixed64, queryErr = gorilla.FormDecoder[int64](queryErr, queries, "sfixed64", gorilla.GetInt64)
+	req.OptInt64, queryErr = gorilla.FormDecoder[*int64](queryErr, queries, "opt_int64", gorilla.GetInt64Ptr)
+	req.OptSint64, queryErr = gorilla.FormDecoder[*int64](queryErr, queries, "opt_sint64", gorilla.GetInt64Ptr)
+	req.OptSfixed64, queryErr = gorilla.FormDecoder[*int64](queryErr, queries, "opt_sfixed64", gorilla.GetInt64Ptr)
+	req.WrapInt64, queryErr = gorilla.FormDecoder[*wrapperspb.Int64Value](queryErr, queries, "wrap_int64", gorilla.GetInt64Value)
 	if queryErr != nil {
 		return nil, queryErr
 	}
@@ -255,19 +254,19 @@ func (decoder int64QueryGorsRequestDecoder) Int64Query(ctx context.Context, r *h
 type int64QueryGorsResponseEncoder struct {
 	marshalOptions      protojson.MarshalOptions
 	unmarshalOptions    protojson.UnmarshalOptions
-	responseTransformer proto_gorilla.ResponseTransformer
+	responseTransformer gorilla.ResponseTransformer
 }
 
 func (encoder int64QueryGorsResponseEncoder) Int64Query(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return proto_gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
+	return gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
 
 type Uint32QueryGorsService interface {
 	Uint32Query(ctx context.Context, request *Uint32QueryRequest) (*emptypb.Empty, error)
 }
 
-func AppendUint32QueryGorsRoute(router *mux.Router, service Uint32QueryGorsService, opts ...proto_gorilla.Option) *mux.Router {
-	options := proto_gorilla.NewOptions(opts...)
+func AppendUint32QueryGorsRoute(router *mux.Router, service Uint32QueryGorsService, opts ...gorilla.Option) *mux.Router {
+	options := gorilla.NewOptions(opts...)
 	handler := uint32QueryGorsHandler{
 		service: service,
 		decoder: uint32QueryGorsRequestDecoder{
@@ -278,10 +277,10 @@ func AppendUint32QueryGorsRoute(router *mux.Router, service Uint32QueryGorsServi
 			unmarshalOptions:    options.UnmarshalOptions(),
 			responseTransformer: options.ResponseTransformer(),
 		},
-		errorEncoder: proto_gorilla.DefaultErrorEncoder,
+		errorEncoder: gorilla.DefaultErrorEncoder,
 	}
 	router.NewRoute().
-		Name("/leo.gors.example.query.v1.Uint32Query/Uint32Query").
+		Name("/leo.gorilla.example.query.v1.Uint32Query/Uint32Query").
 		Methods("GET").
 		Path("/v1/uint32").
 		Handler(handler.Uint32Query())
@@ -292,7 +291,7 @@ type uint32QueryGorsHandler struct {
 	service      Uint32QueryGorsService
 	decoder      uint32QueryGorsRequestDecoder
 	encoder      uint32QueryGorsResponseEncoder
-	errorEncoder proto_gorilla.ErrorEncoder
+	errorEncoder gorilla.ErrorEncoder
 }
 
 func (h uint32QueryGorsHandler) Uint32Query() http.Handler {
@@ -323,11 +322,11 @@ func (decoder uint32QueryGorsRequestDecoder) Uint32Query(ctx context.Context, r 
 	req := &Uint32QueryRequest{}
 	queries := r.URL.Query()
 	var queryErr error
-	req.Uint32, queryErr = proto_gorilla.FormDecoder[uint32](queryErr, queries, "uint32", urlx.GetUint)
-	req.Fixed32, queryErr = proto_gorilla.FormDecoder[uint32](queryErr, queries, "fixed32", urlx.GetUint)
-	req.OptUint32, queryErr = proto_gorilla.FormDecoder[*uint32](queryErr, queries, "opt_uint32", urlx.GetUintPtr)
-	req.OptFixed32, queryErr = proto_gorilla.FormDecoder[*uint32](queryErr, queries, "opt_fixed32", urlx.GetUintPtr)
-	req.WrapUint32, queryErr = proto_gorilla.FormDecoder[*wrapperspb.UInt32Value](queryErr, queries, "wrap_uint32", urlx.GetUint32Value)
+	req.Uint32, queryErr = gorilla.FormDecoder[uint32](queryErr, queries, "uint32", gorilla.GetUint32)
+	req.Fixed32, queryErr = gorilla.FormDecoder[uint32](queryErr, queries, "fixed32", gorilla.GetUint32)
+	req.OptUint32, queryErr = gorilla.FormDecoder[*uint32](queryErr, queries, "opt_uint32", gorilla.GetUint32Ptr)
+	req.OptFixed32, queryErr = gorilla.FormDecoder[*uint32](queryErr, queries, "opt_fixed32", gorilla.GetUint32Ptr)
+	req.WrapUint32, queryErr = gorilla.FormDecoder[*wrapperspb.UInt32Value](queryErr, queries, "wrap_uint32", gorilla.GetUint32Value)
 	if queryErr != nil {
 		return nil, queryErr
 	}
@@ -337,19 +336,19 @@ func (decoder uint32QueryGorsRequestDecoder) Uint32Query(ctx context.Context, r 
 type uint32QueryGorsResponseEncoder struct {
 	marshalOptions      protojson.MarshalOptions
 	unmarshalOptions    protojson.UnmarshalOptions
-	responseTransformer proto_gorilla.ResponseTransformer
+	responseTransformer gorilla.ResponseTransformer
 }
 
 func (encoder uint32QueryGorsResponseEncoder) Uint32Query(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return proto_gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
+	return gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
 
 type Uint64QueryGorsService interface {
 	Uint64Query(ctx context.Context, request *Uint64QueryRequest) (*emptypb.Empty, error)
 }
 
-func AppendUint64QueryGorsRoute(router *mux.Router, service Uint64QueryGorsService, opts ...proto_gorilla.Option) *mux.Router {
-	options := proto_gorilla.NewOptions(opts...)
+func AppendUint64QueryGorsRoute(router *mux.Router, service Uint64QueryGorsService, opts ...gorilla.Option) *mux.Router {
+	options := gorilla.NewOptions(opts...)
 	handler := uint64QueryGorsHandler{
 		service: service,
 		decoder: uint64QueryGorsRequestDecoder{
@@ -360,10 +359,10 @@ func AppendUint64QueryGorsRoute(router *mux.Router, service Uint64QueryGorsServi
 			unmarshalOptions:    options.UnmarshalOptions(),
 			responseTransformer: options.ResponseTransformer(),
 		},
-		errorEncoder: proto_gorilla.DefaultErrorEncoder,
+		errorEncoder: gorilla.DefaultErrorEncoder,
 	}
 	router.NewRoute().
-		Name("/leo.gors.example.query.v1.Uint64Query/Uint64Query").
+		Name("/leo.gorilla.example.query.v1.Uint64Query/Uint64Query").
 		Methods("GET").
 		Path("/v1/uint64").
 		Handler(handler.Uint64Query())
@@ -374,7 +373,7 @@ type uint64QueryGorsHandler struct {
 	service      Uint64QueryGorsService
 	decoder      uint64QueryGorsRequestDecoder
 	encoder      uint64QueryGorsResponseEncoder
-	errorEncoder proto_gorilla.ErrorEncoder
+	errorEncoder gorilla.ErrorEncoder
 }
 
 func (h uint64QueryGorsHandler) Uint64Query() http.Handler {
@@ -405,11 +404,11 @@ func (decoder uint64QueryGorsRequestDecoder) Uint64Query(ctx context.Context, r 
 	req := &Uint64QueryRequest{}
 	queries := r.URL.Query()
 	var queryErr error
-	req.Uint64, queryErr = proto_gorilla.FormDecoder[uint64](queryErr, queries, "uint64", urlx.GetUint)
-	req.Fixed64, queryErr = proto_gorilla.FormDecoder[uint64](queryErr, queries, "fixed64", urlx.GetUint)
-	req.OptUint64, queryErr = proto_gorilla.FormDecoder[*uint64](queryErr, queries, "opt_uint64", urlx.GetUintPtr)
-	req.OptFixed64, queryErr = proto_gorilla.FormDecoder[*uint64](queryErr, queries, "opt_fixed64", urlx.GetUintPtr)
-	req.WrapUint64, queryErr = proto_gorilla.FormDecoder[*wrapperspb.UInt64Value](queryErr, queries, "wrap_uint64", urlx.GetUint64Value)
+	req.Uint64, queryErr = gorilla.FormDecoder[uint64](queryErr, queries, "uint64", gorilla.GetUint64)
+	req.Fixed64, queryErr = gorilla.FormDecoder[uint64](queryErr, queries, "fixed64", gorilla.GetUint64)
+	req.OptUint64, queryErr = gorilla.FormDecoder[*uint64](queryErr, queries, "opt_uint64", gorilla.GetUint64Ptr)
+	req.OptFixed64, queryErr = gorilla.FormDecoder[*uint64](queryErr, queries, "opt_fixed64", gorilla.GetUint64Ptr)
+	req.WrapUint64, queryErr = gorilla.FormDecoder[*wrapperspb.UInt64Value](queryErr, queries, "wrap_uint64", gorilla.GetUint64Value)
 	if queryErr != nil {
 		return nil, queryErr
 	}
@@ -419,19 +418,19 @@ func (decoder uint64QueryGorsRequestDecoder) Uint64Query(ctx context.Context, r 
 type uint64QueryGorsResponseEncoder struct {
 	marshalOptions      protojson.MarshalOptions
 	unmarshalOptions    protojson.UnmarshalOptions
-	responseTransformer proto_gorilla.ResponseTransformer
+	responseTransformer gorilla.ResponseTransformer
 }
 
 func (encoder uint64QueryGorsResponseEncoder) Uint64Query(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return proto_gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
+	return gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
 
 type FloatQueryGorsService interface {
 	FloatQuery(ctx context.Context, request *FloatQueryRequest) (*emptypb.Empty, error)
 }
 
-func AppendFloatQueryGorsRoute(router *mux.Router, service FloatQueryGorsService, opts ...proto_gorilla.Option) *mux.Router {
-	options := proto_gorilla.NewOptions(opts...)
+func AppendFloatQueryGorsRoute(router *mux.Router, service FloatQueryGorsService, opts ...gorilla.Option) *mux.Router {
+	options := gorilla.NewOptions(opts...)
 	handler := floatQueryGorsHandler{
 		service: service,
 		decoder: floatQueryGorsRequestDecoder{
@@ -442,10 +441,10 @@ func AppendFloatQueryGorsRoute(router *mux.Router, service FloatQueryGorsService
 			unmarshalOptions:    options.UnmarshalOptions(),
 			responseTransformer: options.ResponseTransformer(),
 		},
-		errorEncoder: proto_gorilla.DefaultErrorEncoder,
+		errorEncoder: gorilla.DefaultErrorEncoder,
 	}
 	router.NewRoute().
-		Name("/leo.gors.example.query.v1.FloatQuery/FloatQuery").
+		Name("/leo.gorilla.example.query.v1.FloatQuery/FloatQuery").
 		Methods("GET").
 		Path("/v1/float").
 		Handler(handler.FloatQuery())
@@ -456,7 +455,7 @@ type floatQueryGorsHandler struct {
 	service      FloatQueryGorsService
 	decoder      floatQueryGorsRequestDecoder
 	encoder      floatQueryGorsResponseEncoder
-	errorEncoder proto_gorilla.ErrorEncoder
+	errorEncoder gorilla.ErrorEncoder
 }
 
 func (h floatQueryGorsHandler) FloatQuery() http.Handler {
@@ -487,9 +486,9 @@ func (decoder floatQueryGorsRequestDecoder) FloatQuery(ctx context.Context, r *h
 	req := &FloatQueryRequest{}
 	queries := r.URL.Query()
 	var queryErr error
-	req.Float, queryErr = proto_gorilla.FormDecoder[float32](queryErr, queries, "float", urlx.GetFloat)
-	req.OptFloat, queryErr = proto_gorilla.FormDecoder[*float32](queryErr, queries, "opt_float", urlx.GetFloatPtr)
-	req.WrapFloat, queryErr = proto_gorilla.FormDecoder[*wrapperspb.FloatValue](queryErr, queries, "wrap_float", urlx.GetFloat32Value)
+	req.Float, queryErr = gorilla.FormDecoder[float32](queryErr, queries, "float", gorilla.GetFloat32)
+	req.OptFloat, queryErr = gorilla.FormDecoder[*float32](queryErr, queries, "opt_float", gorilla.GetFloat32Ptr)
+	req.WrapFloat, queryErr = gorilla.FormDecoder[*wrapperspb.FloatValue](queryErr, queries, "wrap_float", gorilla.GetFloat32Value)
 	if queryErr != nil {
 		return nil, queryErr
 	}
@@ -499,19 +498,19 @@ func (decoder floatQueryGorsRequestDecoder) FloatQuery(ctx context.Context, r *h
 type floatQueryGorsResponseEncoder struct {
 	marshalOptions      protojson.MarshalOptions
 	unmarshalOptions    protojson.UnmarshalOptions
-	responseTransformer proto_gorilla.ResponseTransformer
+	responseTransformer gorilla.ResponseTransformer
 }
 
 func (encoder floatQueryGorsResponseEncoder) FloatQuery(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return proto_gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
+	return gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
 
 type DoubleQueryGorsService interface {
 	DoubleQuery(ctx context.Context, request *DoubleQueryRequest) (*emptypb.Empty, error)
 }
 
-func AppendDoubleQueryGorsRoute(router *mux.Router, service DoubleQueryGorsService, opts ...proto_gorilla.Option) *mux.Router {
-	options := proto_gorilla.NewOptions(opts...)
+func AppendDoubleQueryGorsRoute(router *mux.Router, service DoubleQueryGorsService, opts ...gorilla.Option) *mux.Router {
+	options := gorilla.NewOptions(opts...)
 	handler := doubleQueryGorsHandler{
 		service: service,
 		decoder: doubleQueryGorsRequestDecoder{
@@ -522,10 +521,10 @@ func AppendDoubleQueryGorsRoute(router *mux.Router, service DoubleQueryGorsServi
 			unmarshalOptions:    options.UnmarshalOptions(),
 			responseTransformer: options.ResponseTransformer(),
 		},
-		errorEncoder: proto_gorilla.DefaultErrorEncoder,
+		errorEncoder: gorilla.DefaultErrorEncoder,
 	}
 	router.NewRoute().
-		Name("/leo.gors.example.query.v1.DoubleQuery/DoubleQuery").
+		Name("/leo.gorilla.example.query.v1.DoubleQuery/DoubleQuery").
 		Methods("GET").
 		Path("/v1/double").
 		Handler(handler.DoubleQuery())
@@ -536,7 +535,7 @@ type doubleQueryGorsHandler struct {
 	service      DoubleQueryGorsService
 	decoder      doubleQueryGorsRequestDecoder
 	encoder      doubleQueryGorsResponseEncoder
-	errorEncoder proto_gorilla.ErrorEncoder
+	errorEncoder gorilla.ErrorEncoder
 }
 
 func (h doubleQueryGorsHandler) DoubleQuery() http.Handler {
@@ -567,9 +566,9 @@ func (decoder doubleQueryGorsRequestDecoder) DoubleQuery(ctx context.Context, r 
 	req := &DoubleQueryRequest{}
 	queries := r.URL.Query()
 	var queryErr error
-	req.Double, queryErr = proto_gorilla.FormDecoder[float64](queryErr, queries, "double", urlx.GetFloat)
-	req.OptDouble, queryErr = proto_gorilla.FormDecoder[*float64](queryErr, queries, "opt_double", urlx.GetFloatPtr)
-	req.WrapDouble, queryErr = proto_gorilla.FormDecoder[*wrapperspb.DoubleValue](queryErr, queries, "wrap_double", urlx.GetFloat64Value)
+	req.Double, queryErr = gorilla.FormDecoder[float64](queryErr, queries, "double", gorilla.GetFloat64)
+	req.OptDouble, queryErr = gorilla.FormDecoder[*float64](queryErr, queries, "opt_double", gorilla.GetFloat64Ptr)
+	req.WrapDouble, queryErr = gorilla.FormDecoder[*wrapperspb.DoubleValue](queryErr, queries, "wrap_double", gorilla.GetFloat64Value)
 	if queryErr != nil {
 		return nil, queryErr
 	}
@@ -579,19 +578,19 @@ func (decoder doubleQueryGorsRequestDecoder) DoubleQuery(ctx context.Context, r 
 type doubleQueryGorsResponseEncoder struct {
 	marshalOptions      protojson.MarshalOptions
 	unmarshalOptions    protojson.UnmarshalOptions
-	responseTransformer proto_gorilla.ResponseTransformer
+	responseTransformer gorilla.ResponseTransformer
 }
 
 func (encoder doubleQueryGorsResponseEncoder) DoubleQuery(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return proto_gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
+	return gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
 
 type StringQueryGorsService interface {
 	StringQuery(ctx context.Context, request *StringQueryRequest) (*emptypb.Empty, error)
 }
 
-func AppendStringQueryGorsRoute(router *mux.Router, service StringQueryGorsService, opts ...proto_gorilla.Option) *mux.Router {
-	options := proto_gorilla.NewOptions(opts...)
+func AppendStringQueryGorsRoute(router *mux.Router, service StringQueryGorsService, opts ...gorilla.Option) *mux.Router {
+	options := gorilla.NewOptions(opts...)
 	handler := stringQueryGorsHandler{
 		service: service,
 		decoder: stringQueryGorsRequestDecoder{
@@ -602,10 +601,10 @@ func AppendStringQueryGorsRoute(router *mux.Router, service StringQueryGorsServi
 			unmarshalOptions:    options.UnmarshalOptions(),
 			responseTransformer: options.ResponseTransformer(),
 		},
-		errorEncoder: proto_gorilla.DefaultErrorEncoder,
+		errorEncoder: gorilla.DefaultErrorEncoder,
 	}
 	router.NewRoute().
-		Name("/leo.gors.example.query.v1.StringQuery/StringQuery").
+		Name("/leo.gorilla.example.query.v1.StringQuery/StringQuery").
 		Methods("GET").
 		Path("/v1/string").
 		Handler(handler.StringQuery())
@@ -616,7 +615,7 @@ type stringQueryGorsHandler struct {
 	service      StringQueryGorsService
 	decoder      stringQueryGorsRequestDecoder
 	encoder      stringQueryGorsResponseEncoder
-	errorEncoder proto_gorilla.ErrorEncoder
+	errorEncoder gorilla.ErrorEncoder
 }
 
 func (h stringQueryGorsHandler) StringQuery() http.Handler {
@@ -659,19 +658,19 @@ func (decoder stringQueryGorsRequestDecoder) StringQuery(ctx context.Context, r 
 type stringQueryGorsResponseEncoder struct {
 	marshalOptions      protojson.MarshalOptions
 	unmarshalOptions    protojson.UnmarshalOptions
-	responseTransformer proto_gorilla.ResponseTransformer
+	responseTransformer gorilla.ResponseTransformer
 }
 
 func (encoder stringQueryGorsResponseEncoder) StringQuery(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return proto_gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
+	return gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
 
 type EnumQueryGorsService interface {
 	EnumQuery(ctx context.Context, request *EnumQueryRequest) (*emptypb.Empty, error)
 }
 
-func AppendEnumQueryGorsRoute(router *mux.Router, service EnumQueryGorsService, opts ...proto_gorilla.Option) *mux.Router {
-	options := proto_gorilla.NewOptions(opts...)
+func AppendEnumQueryGorsRoute(router *mux.Router, service EnumQueryGorsService, opts ...gorilla.Option) *mux.Router {
+	options := gorilla.NewOptions(opts...)
 	handler := enumQueryGorsHandler{
 		service: service,
 		decoder: enumQueryGorsRequestDecoder{
@@ -682,10 +681,10 @@ func AppendEnumQueryGorsRoute(router *mux.Router, service EnumQueryGorsService, 
 			unmarshalOptions:    options.UnmarshalOptions(),
 			responseTransformer: options.ResponseTransformer(),
 		},
-		errorEncoder: proto_gorilla.DefaultErrorEncoder,
+		errorEncoder: gorilla.DefaultErrorEncoder,
 	}
 	router.NewRoute().
-		Name("/leo.gors.example.query.v1.EnumQuery/EnumQuery").
+		Name("/leo.gorilla.example.query.v1.EnumQuery/EnumQuery").
 		Methods("GET").
 		Path("/v1/enum").
 		Handler(handler.EnumQuery())
@@ -696,7 +695,7 @@ type enumQueryGorsHandler struct {
 	service      EnumQueryGorsService
 	decoder      enumQueryGorsRequestDecoder
 	encoder      enumQueryGorsResponseEncoder
-	errorEncoder proto_gorilla.ErrorEncoder
+	errorEncoder gorilla.ErrorEncoder
 }
 
 func (h enumQueryGorsHandler) EnumQuery() http.Handler {
@@ -727,8 +726,8 @@ func (decoder enumQueryGorsRequestDecoder) EnumQuery(ctx context.Context, r *htt
 	req := &EnumQueryRequest{}
 	queries := r.URL.Query()
 	var queryErr error
-	req.Status, queryErr = proto_gorilla.FormDecoder[EnumQueryRequest_Status](queryErr, queries, "status", urlx.GetInt[EnumQueryRequest_Status])
-	req.OptStatus, queryErr = proto_gorilla.FormDecoder[*EnumQueryRequest_Status](queryErr, queries, "opt_status", urlx.GetIntPtr[EnumQueryRequest_Status])
+	req.Status, queryErr = gorilla.FormDecoder[EnumQueryRequest_Status](queryErr, queries, "status", gorilla.GetInt[EnumQueryRequest_Status])
+	req.OptStatus, queryErr = gorilla.FormDecoder[*EnumQueryRequest_Status](queryErr, queries, "opt_status", gorilla.GetIntPtr[EnumQueryRequest_Status])
 	if queryErr != nil {
 		return nil, queryErr
 	}
@@ -738,9 +737,9 @@ func (decoder enumQueryGorsRequestDecoder) EnumQuery(ctx context.Context, r *htt
 type enumQueryGorsResponseEncoder struct {
 	marshalOptions      protojson.MarshalOptions
 	unmarshalOptions    protojson.UnmarshalOptions
-	responseTransformer proto_gorilla.ResponseTransformer
+	responseTransformer gorilla.ResponseTransformer
 }
 
 func (encoder enumQueryGorsResponseEncoder) EnumQuery(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return proto_gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
+	return gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
