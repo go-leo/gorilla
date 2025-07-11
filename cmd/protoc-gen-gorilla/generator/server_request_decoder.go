@@ -232,7 +232,7 @@ func (f *Generator) PrintQueryField(g *protogen.GeneratedFile, queryFields []*pr
 			}
 		case protoreflect.Int64Kind, protoreflect.Sint64Kind, protoreflect.Sfixed64Kind: // int64
 			if field.Desc.IsList() {
-				f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetIntSlice"), fieldName, form, errName)
+				f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetInt64Slice"), fieldName, form, errName)
 			} else {
 				if pointer {
 					f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetInt64Ptr"), fieldName, form, errName)
@@ -278,12 +278,12 @@ func (f *Generator) PrintQueryField(g *protogen.GeneratedFile, queryFields []*pr
 			}
 		case protoreflect.EnumKind: // enum int32
 			if field.Desc.IsList() {
-				f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetIntSlice["+g.QualifiedGoIdent(goType[1].(protogen.GoIdent))+"]"), fieldName, form, errName)
+				f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetInt32Slice["+g.QualifiedGoIdent(goType[1].(protogen.GoIdent))+"]"), fieldName, form, errName)
 			} else {
 				if pointer {
-					f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetIntPtr["+g.QualifiedGoIdent(goType[1].(protogen.GoIdent))+"]"), fieldName, form, errName)
+					f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetInt32Ptr["+g.QualifiedGoIdent(goType[1].(protogen.GoIdent))+"]"), fieldName, form, errName)
 				} else {
-					f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetInt["+g.QualifiedGoIdent(goType[0].(protogen.GoIdent))+"]"), fieldName, form, errName)
+					f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetInt32["+g.QualifiedGoIdent(goType[0].(protogen.GoIdent))+"]"), fieldName, form, errName)
 				}
 			}
 		case protoreflect.MessageKind:
@@ -362,5 +362,5 @@ func (f *Generator) PrintStringListAssign(g *protogen.GeneratedFile, tgtValue []
 }
 
 func (f *Generator) PrintWrapStringListAssign(g *protogen.GeneratedFile, tgtValue []any, srcValue []any) {
-	g.P(append(tgtValue, append(append([]any{gen.WrapStringSliceIdent, "("}, srcValue...), ")")...)...)
+	g.P(append(tgtValue, append(append([]any{ gen.GorillaPackage.Ident("WrapStringSlice"), "("}, srcValue...), ")")...)...)
 }

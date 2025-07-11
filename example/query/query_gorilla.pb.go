@@ -77,6 +77,8 @@ func (decoder boolQueryGorillaRequestDecoder) BoolQuery(ctx context.Context, r *
 	req.Bool, queryErr = gorilla.FormDecoder[bool](queryErr, queries, "bool", gorilla.GetBool)
 	req.OptBool, queryErr = gorilla.FormDecoder[*bool](queryErr, queries, "opt_bool", gorilla.GetBoolPtr)
 	req.WrapBool, queryErr = gorilla.FormDecoder[*wrapperspb.BoolValue](queryErr, queries, "wrap_bool", gorilla.GetBoolValue)
+	req.ListBool, queryErr = gorilla.FormDecoder[[]bool](queryErr, queries, "list_bool", gorilla.GetBoolSlice)
+	req.ListWrapBool, queryErr = gorilla.FormDecoder[[]*wrapperspb.BoolValue](queryErr, queries, "list_wrap_bool", gorilla.GetBoolValueSlice)
 	if queryErr != nil {
 		return nil, queryErr
 	}
@@ -161,6 +163,10 @@ func (decoder int32QueryGorillaRequestDecoder) Int32Query(ctx context.Context, r
 	req.OptSint32, queryErr = gorilla.FormDecoder[*int32](queryErr, queries, "opt_sint32", gorilla.GetInt32Ptr)
 	req.OptSfixed32, queryErr = gorilla.FormDecoder[*int32](queryErr, queries, "opt_sfixed32", gorilla.GetInt32Ptr)
 	req.WrapInt32, queryErr = gorilla.FormDecoder[*wrapperspb.Int32Value](queryErr, queries, "wrap_int32", gorilla.GetInt32Value)
+	req.ListInt32, queryErr = gorilla.FormDecoder[[]int32](queryErr, queries, "list_int32", gorilla.GetInt32Slice)
+	req.ListSint32, queryErr = gorilla.FormDecoder[[]int32](queryErr, queries, "list_sint32", gorilla.GetInt32Slice)
+	req.ListSfixed32, queryErr = gorilla.FormDecoder[[]int32](queryErr, queries, "list_sfixed32", gorilla.GetInt32Slice)
+	req.ListWrapInt32, queryErr = gorilla.FormDecoder[[]*wrapperspb.Int32Value](queryErr, queries, "list_wrap_int32", gorilla.GetInt32ValueSlice)
 	if queryErr != nil {
 		return nil, queryErr
 	}
@@ -245,6 +251,10 @@ func (decoder int64QueryGorillaRequestDecoder) Int64Query(ctx context.Context, r
 	req.OptSint64, queryErr = gorilla.FormDecoder[*int64](queryErr, queries, "opt_sint64", gorilla.GetInt64Ptr)
 	req.OptSfixed64, queryErr = gorilla.FormDecoder[*int64](queryErr, queries, "opt_sfixed64", gorilla.GetInt64Ptr)
 	req.WrapInt64, queryErr = gorilla.FormDecoder[*wrapperspb.Int64Value](queryErr, queries, "wrap_int64", gorilla.GetInt64Value)
+	req.ListInt64, queryErr = gorilla.FormDecoder[[]int64](queryErr, queries, "list_int64", gorilla.GetInt64Slice)
+	req.ListSint64, queryErr = gorilla.FormDecoder[[]int64](queryErr, queries, "list_sint64", gorilla.GetInt64Slice)
+	req.ListSfixed64, queryErr = gorilla.FormDecoder[[]int64](queryErr, queries, "list_sfixed64", gorilla.GetInt64Slice)
+	req.ListWrapInt64, queryErr = gorilla.FormDecoder[[]*wrapperspb.Int64Value](queryErr, queries, "list_wrap_int64", gorilla.GetInt64ValueSlice)
 	if queryErr != nil {
 		return nil, queryErr
 	}
@@ -327,6 +337,9 @@ func (decoder uint32QueryGorillaRequestDecoder) Uint32Query(ctx context.Context,
 	req.OptUint32, queryErr = gorilla.FormDecoder[*uint32](queryErr, queries, "opt_uint32", gorilla.GetUint32Ptr)
 	req.OptFixed32, queryErr = gorilla.FormDecoder[*uint32](queryErr, queries, "opt_fixed32", gorilla.GetUint32Ptr)
 	req.WrapUint32, queryErr = gorilla.FormDecoder[*wrapperspb.UInt32Value](queryErr, queries, "wrap_uint32", gorilla.GetUint32Value)
+	req.ListUint32, queryErr = gorilla.FormDecoder[[]uint32](queryErr, queries, "list_uint32", gorilla.GetUint32Slice)
+	req.ListFixed32, queryErr = gorilla.FormDecoder[[]uint32](queryErr, queries, "list_fixed32", gorilla.GetUint32Slice)
+	req.ListWrapUint32, queryErr = gorilla.FormDecoder[[]*wrapperspb.UInt32Value](queryErr, queries, "list_wrap_uint32", gorilla.GetUint32ValueSlice)
 	if queryErr != nil {
 		return nil, queryErr
 	}
@@ -409,6 +422,9 @@ func (decoder uint64QueryGorillaRequestDecoder) Uint64Query(ctx context.Context,
 	req.OptUint64, queryErr = gorilla.FormDecoder[*uint64](queryErr, queries, "opt_uint64", gorilla.GetUint64Ptr)
 	req.OptFixed64, queryErr = gorilla.FormDecoder[*uint64](queryErr, queries, "opt_fixed64", gorilla.GetUint64Ptr)
 	req.WrapUint64, queryErr = gorilla.FormDecoder[*wrapperspb.UInt64Value](queryErr, queries, "wrap_uint64", gorilla.GetUint64Value)
+	req.ListUint64, queryErr = gorilla.FormDecoder[[]uint64](queryErr, queries, "list_uint64", gorilla.GetUint64Slice)
+	req.ListFixed64, queryErr = gorilla.FormDecoder[[]uint64](queryErr, queries, "list_fixed64", gorilla.GetUint64Slice)
+	req.ListWrapUint64, queryErr = gorilla.FormDecoder[[]*wrapperspb.UInt64Value](queryErr, queries, "list_wrap_uint64", gorilla.GetUint64ValueSlice)
 	if queryErr != nil {
 		return nil, queryErr
 	}
@@ -489,6 +505,8 @@ func (decoder floatQueryGorillaRequestDecoder) FloatQuery(ctx context.Context, r
 	req.Float, queryErr = gorilla.FormDecoder[float32](queryErr, queries, "float", gorilla.GetFloat32)
 	req.OptFloat, queryErr = gorilla.FormDecoder[*float32](queryErr, queries, "opt_float", gorilla.GetFloat32Ptr)
 	req.WrapFloat, queryErr = gorilla.FormDecoder[*wrapperspb.FloatValue](queryErr, queries, "wrap_float", gorilla.GetFloat32Value)
+	req.ListFloat, queryErr = gorilla.FormDecoder[[]float32](queryErr, queries, "list_float", gorilla.GetFloat32Slice)
+	req.ListWrapFloat, queryErr = gorilla.FormDecoder[[]*wrapperspb.FloatValue](queryErr, queries, "list_wrap_float", gorilla.GetFloat32ValueSlice)
 	if queryErr != nil {
 		return nil, queryErr
 	}
@@ -569,6 +587,8 @@ func (decoder doubleQueryGorillaRequestDecoder) DoubleQuery(ctx context.Context,
 	req.Double, queryErr = gorilla.FormDecoder[float64](queryErr, queries, "double", gorilla.GetFloat64)
 	req.OptDouble, queryErr = gorilla.FormDecoder[*float64](queryErr, queries, "opt_double", gorilla.GetFloat64Ptr)
 	req.WrapDouble, queryErr = gorilla.FormDecoder[*wrapperspb.DoubleValue](queryErr, queries, "wrap_double", gorilla.GetFloat64Value)
+	req.ListDouble, queryErr = gorilla.FormDecoder[[]float64](queryErr, queries, "list_double", gorilla.GetFloat64Slice)
+	req.ListWrapDouble, queryErr = gorilla.FormDecoder[[]*wrapperspb.DoubleValue](queryErr, queries, "list_wrap_double", gorilla.GetFloat64ValueSlice)
 	if queryErr != nil {
 		return nil, queryErr
 	}
@@ -649,6 +669,8 @@ func (decoder stringQueryGorillaRequestDecoder) StringQuery(ctx context.Context,
 	req.String_ = queries.Get("string")
 	req.OptString = proto.String(queries.Get("opt_string"))
 	req.WrapString = wrapperspb.String(queries.Get("wrap_string"))
+	req.ListString = queries["list_string"]
+	req.ListWrapString = gorilla.WrapStringSlice(queries["list_wrap_string"])
 	if queryErr != nil {
 		return nil, queryErr
 	}
@@ -726,8 +748,9 @@ func (decoder enumQueryGorillaRequestDecoder) EnumQuery(ctx context.Context, r *
 	req := &EnumQueryRequest{}
 	queries := r.URL.Query()
 	var queryErr error
-	req.Status, queryErr = gorilla.FormDecoder[EnumQueryRequest_Status](queryErr, queries, "status", gorilla.GetInt[EnumQueryRequest_Status])
-	req.OptStatus, queryErr = gorilla.FormDecoder[*EnumQueryRequest_Status](queryErr, queries, "opt_status", gorilla.GetIntPtr[EnumQueryRequest_Status])
+	req.Status, queryErr = gorilla.FormDecoder[EnumQueryRequest_Status](queryErr, queries, "status", gorilla.GetInt32[EnumQueryRequest_Status])
+	req.OptStatus, queryErr = gorilla.FormDecoder[*EnumQueryRequest_Status](queryErr, queries, "opt_status", gorilla.GetInt32Ptr[EnumQueryRequest_Status])
+	req.ListStatus, queryErr = gorilla.FormDecoder[[]EnumQueryRequest_Status](queryErr, queries, "list_status", gorilla.GetInt32Slice[EnumQueryRequest_Status])
 	if queryErr != nil {
 		return nil, queryErr
 	}
