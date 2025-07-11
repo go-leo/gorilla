@@ -36,13 +36,14 @@ func (f *Generator) GenerateServerResponseEncoder(service *gen.Service, g *proto
 			if bodyField == nil {
 				return fmt.Errorf("%s, failed to find body response field %s", endpoint.FullName(), bodyParameter)
 			}
-			srcValue := []any{"resp.Get", bodyField.GoName, "()"}
 			switch bodyField.Desc.Kind() {
 			case protoreflect.MessageKind:
 				switch bodyField.Message.Desc.FullName() {
 				case "google.api.HttpBody":
+					srcValue := []any{"resp.Get", bodyField.GoName, "()"}
 					f.PrintHttpBodyEncodeBlock(g, srcValue)
 				default:
+					srcValue := []any{"encoder.responseTransformer(ctx, resp.Get", bodyField.GoName, "())"}
 					f.PrintResponseEncodeBlock(g, srcValue)
 				}
 			}
