@@ -1,13 +1,13 @@
-# gors 
-gors 参考 Google API 设计方案，通过定义 proto 文件，快速生成Go语言的Restful服务路由。
-gors 底层基于 [gorilla](http://github.com/gorilla/mux) 管理http路由。
+# gorilla 
+gorilla 参考 Google API 设计方案，通过定义 proto 文件，快速生成Go语言的Restful服务路由。
+gorilla 底层基于 [gorilla/mux](http://github.com/gorilla/mux) 管理http路由。
 
 # 路由规则
-详细定义规则见 googleapi 文档 [http.proto](https://github.com/googleapis/googleapis/blob/master/google/api/http.proto)
+详细定义规则见[gorilla/mux](https://github.com/gorilla/mux)
 
 # 安装
 ```
-go install github.com/go-leo/gorilla/cmd/protoc-gen-gors@latest
+go install github.com/go-leo/gorilla/cmd/protoc-gen-gorilla@latest
 ```
 
 # Example
