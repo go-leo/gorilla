@@ -25,28 +25,28 @@ func (s *Service) Name() string {
 	return s.ProtoService.GoName
 }
 
-func (s *Service) GorsName() string {
-	return s.Name() + "Gors"
+func (s *Service) GorillaName() string {
+	return s.Name() + "Gorilla"
 }
 
 func (s *Service) ServiceName() string {
-	return s.GorsName() + "Service"
+	return s.GorillaName() + "Service"
 }
 
 func (s *Service) AppendRouteName() string {
-	return "Append" + s.GorsName() + "Route"
+	return "Append" + s.GorillaName() + "Route"
 }
 
 func (s *Service) HandlerName() string {
-	return s.GorsName() + "Handler"
+	return s.GorillaName() + "Handler"
 }
 
 func (s *Service) RequestDecoderName() string {
-	return s.GorsName() + "RequestDecoder"
+	return s.GorillaName() + "RequestDecoder"
 }
 
 func (s *Service) ResponseEncoderName() string {
-	return s.GorsName() + "ResponseEncoder"
+	return s.GorillaName() + "ResponseEncoder"
 }
 
 func NewServices(file *protogen.File) ([]*Service, error) {
