@@ -8,41 +8,41 @@ import "google/api/httpbody.proto";
 import "google/rpc/http.proto";
 
 service Body {
-  rpc StarBody (BodyRequest) returns (google.protobuf.Empty) {
+  rpc StarBody (BodyRequest) returns (Response) {
     option (google.api.http) = {
       post : "/v1/star/body"
       body : "*"
     };
   }
 
-  rpc NamedBody (BodyRequest) returns (google.protobuf.Empty) {
+  rpc NamedBody (NamedBodyRequest) returns (Response) {
     option (google.api.http) = {
       post : "/v1/named/body"
-      body : "user"
+      body : "body"
     };
   }
 
-  rpc NonBody (google.protobuf.Empty) returns (google.protobuf.Empty) {
+  rpc NonBody (google.protobuf.Empty) returns (Response) {
     option (google.api.http) = {
       get : "/v1/user_body"
     };
   }
 
-  rpc HttpBodyStarBody (google.api.HttpBody) returns (google.protobuf.Empty) {
+  rpc HttpBodyStarBody (google.api.HttpBody) returns (Response) {
     option (google.api.http) = {
       put : "/v1/http/body/star/body"
       body : "*"
     };
   }
 
-  rpc HttpBodyNamedBody (HttpBodyRequest) returns (google.protobuf.Empty) {
+  rpc HttpBodyNamedBody (HttpBodyRequest) returns (Response) {
     option (google.api.http) = {
       put : "/v1/http/body/named/body"
       body : "body"
     };
   }
 
-  rpc HttpRequest (google.rpc.HttpRequest) returns (google.protobuf.Empty) {
+  rpc HttpRequest (google.rpc.HttpRequest) returns (Response) {
     option (google.api.http) = {
       put : "/v1/http/request"
       body : "*"
@@ -52,15 +52,20 @@ service Body {
 }
 
 message BodyRequest {
-  message User {
-    string name = 1;
-    string email = 2;
-    string phone = 3;
-    string address = 4;
+   string message = 1;
+}
+
+message NamedBodyRequest {
+  message Body {
+      string message = 1;
   }
-  User user = 1;
+  Body body = 1;
 }
 
 message HttpBodyRequest {
   google.api.HttpBody body = 1;
+}
+
+message Response {
+  string message = 1;
 }

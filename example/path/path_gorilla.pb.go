@@ -6,15 +6,15 @@ import (
 	context "context"
 	gorilla "github.com/go-leo/gorilla"
 	mux "github.com/gorilla/mux"
+	httpbody "google.golang.org/genproto/googleapis/api/httpbody"
 	protojson "google.golang.org/protobuf/encoding/protojson"
 	proto "google.golang.org/protobuf/proto"
-	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
 	http "net/http"
 )
 
 type BoolPathGorillaService interface {
-	BoolPath(ctx context.Context, request *BoolPathRequest) (*emptypb.Empty, error)
+	BoolPath(ctx context.Context, request *BoolPathRequest) (*httpbody.HttpBody, error)
 }
 
 func AppendBoolPathGorillaRoute(router *mux.Router, service BoolPathGorillaService, opts ...gorilla.Option) *mux.Router {
@@ -89,12 +89,12 @@ type boolPathGorillaResponseEncoder struct {
 	responseTransformer gorilla.ResponseTransformer
 }
 
-func (encoder boolPathGorillaResponseEncoder) BoolPath(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
+func (encoder boolPathGorillaResponseEncoder) BoolPath(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
+	return gorilla.HttpBodyEncoder(ctx, w, resp)
 }
 
 type Int32PathGorillaService interface {
-	Int32Path(ctx context.Context, request *Int32PathRequest) (*emptypb.Empty, error)
+	Int32Path(ctx context.Context, request *Int32PathRequest) (*httpbody.HttpBody, error)
 }
 
 func AppendInt32PathGorillaRoute(router *mux.Router, service Int32PathGorillaService, opts ...gorilla.Option) *mux.Router {
@@ -173,12 +173,12 @@ type int32PathGorillaResponseEncoder struct {
 	responseTransformer gorilla.ResponseTransformer
 }
 
-func (encoder int32PathGorillaResponseEncoder) Int32Path(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
+func (encoder int32PathGorillaResponseEncoder) Int32Path(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
+	return gorilla.HttpBodyEncoder(ctx, w, resp)
 }
 
 type Int64PathGorillaService interface {
-	Int64Path(ctx context.Context, request *Int64PathRequest) (*emptypb.Empty, error)
+	Int64Path(ctx context.Context, request *Int64PathRequest) (*httpbody.HttpBody, error)
 }
 
 func AppendInt64PathGorillaRoute(router *mux.Router, service Int64PathGorillaService, opts ...gorilla.Option) *mux.Router {
@@ -257,12 +257,12 @@ type int64PathGorillaResponseEncoder struct {
 	responseTransformer gorilla.ResponseTransformer
 }
 
-func (encoder int64PathGorillaResponseEncoder) Int64Path(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
+func (encoder int64PathGorillaResponseEncoder) Int64Path(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
+	return gorilla.HttpBodyEncoder(ctx, w, resp)
 }
 
 type Uint32PathGorillaService interface {
-	Uint32Path(ctx context.Context, request *Uint32PathRequest) (*emptypb.Empty, error)
+	Uint32Path(ctx context.Context, request *Uint32PathRequest) (*httpbody.HttpBody, error)
 }
 
 func AppendUint32PathGorillaRoute(router *mux.Router, service Uint32PathGorillaService, opts ...gorilla.Option) *mux.Router {
@@ -339,12 +339,12 @@ type uint32PathGorillaResponseEncoder struct {
 	responseTransformer gorilla.ResponseTransformer
 }
 
-func (encoder uint32PathGorillaResponseEncoder) Uint32Path(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
+func (encoder uint32PathGorillaResponseEncoder) Uint32Path(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
+	return gorilla.HttpBodyEncoder(ctx, w, resp)
 }
 
 type Uint64PathGorillaService interface {
-	Uint64Path(ctx context.Context, request *Uint64PathRequest) (*emptypb.Empty, error)
+	Uint64Path(ctx context.Context, request *Uint64PathRequest) (*httpbody.HttpBody, error)
 }
 
 func AppendUint64PathGorillaRoute(router *mux.Router, service Uint64PathGorillaService, opts ...gorilla.Option) *mux.Router {
@@ -421,12 +421,12 @@ type uint64PathGorillaResponseEncoder struct {
 	responseTransformer gorilla.ResponseTransformer
 }
 
-func (encoder uint64PathGorillaResponseEncoder) Uint64Path(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
+func (encoder uint64PathGorillaResponseEncoder) Uint64Path(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
+	return gorilla.HttpBodyEncoder(ctx, w, resp)
 }
 
 type FloatPathGorillaService interface {
-	FloatPath(ctx context.Context, request *FloatPathRequest) (*emptypb.Empty, error)
+	FloatPath(ctx context.Context, request *FloatPathRequest) (*httpbody.HttpBody, error)
 }
 
 func AppendFloatPathGorillaRoute(router *mux.Router, service FloatPathGorillaService, opts ...gorilla.Option) *mux.Router {
@@ -501,12 +501,12 @@ type floatPathGorillaResponseEncoder struct {
 	responseTransformer gorilla.ResponseTransformer
 }
 
-func (encoder floatPathGorillaResponseEncoder) FloatPath(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
+func (encoder floatPathGorillaResponseEncoder) FloatPath(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
+	return gorilla.HttpBodyEncoder(ctx, w, resp)
 }
 
 type DoublePathGorillaService interface {
-	DoublePath(ctx context.Context, request *DoublePathRequest) (*emptypb.Empty, error)
+	DoublePath(ctx context.Context, request *DoublePathRequest) (*httpbody.HttpBody, error)
 }
 
 func AppendDoublePathGorillaRoute(router *mux.Router, service DoublePathGorillaService, opts ...gorilla.Option) *mux.Router {
@@ -581,12 +581,12 @@ type doublePathGorillaResponseEncoder struct {
 	responseTransformer gorilla.ResponseTransformer
 }
 
-func (encoder doublePathGorillaResponseEncoder) DoublePath(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
+func (encoder doublePathGorillaResponseEncoder) DoublePath(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
+	return gorilla.HttpBodyEncoder(ctx, w, resp)
 }
 
 type StringPathGorillaService interface {
-	StringPath(ctx context.Context, request *StringPathRequest) (*emptypb.Empty, error)
+	StringPath(ctx context.Context, request *StringPathRequest) (*httpbody.HttpBody, error)
 }
 
 func AppendStringPathGorillaRoute(router *mux.Router, service StringPathGorillaService, opts ...gorilla.Option) *mux.Router {
@@ -661,12 +661,12 @@ type stringPathGorillaResponseEncoder struct {
 	responseTransformer gorilla.ResponseTransformer
 }
 
-func (encoder stringPathGorillaResponseEncoder) StringPath(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
+func (encoder stringPathGorillaResponseEncoder) StringPath(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
+	return gorilla.HttpBodyEncoder(ctx, w, resp)
 }
 
 type EnumPathGorillaService interface {
-	EnumPath(ctx context.Context, request *EnumPathRequest) (*emptypb.Empty, error)
+	EnumPath(ctx context.Context, request *EnumPathRequest) (*httpbody.HttpBody, error)
 }
 
 func AppendEnumPathGorillaRoute(router *mux.Router, service EnumPathGorillaService, opts ...gorilla.Option) *mux.Router {
@@ -740,6 +740,6 @@ type enumPathGorillaResponseEncoder struct {
 	responseTransformer gorilla.ResponseTransformer
 }
 
-func (encoder enumPathGorillaResponseEncoder) EnumPath(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
+func (encoder enumPathGorillaResponseEncoder) EnumPath(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
+	return gorilla.HttpBodyEncoder(ctx, w, resp)
 }
