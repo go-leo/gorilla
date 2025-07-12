@@ -278,12 +278,12 @@ func (f *Generator) PrintQueryField(g *protogen.GeneratedFile, queryFields []*pr
 			}
 		case protoreflect.EnumKind: // enum int32
 			if field.Desc.IsList() {
-				f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetInt32Slice["+g.QualifiedGoIdent(goType[1].(protogen.GoIdent))+"]"), fieldName, form, errName)
+				f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetIntSlice["+g.QualifiedGoIdent(goType[1].(protogen.GoIdent))+"]"), fieldName, form, errName)
 			} else {
 				if pointer {
-					f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetInt32Ptr["+g.QualifiedGoIdent(goType[1].(protogen.GoIdent))+"]"), fieldName, form, errName)
+					f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetIntPtr["+g.QualifiedGoIdent(goType[1].(protogen.GoIdent))+"]"), fieldName, form, errName)
 				} else {
-					f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetInt32["+g.QualifiedGoIdent(goType[0].(protogen.GoIdent))+"]"), fieldName, form, errName)
+					f.PrintFieldAssign(g, tgtErrValue, goType, gen.GorillaPackage.Ident("GetInt["+g.QualifiedGoIdent(goType[0].(protogen.GoIdent))+"]"), fieldName, form, errName)
 				}
 			}
 		case protoreflect.MessageKind:

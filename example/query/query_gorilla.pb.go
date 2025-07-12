@@ -6,15 +6,15 @@ import (
 	context "context"
 	gorilla "github.com/go-leo/gorilla"
 	mux "github.com/gorilla/mux"
+	httpbody "google.golang.org/genproto/googleapis/api/httpbody"
 	protojson "google.golang.org/protobuf/encoding/protojson"
 	proto "google.golang.org/protobuf/proto"
-	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
 	http "net/http"
 )
 
 type BoolQueryGorillaService interface {
-	BoolQuery(ctx context.Context, request *BoolQueryRequest) (*emptypb.Empty, error)
+	BoolQuery(ctx context.Context, request *BoolQueryRequest) (*httpbody.HttpBody, error)
 }
 
 func AppendBoolQueryGorillaRoute(router *mux.Router, service BoolQueryGorillaService, opts ...gorilla.Option) *mux.Router {
@@ -91,12 +91,12 @@ type boolQueryGorillaResponseEncoder struct {
 	responseTransformer gorilla.ResponseTransformer
 }
 
-func (encoder boolQueryGorillaResponseEncoder) BoolQuery(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
+func (encoder boolQueryGorillaResponseEncoder) BoolQuery(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
+	return gorilla.HttpBodyEncoder(ctx, w, resp)
 }
 
 type Int32QueryGorillaService interface {
-	Int32Query(ctx context.Context, request *Int32QueryRequest) (*emptypb.Empty, error)
+	Int32Query(ctx context.Context, request *Int32QueryRequest) (*httpbody.HttpBody, error)
 }
 
 func AppendInt32QueryGorillaRoute(router *mux.Router, service Int32QueryGorillaService, opts ...gorilla.Option) *mux.Router {
@@ -179,12 +179,12 @@ type int32QueryGorillaResponseEncoder struct {
 	responseTransformer gorilla.ResponseTransformer
 }
 
-func (encoder int32QueryGorillaResponseEncoder) Int32Query(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
+func (encoder int32QueryGorillaResponseEncoder) Int32Query(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
+	return gorilla.HttpBodyEncoder(ctx, w, resp)
 }
 
 type Int64QueryGorillaService interface {
-	Int64Query(ctx context.Context, request *Int64QueryRequest) (*emptypb.Empty, error)
+	Int64Query(ctx context.Context, request *Int64QueryRequest) (*httpbody.HttpBody, error)
 }
 
 func AppendInt64QueryGorillaRoute(router *mux.Router, service Int64QueryGorillaService, opts ...gorilla.Option) *mux.Router {
@@ -267,12 +267,12 @@ type int64QueryGorillaResponseEncoder struct {
 	responseTransformer gorilla.ResponseTransformer
 }
 
-func (encoder int64QueryGorillaResponseEncoder) Int64Query(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
+func (encoder int64QueryGorillaResponseEncoder) Int64Query(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
+	return gorilla.HttpBodyEncoder(ctx, w, resp)
 }
 
 type Uint32QueryGorillaService interface {
-	Uint32Query(ctx context.Context, request *Uint32QueryRequest) (*emptypb.Empty, error)
+	Uint32Query(ctx context.Context, request *Uint32QueryRequest) (*httpbody.HttpBody, error)
 }
 
 func AppendUint32QueryGorillaRoute(router *mux.Router, service Uint32QueryGorillaService, opts ...gorilla.Option) *mux.Router {
@@ -352,12 +352,12 @@ type uint32QueryGorillaResponseEncoder struct {
 	responseTransformer gorilla.ResponseTransformer
 }
 
-func (encoder uint32QueryGorillaResponseEncoder) Uint32Query(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
+func (encoder uint32QueryGorillaResponseEncoder) Uint32Query(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
+	return gorilla.HttpBodyEncoder(ctx, w, resp)
 }
 
 type Uint64QueryGorillaService interface {
-	Uint64Query(ctx context.Context, request *Uint64QueryRequest) (*emptypb.Empty, error)
+	Uint64Query(ctx context.Context, request *Uint64QueryRequest) (*httpbody.HttpBody, error)
 }
 
 func AppendUint64QueryGorillaRoute(router *mux.Router, service Uint64QueryGorillaService, opts ...gorilla.Option) *mux.Router {
@@ -437,12 +437,12 @@ type uint64QueryGorillaResponseEncoder struct {
 	responseTransformer gorilla.ResponseTransformer
 }
 
-func (encoder uint64QueryGorillaResponseEncoder) Uint64Query(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
+func (encoder uint64QueryGorillaResponseEncoder) Uint64Query(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
+	return gorilla.HttpBodyEncoder(ctx, w, resp)
 }
 
 type FloatQueryGorillaService interface {
-	FloatQuery(ctx context.Context, request *FloatQueryRequest) (*emptypb.Empty, error)
+	FloatQuery(ctx context.Context, request *FloatQueryRequest) (*httpbody.HttpBody, error)
 }
 
 func AppendFloatQueryGorillaRoute(router *mux.Router, service FloatQueryGorillaService, opts ...gorilla.Option) *mux.Router {
@@ -519,12 +519,12 @@ type floatQueryGorillaResponseEncoder struct {
 	responseTransformer gorilla.ResponseTransformer
 }
 
-func (encoder floatQueryGorillaResponseEncoder) FloatQuery(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
+func (encoder floatQueryGorillaResponseEncoder) FloatQuery(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
+	return gorilla.HttpBodyEncoder(ctx, w, resp)
 }
 
 type DoubleQueryGorillaService interface {
-	DoubleQuery(ctx context.Context, request *DoubleQueryRequest) (*emptypb.Empty, error)
+	DoubleQuery(ctx context.Context, request *DoubleQueryRequest) (*httpbody.HttpBody, error)
 }
 
 func AppendDoubleQueryGorillaRoute(router *mux.Router, service DoubleQueryGorillaService, opts ...gorilla.Option) *mux.Router {
@@ -601,12 +601,12 @@ type doubleQueryGorillaResponseEncoder struct {
 	responseTransformer gorilla.ResponseTransformer
 }
 
-func (encoder doubleQueryGorillaResponseEncoder) DoubleQuery(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
+func (encoder doubleQueryGorillaResponseEncoder) DoubleQuery(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
+	return gorilla.HttpBodyEncoder(ctx, w, resp)
 }
 
 type StringQueryGorillaService interface {
-	StringQuery(ctx context.Context, request *StringQueryRequest) (*emptypb.Empty, error)
+	StringQuery(ctx context.Context, request *StringQueryRequest) (*httpbody.HttpBody, error)
 }
 
 func AppendStringQueryGorillaRoute(router *mux.Router, service StringQueryGorillaService, opts ...gorilla.Option) *mux.Router {
@@ -683,12 +683,12 @@ type stringQueryGorillaResponseEncoder struct {
 	responseTransformer gorilla.ResponseTransformer
 }
 
-func (encoder stringQueryGorillaResponseEncoder) StringQuery(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
+func (encoder stringQueryGorillaResponseEncoder) StringQuery(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
+	return gorilla.HttpBodyEncoder(ctx, w, resp)
 }
 
 type EnumQueryGorillaService interface {
-	EnumQuery(ctx context.Context, request *EnumQueryRequest) (*emptypb.Empty, error)
+	EnumQuery(ctx context.Context, request *EnumQueryRequest) (*httpbody.HttpBody, error)
 }
 
 func AppendEnumQueryGorillaRoute(router *mux.Router, service EnumQueryGorillaService, opts ...gorilla.Option) *mux.Router {
@@ -748,9 +748,9 @@ func (decoder enumQueryGorillaRequestDecoder) EnumQuery(ctx context.Context, r *
 	req := &EnumQueryRequest{}
 	queries := r.URL.Query()
 	var queryErr error
-	req.Status, queryErr = gorilla.FormDecoder[EnumQueryRequest_Status](queryErr, queries, "status", gorilla.GetInt32[EnumQueryRequest_Status])
-	req.OptStatus, queryErr = gorilla.FormDecoder[*EnumQueryRequest_Status](queryErr, queries, "opt_status", gorilla.GetInt32Ptr[EnumQueryRequest_Status])
-	req.ListStatus, queryErr = gorilla.FormDecoder[[]EnumQueryRequest_Status](queryErr, queries, "list_status", gorilla.GetInt32Slice[EnumQueryRequest_Status])
+	req.Status, queryErr = gorilla.FormDecoder[EnumQueryRequest_Status](queryErr, queries, "status", gorilla.GetInt[EnumQueryRequest_Status])
+	req.OptStatus, queryErr = gorilla.FormDecoder[*EnumQueryRequest_Status](queryErr, queries, "opt_status", gorilla.GetIntPtr[EnumQueryRequest_Status])
+	req.ListStatus, queryErr = gorilla.FormDecoder[[]EnumQueryRequest_Status](queryErr, queries, "list_status", gorilla.GetIntSlice[EnumQueryRequest_Status])
 	if queryErr != nil {
 		return nil, queryErr
 	}
@@ -763,6 +763,6 @@ type enumQueryGorillaResponseEncoder struct {
 	responseTransformer gorilla.ResponseTransformer
 }
 
-func (encoder enumQueryGorillaResponseEncoder) EnumQuery(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
+func (encoder enumQueryGorillaResponseEncoder) EnumQuery(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
+	return gorilla.HttpBodyEncoder(ctx, w, resp)
 }

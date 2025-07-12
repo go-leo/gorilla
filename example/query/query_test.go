@@ -1,4 +1,4 @@
-package path
+package query
 
 import (
 	"context"
@@ -15,9 +15,9 @@ import (
 
 // ---- Mock Services ----
 
-type MockBoolPathService struct{}
+type MockBoolQueryService struct{}
 
-func (m *MockBoolPathService) BoolPath(ctx context.Context, req *BoolPathRequest) (*httpbody.HttpBody, error) {
+func (m *MockBoolQueryService) BoolQuery(ctx context.Context, req *BoolQueryRequest) (*httpbody.HttpBody, error) {
 	data, err := protojson.Marshal(req)
 	if err != nil {
 		return nil, err
@@ -25,9 +25,9 @@ func (m *MockBoolPathService) BoolPath(ctx context.Context, req *BoolPathRequest
 	return &httpbody.HttpBody{Data: data}, nil
 }
 
-type MockInt32PathService struct{}
+type MockInt32QueryService struct{}
 
-func (m *MockInt32PathService) Int32Path(ctx context.Context, req *Int32PathRequest) (*httpbody.HttpBody, error) {
+func (m *MockInt32QueryService) Int32Query(ctx context.Context, req *Int32QueryRequest) (*httpbody.HttpBody, error) {
 	data, err := protojson.Marshal(req)
 	if err != nil {
 		return nil, err
@@ -35,9 +35,9 @@ func (m *MockInt32PathService) Int32Path(ctx context.Context, req *Int32PathRequ
 	return &httpbody.HttpBody{Data: data}, nil
 }
 
-type MockInt64PathService struct{}
+type MockInt64QueryService struct{}
 
-func (m *MockInt64PathService) Int64Path(ctx context.Context, req *Int64PathRequest) (*httpbody.HttpBody, error) {
+func (m *MockInt64QueryService) Int64Query(ctx context.Context, req *Int64QueryRequest) (*httpbody.HttpBody, error) {
 	data, err := protojson.Marshal(req)
 	if err != nil {
 		return nil, err
@@ -45,9 +45,9 @@ func (m *MockInt64PathService) Int64Path(ctx context.Context, req *Int64PathRequ
 	return &httpbody.HttpBody{Data: data}, nil
 }
 
-type MockUint32PathService struct{}
+type MockUint32QueryService struct{}
 
-func (m *MockUint32PathService) Uint32Path(ctx context.Context, req *Uint32PathRequest) (*httpbody.HttpBody, error) {
+func (m *MockUint32QueryService) Uint32Query(ctx context.Context, req *Uint32QueryRequest) (*httpbody.HttpBody, error) {
 	data, err := protojson.Marshal(req)
 	if err != nil {
 		return nil, err
@@ -55,9 +55,9 @@ func (m *MockUint32PathService) Uint32Path(ctx context.Context, req *Uint32PathR
 	return &httpbody.HttpBody{Data: data}, nil
 }
 
-type MockUint64PathService struct{}
+type MockUint64QueryService struct{}
 
-func (m *MockUint64PathService) Uint64Path(ctx context.Context, req *Uint64PathRequest) (*httpbody.HttpBody, error) {
+func (m *MockUint64QueryService) Uint64Query(ctx context.Context, req *Uint64QueryRequest) (*httpbody.HttpBody, error) {
 	data, err := protojson.Marshal(req)
 	if err != nil {
 		return nil, err
@@ -65,9 +65,9 @@ func (m *MockUint64PathService) Uint64Path(ctx context.Context, req *Uint64PathR
 	return &httpbody.HttpBody{Data: data}, nil
 }
 
-type MockFloatPathService struct{}
+type MockFloatQueryService struct{}
 
-func (m *MockFloatPathService) FloatPath(ctx context.Context, req *FloatPathRequest) (*httpbody.HttpBody, error) {
+func (m *MockFloatQueryService) FloatQuery(ctx context.Context, req *FloatQueryRequest) (*httpbody.HttpBody, error) {
 	data, err := protojson.Marshal(req)
 	if err != nil {
 		return nil, err
@@ -75,9 +75,9 @@ func (m *MockFloatPathService) FloatPath(ctx context.Context, req *FloatPathRequ
 	return &httpbody.HttpBody{Data: data}, nil
 }
 
-type MockDoublePathService struct{}
+type MockDoubleQueryService struct{}
 
-func (m *MockDoublePathService) DoublePath(ctx context.Context, req *DoublePathRequest) (*httpbody.HttpBody, error) {
+func (m *MockDoubleQueryService) DoubleQuery(ctx context.Context, req *DoubleQueryRequest) (*httpbody.HttpBody, error) {
 	data, err := protojson.Marshal(req)
 	if err != nil {
 		return nil, err
@@ -85,9 +85,9 @@ func (m *MockDoublePathService) DoublePath(ctx context.Context, req *DoublePathR
 	return &httpbody.HttpBody{Data: data}, nil
 }
 
-type MockStringPathService struct{}
+type MockStringQueryService struct{}
 
-func (m *MockStringPathService) StringPath(ctx context.Context, req *StringPathRequest) (*httpbody.HttpBody, error) {
+func (m *MockStringQueryService) StringQuery(ctx context.Context, req *StringQueryRequest) (*httpbody.HttpBody, error) {
 	data, err := protojson.Marshal(req)
 	if err != nil {
 		return nil, err
@@ -95,9 +95,9 @@ func (m *MockStringPathService) StringPath(ctx context.Context, req *StringPathR
 	return &httpbody.HttpBody{Data: data}, nil
 }
 
-type MockEnumPathService struct{}
+type MockEnumQueryService struct{}
 
-func (m *MockEnumPathService) EnumPath(ctx context.Context, req *EnumPathRequest) (*httpbody.HttpBody, error) {
+func (m *MockEnumQueryService) EnumQuery(ctx context.Context, req *EnumQueryRequest) (*httpbody.HttpBody, error) {
 	data, err := protojson.Marshal(req)
 	if err != nil {
 		return nil, err
@@ -109,11 +109,11 @@ func (m *MockEnumPathService) EnumPath(ctx context.Context, req *EnumPathRequest
 
 func TestBoolPath(t *testing.T) {
 	router := mux.NewRouter()
-	router = AppendBoolPathGorillaRoute(router, &MockBoolPathService{})
+	router = AppendBoolQueryGorillaRoute(router, &MockBoolQueryService{})
 	server := httptest.NewServer(router)
 	defer server.Close()
 
-	url := server.URL + "/v1/true/false/true"
+	url := server.URL + "/v1/bool?bool=true&opt_bool=false&wrap_bool=true&list_bool=true&list_bool=false&list_wrap_bool=true&list_wrap_bool=false"
 	resp, err := http.Get(url)
 	if err != nil {
 		t.Fatal(err)
@@ -123,7 +123,7 @@ func TestBoolPath(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	expected := `{"bool":true,"optBool":false,"wrapBool":true}`
+	expected := `{"bool":true, "optBool":false, "wrapBool":true, "listBool":[true, false], "listWrapBool":[true, false]}`
 	if strings.ReplaceAll(string(body), " ", "") != strings.ReplaceAll(expected, " ", "") {
 		t.Fatalf("body is not equal: got %s, want %s", string(body), expected)
 	}
@@ -131,11 +131,11 @@ func TestBoolPath(t *testing.T) {
 
 func TestInt32Path(t *testing.T) {
 	router := mux.NewRouter()
-	router = AppendInt32PathGorillaRoute(router, &MockInt32PathService{})
+	router = AppendInt32QueryGorillaRoute(router, &MockInt32QueryService{})
 	server := httptest.NewServer(router)
 	defer server.Close()
 
-	url := server.URL + "/v1/1/2/3/4/5/6/7"
+	url := server.URL + "/v1/int32?int32=1&sint32=2&sfixed32=3&opt_int32=4&opt_sint32=5&opt_sfixed32=6&wrap_int32=7&list_int32=1&list_int32=2&list_sint32=1&list_sint32=2&list_sfixed32=1&list_sfixed32=2&list_wrap_int32=1&list_wrap_int32=2"
 	resp, err := http.Get(url)
 	if err != nil {
 		t.Fatal(err)
@@ -145,7 +145,7 @@ func TestInt32Path(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	expected := `{"int32":1,"sint32":2,"sfixed32":3,"optInt32":4,"optSint32":5,"optSfixed32":6,"wrapInt32":7}`
+	expected := `{"int32":1,"sint32":2,"sfixed32":3,"optInt32":4,"optSint32":5,"optSfixed32":6,"wrapInt32":7,"listInt32":[1,2],"listSint32":[1,2],"listSfixed32":[1,2],"listWrapInt32":[1,2]}`
 	if strings.ReplaceAll(string(body), " ", "") != strings.ReplaceAll(expected, " ", "") {
 		t.Fatalf("body is not equal: got %s, want %s", string(body), expected)
 	}
@@ -153,11 +153,11 @@ func TestInt32Path(t *testing.T) {
 
 func TestInt64Path(t *testing.T) {
 	router := mux.NewRouter()
-	router = AppendInt64PathGorillaRoute(router, &MockInt64PathService{})
+	router = AppendInt64QueryGorillaRoute(router, &MockInt64QueryService{})
 	server := httptest.NewServer(router)
 	defer server.Close()
 
-	url := server.URL + "/v1/10/20/30/40/50/60/70"
+	url := server.URL + "/v1/int64?int64=10&sint64=20&sfixed64=30&opt_int64=40&opt_sint64=50&opt_sfixed64=60&wrap_int64=70&list_int64=1&list_int64=2&list_sint64=1&list_sint64=2&list_sfixed64=1&list_sfixed64=2&list_wrap_int64=1&list_wrap_int64=2"
 	resp, err := http.Get(url)
 	if err != nil {
 		t.Fatal(err)
@@ -167,7 +167,7 @@ func TestInt64Path(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	expected := `{"int64":"10","sint64":"20","sfixed64":"30","optInt64":"40","optSint64":"50","optSfixed64":"60","wrapInt64":"70"}`
+	expected := `{"int64":"10", "sint64":"20", "sfixed64":"30", "optInt64":"40", "optSint64":"50", "optSfixed64":"60", "wrapInt64":"70", "listInt64":["1", "2"], "listSint64":["1", "2"], "listSfixed64":["1", "2"], "listWrapInt64":["1", "2"]}`
 	if strings.ReplaceAll(string(body), " ", "") != strings.ReplaceAll(expected, " ", "") {
 		t.Fatalf("body is not equal: got %s, want %s", string(body), expected)
 	}
@@ -175,11 +175,11 @@ func TestInt64Path(t *testing.T) {
 
 func TestUint32Path(t *testing.T) {
 	router := mux.NewRouter()
-	router = AppendUint32PathGorillaRoute(router, &MockUint32PathService{})
+	router = AppendUint32QueryGorillaRoute(router, &MockUint32QueryService{})
 	server := httptest.NewServer(router)
 	defer server.Close()
 
-	url := server.URL + "/v1/1/2/3/4/5"
+	url := server.URL + "/v1/uint32?uint32=1&fixed32=2&opt_uint32=3&opt_fixed32=4&wrap_uint32=5&list_uint32=1&list_uint32=2&list_fixed32=1&list_fixed32=2&list_wrap_uint32=1&list_wrap_uint32=2"
 	resp, err := http.Get(url)
 	if err != nil {
 		t.Fatal(err)
@@ -189,7 +189,7 @@ func TestUint32Path(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	expected := `{"uint32":1,"fixed32":2,"optUint32":3,"optFixed32":4,"wrapUint32":5}`
+	expected := `{"uint32":1,"fixed32":2,"optUint32":3,"optFixed32":4,"wrapUint32":5,"listUint32":[1,2],"listFixed32":[1,2],"listWrapUint32":[1,2]}`
 	if strings.ReplaceAll(string(body), " ", "") != strings.ReplaceAll(expected, " ", "") {
 		t.Fatalf("body is not equal: got %s, want %s", string(body), expected)
 	}
@@ -197,11 +197,11 @@ func TestUint32Path(t *testing.T) {
 
 func TestUint64Path(t *testing.T) {
 	router := mux.NewRouter()
-	router = AppendUint64PathGorillaRoute(router, &MockUint64PathService{})
+	router = AppendUint64QueryGorillaRoute(router, &MockUint64QueryService{})
 	server := httptest.NewServer(router)
 	defer server.Close()
 
-	url := server.URL + "/v1/10/20/30/40/50"
+	url := server.URL + "/v1/uint64?uint64=10&fixed64=20&opt_uint64=30&opt_fixed64=40&wrap_uint64=50&list_uint64=1&list_uint64=2&list_fixed64=1&list_fixed64=2&list_wrap_uint64=1&list_wrap_uint64=2"
 	resp, err := http.Get(url)
 	if err != nil {
 		t.Fatal(err)
@@ -211,7 +211,7 @@ func TestUint64Path(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	expected := `{"uint64":"10","fixed64":"20","optUint64":"30","optFixed64":"40","wrapUint64":"50"}`
+	expected := `{"uint64":"10", "fixed64":"20", "optUint64":"30", "optFixed64":"40", "wrapUint64":"50", "listUint64":["1", "2"], "listFixed64":["1", "2"], "listWrapUint64":["1", "2"]}`
 	if strings.ReplaceAll(string(body), " ", "") != strings.ReplaceAll(expected, " ", "") {
 		t.Fatalf("body is not equal: got %s, want %s", string(body), expected)
 	}
@@ -219,11 +219,11 @@ func TestUint64Path(t *testing.T) {
 
 func TestFloatPath(t *testing.T) {
 	router := mux.NewRouter()
-	router = AppendFloatPathGorillaRoute(router, &MockFloatPathService{})
+	router = AppendFloatQueryGorillaRoute(router, &MockFloatQueryService{})
 	server := httptest.NewServer(router)
 	defer server.Close()
 
-	url := server.URL + "/v1/1.23/4.56/7.89"
+	url := server.URL + "/v1/float?float=1.23&opt_float=4.56&wrap_float=7.89&list_float=1.23&list_float=3.45&list_wrap_float=4.32&list_wrap_float=5.66"
 	resp, err := http.Get(url)
 	if err != nil {
 		t.Fatal(err)
@@ -233,7 +233,7 @@ func TestFloatPath(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	expected := `{"float":1.23,"optFloat":4.56,"wrapFloat":7.89}`
+	expected := `{"float":1.23, "optFloat":4.56, "wrapFloat":7.89, "listFloat":[1.23, 3.45], "listWrapFloat":[4.32, 5.66]}`
 	if strings.ReplaceAll(string(body), " ", "") != strings.ReplaceAll(expected, " ", "") {
 		t.Fatalf("body is not equal: got %s, want %s", string(body), expected)
 	}
@@ -241,11 +241,11 @@ func TestFloatPath(t *testing.T) {
 
 func TestDoublePath(t *testing.T) {
 	router := mux.NewRouter()
-	router = AppendDoublePathGorillaRoute(router, &MockDoublePathService{})
+	router = AppendDoubleQueryGorillaRoute(router, &MockDoubleQueryService{})
 	server := httptest.NewServer(router)
 	defer server.Close()
 
-	url := server.URL + "/v1/1.23/4.56/7.89"
+	url := server.URL + "/v1/double?double=1.23&opt_double=4.56&wrap_double=7.89&list_double=1.23&list_double=3.45&list_wrap_double=4.32&list_wrap_double=5.66"
 	resp, err := http.Get(url)
 	if err != nil {
 		t.Fatal(err)
@@ -255,7 +255,7 @@ func TestDoublePath(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	expected := `{"double":1.23,"optDouble":4.56,"wrapDouble":7.89}`
+	expected := `{"double":1.23,"optDouble":4.56,"wrapDouble":7.89,"listDouble":[1.23,3.45],"listWrapDouble":[4.32,5.66]}`
 	if strings.ReplaceAll(string(body), " ", "") != strings.ReplaceAll(expected, " ", "") {
 		t.Fatalf("body is not equal: got %s, want %s", string(body), expected)
 	}
@@ -263,11 +263,11 @@ func TestDoublePath(t *testing.T) {
 
 func TestStringPath(t *testing.T) {
 	router := mux.NewRouter()
-	router = AppendStringPathGorillaRoute(router, &MockStringPathService{})
+	router = AppendStringQueryGorillaRoute(router, &MockStringQueryService{})
 	server := httptest.NewServer(router)
 	defer server.Close()
 
-	url := server.URL + "/v1/abc/def/ghi"
+	url := server.URL + "/v1/string?string=abc&opt_string=def&wrap_string=ghi&list_string=d3d&list_string=lo-&list_wrap_string=<>d&list_wrap_string={[]}"
 	resp, err := http.Get(url)
 	if err != nil {
 		t.Fatal(err)
@@ -277,7 +277,7 @@ func TestStringPath(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	expected := `{"string":"abc","optString":"def","wrapString":"ghi"}`
+	expected := `{"string":"abc","optString":"def","wrapString":"ghi","listString":["d3d","lo-"],"listWrapString":["<>d","{[]}"]}`
 	if strings.ReplaceAll(string(body), " ", "") != strings.ReplaceAll(expected, " ", "") {
 		t.Fatalf("body is not equal: got %s, want %s", string(body), expected)
 	}
@@ -285,11 +285,11 @@ func TestStringPath(t *testing.T) {
 
 func TestEnumPath(t *testing.T) {
 	router := mux.NewRouter()
-	router = AppendEnumPathGorillaRoute(router, &MockEnumPathService{})
+	router = AppendEnumQueryGorillaRoute(router, &MockEnumQueryService{})
 	server := httptest.NewServer(router)
 	defer server.Close()
 
-	url := server.URL + "/v1/1/2"
+	url := server.URL + "/v1/enum?status=1&opt_status=2&list_status=1&list_status=2"
 	resp, err := http.Get(url)
 	if err != nil {
 		t.Fatal(err)
@@ -299,7 +299,7 @@ func TestEnumPath(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	expected := `{"status":"OK","optStatus":"CANCELLED"}`
+	expected := `{"status":"OK", "optStatus":"CANCELLED", "listStatus":["OK", "CANCELLED"]}`
 	if strings.ReplaceAll(string(body), " ", "") != strings.ReplaceAll(expected, " ", "") {
 		t.Fatalf("body is not equal: got %s, want %s", string(body), expected)
 	}
