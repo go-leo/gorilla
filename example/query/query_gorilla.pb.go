@@ -35,7 +35,7 @@ func AppendBoolQueryGorillaRoute(router *mux.Router, service BoolQueryGorillaSer
 		Name("/leo.gorilla.example.query.v1.BoolQuery/BoolQuery").
 		Methods("GET").
 		Path("/v1/bool").
-		Handler(handler.BoolQuery())
+		Handler(gorilla.Chain(handler.BoolQuery(), options.Middlewares()...))
 	return router
 }
 
@@ -117,7 +117,7 @@ func AppendInt32QueryGorillaRoute(router *mux.Router, service Int32QueryGorillaS
 		Name("/leo.gorilla.example.query.v1.Int32Query/Int32Query").
 		Methods("GET").
 		Path("/v1/int32").
-		Handler(handler.Int32Query())
+		Handler(gorilla.Chain(handler.Int32Query(), options.Middlewares()...))
 	return router
 }
 
@@ -205,7 +205,7 @@ func AppendInt64QueryGorillaRoute(router *mux.Router, service Int64QueryGorillaS
 		Name("/leo.gorilla.example.query.v1.Int64Query/Int64Query").
 		Methods("GET").
 		Path("/v1/int64").
-		Handler(handler.Int64Query())
+		Handler(gorilla.Chain(handler.Int64Query(), options.Middlewares()...))
 	return router
 }
 
@@ -293,7 +293,7 @@ func AppendUint32QueryGorillaRoute(router *mux.Router, service Uint32QueryGorill
 		Name("/leo.gorilla.example.query.v1.Uint32Query/Uint32Query").
 		Methods("GET").
 		Path("/v1/uint32").
-		Handler(handler.Uint32Query())
+		Handler(gorilla.Chain(handler.Uint32Query(), options.Middlewares()...))
 	return router
 }
 
@@ -378,7 +378,7 @@ func AppendUint64QueryGorillaRoute(router *mux.Router, service Uint64QueryGorill
 		Name("/leo.gorilla.example.query.v1.Uint64Query/Uint64Query").
 		Methods("GET").
 		Path("/v1/uint64").
-		Handler(handler.Uint64Query())
+		Handler(gorilla.Chain(handler.Uint64Query(), options.Middlewares()...))
 	return router
 }
 
@@ -463,7 +463,7 @@ func AppendFloatQueryGorillaRoute(router *mux.Router, service FloatQueryGorillaS
 		Name("/leo.gorilla.example.query.v1.FloatQuery/FloatQuery").
 		Methods("GET").
 		Path("/v1/float").
-		Handler(handler.FloatQuery())
+		Handler(gorilla.Chain(handler.FloatQuery(), options.Middlewares()...))
 	return router
 }
 
@@ -545,7 +545,7 @@ func AppendDoubleQueryGorillaRoute(router *mux.Router, service DoubleQueryGorill
 		Name("/leo.gorilla.example.query.v1.DoubleQuery/DoubleQuery").
 		Methods("GET").
 		Path("/v1/double").
-		Handler(handler.DoubleQuery())
+		Handler(gorilla.Chain(handler.DoubleQuery(), options.Middlewares()...))
 	return router
 }
 
@@ -627,7 +627,7 @@ func AppendStringQueryGorillaRoute(router *mux.Router, service StringQueryGorill
 		Name("/leo.gorilla.example.query.v1.StringQuery/StringQuery").
 		Methods("GET").
 		Path("/v1/string").
-		Handler(handler.StringQuery())
+		Handler(gorilla.Chain(handler.StringQuery(), options.Middlewares()...))
 	return router
 }
 
@@ -709,7 +709,7 @@ func AppendEnumQueryGorillaRoute(router *mux.Router, service EnumQueryGorillaSer
 		Name("/leo.gorilla.example.query.v1.EnumQuery/EnumQuery").
 		Methods("GET").
 		Path("/v1/enum").
-		Handler(handler.EnumQuery())
+		Handler(gorilla.Chain(handler.EnumQuery(), options.Middlewares()...))
 	return router
 }
 

@@ -40,32 +40,32 @@ func AppendBodyGorillaRoute(router *mux.Router, service BodyGorillaService, opts
 		Name("/leo.gorilla.example.body.v1.Body/StarBody").
 		Methods("POST").
 		Path("/v1/star/body").
-		Handler(handler.StarBody())
+		Handler(gorilla.Chain(handler.StarBody(), options.Middlewares()...))
 	router.NewRoute().
 		Name("/leo.gorilla.example.body.v1.Body/NamedBody").
 		Methods("POST").
 		Path("/v1/named/body").
-		Handler(handler.NamedBody())
+		Handler(gorilla.Chain(handler.NamedBody(), options.Middlewares()...))
 	router.NewRoute().
 		Name("/leo.gorilla.example.body.v1.Body/NonBody").
 		Methods("GET").
 		Path("/v1/user_body").
-		Handler(handler.NonBody())
+		Handler(gorilla.Chain(handler.NonBody(), options.Middlewares()...))
 	router.NewRoute().
 		Name("/leo.gorilla.example.body.v1.Body/HttpBodyStarBody").
 		Methods("PUT").
 		Path("/v1/http/body/star/body").
-		Handler(handler.HttpBodyStarBody())
+		Handler(gorilla.Chain(handler.HttpBodyStarBody(), options.Middlewares()...))
 	router.NewRoute().
 		Name("/leo.gorilla.example.body.v1.Body/HttpBodyNamedBody").
 		Methods("PUT").
 		Path("/v1/http/body/named/body").
-		Handler(handler.HttpBodyNamedBody())
+		Handler(gorilla.Chain(handler.HttpBodyNamedBody(), options.Middlewares()...))
 	router.NewRoute().
 		Name("/leo.gorilla.example.body.v1.Body/HttpRequest").
 		Methods("PUT").
 		Path("/v1/http/request").
-		Handler(handler.HttpRequest())
+		Handler(gorilla.Chain(handler.HttpRequest(), options.Middlewares()...))
 	return router
 }
 

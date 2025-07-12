@@ -53,6 +53,7 @@ var (
 	FormDecoderIdent         = GorillaPackage.Ident("FormDecoder")
 	OptionIdent              = GorillaPackage.Ident("Option")
 	NewOptionsIdent          = GorillaPackage.Ident("NewOptions")
+	ChainIdent               = GorillaPackage.Ident("Chain")
 )
 
 var (

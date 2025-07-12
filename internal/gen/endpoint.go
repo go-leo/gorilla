@@ -69,7 +69,7 @@ func (e *Endpoint) ParseParameters() (*protogen.Message, *protogen.Field, []*pro
 	}
 
 	var pathFields []*protogen.Field
-	pathParameters, _ := e.route.GetVarNames()
+	pathParameters, _ := e.PathParameters()
 	for _, pathParameter := range pathParameters {
 		field := FindField(pathParameter, e.Input())
 		if field == nil {
@@ -154,6 +154,10 @@ func (e *Endpoint) ParseParameters() (*protogen.Message, *protogen.Field, []*pro
 		queryFields = append(queryFields, field)
 	}
 	return bodyMessage, bodyField, pathFields, queryFields, nil
+}
+
+func (e *Endpoint) PathParameters() ([]string, error) {
+	return e.route.GetVarNames()
 }
 
 func (e *Endpoint) SetRoute(route *mux.Route) {

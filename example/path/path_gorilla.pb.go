@@ -35,7 +35,7 @@ func AppendBoolPathGorillaRoute(router *mux.Router, service BoolPathGorillaServi
 		Name("/leo.gorilla.example.path.v1.BoolPath/BoolPath").
 		Methods("GET").
 		Path("/v1/{bool}/{opt_bool}/{wrap_bool}").
-		Handler(handler.BoolPath())
+		Handler(gorilla.Chain(handler.BoolPath(), options.Middlewares()...))
 	return router
 }
 
@@ -77,6 +77,9 @@ func (decoder boolPathGorillaRequestDecoder) BoolPath(ctx context.Context, r *ht
 	req.Bool, varErr = gorilla.FormDecoder[bool](varErr, vars, "bool", gorilla.GetBool)
 	req.OptBool, varErr = gorilla.FormDecoder[*bool](varErr, vars, "opt_bool", gorilla.GetBoolPtr)
 	req.WrapBool, varErr = gorilla.FormDecoder[*wrapperspb.BoolValue](varErr, vars, "wrap_bool", gorilla.GetBoolValue)
+	req.Bool, varErr = gorilla.FormDecoder[bool](varErr, vars, "bool", gorilla.GetBool)
+	req.OptBool, varErr = gorilla.FormDecoder[*bool](varErr, vars, "opt_bool", gorilla.GetBoolPtr)
+	req.WrapBool, varErr = gorilla.FormDecoder[*wrapperspb.BoolValue](varErr, vars, "wrap_bool", gorilla.GetBoolValue)
 	if varErr != nil {
 		return nil, varErr
 	}
@@ -115,7 +118,7 @@ func AppendInt32PathGorillaRoute(router *mux.Router, service Int32PathGorillaSer
 		Name("/leo.gorilla.example.path.v1.Int32Path/Int32Path").
 		Methods("GET").
 		Path("/v1/{int32}/{sint32}/{sfixed32}/{opt_int32}/{opt_sint32}/{opt_sfixed32}/{wrap_int32}").
-		Handler(handler.Int32Path())
+		Handler(gorilla.Chain(handler.Int32Path(), options.Middlewares()...))
 	return router
 }
 
@@ -161,6 +164,13 @@ func (decoder int32PathGorillaRequestDecoder) Int32Path(ctx context.Context, r *
 	req.OptSint32, varErr = gorilla.FormDecoder[*int32](varErr, vars, "opt_sint32", gorilla.GetInt32Ptr)
 	req.OptSfixed32, varErr = gorilla.FormDecoder[*int32](varErr, vars, "opt_sfixed32", gorilla.GetInt32Ptr)
 	req.WrapInt32, varErr = gorilla.FormDecoder[*wrapperspb.Int32Value](varErr, vars, "wrap_int32", gorilla.GetInt32Value)
+	req.Int32, varErr = gorilla.FormDecoder[int32](varErr, vars, "int32", gorilla.GetInt32)
+	req.Sint32, varErr = gorilla.FormDecoder[int32](varErr, vars, "sint32", gorilla.GetInt32)
+	req.Sfixed32, varErr = gorilla.FormDecoder[int32](varErr, vars, "sfixed32", gorilla.GetInt32)
+	req.OptInt32, varErr = gorilla.FormDecoder[*int32](varErr, vars, "opt_int32", gorilla.GetInt32Ptr)
+	req.OptSint32, varErr = gorilla.FormDecoder[*int32](varErr, vars, "opt_sint32", gorilla.GetInt32Ptr)
+	req.OptSfixed32, varErr = gorilla.FormDecoder[*int32](varErr, vars, "opt_sfixed32", gorilla.GetInt32Ptr)
+	req.WrapInt32, varErr = gorilla.FormDecoder[*wrapperspb.Int32Value](varErr, vars, "wrap_int32", gorilla.GetInt32Value)
 	if varErr != nil {
 		return nil, varErr
 	}
@@ -199,7 +209,7 @@ func AppendInt64PathGorillaRoute(router *mux.Router, service Int64PathGorillaSer
 		Name("/leo.gorilla.example.path.v1.Int64Path/Int64Path").
 		Methods("GET").
 		Path("/v1/{int64}/{sint64}/{sfixed64}/{opt_int64}/{opt_sint64}/{opt_sfixed64}/{wrap_int64}").
-		Handler(handler.Int64Path())
+		Handler(gorilla.Chain(handler.Int64Path(), options.Middlewares()...))
 	return router
 }
 
@@ -245,6 +255,13 @@ func (decoder int64PathGorillaRequestDecoder) Int64Path(ctx context.Context, r *
 	req.OptSint64, varErr = gorilla.FormDecoder[*int64](varErr, vars, "opt_sint64", gorilla.GetInt64Ptr)
 	req.OptSfixed64, varErr = gorilla.FormDecoder[*int64](varErr, vars, "opt_sfixed64", gorilla.GetInt64Ptr)
 	req.WrapInt64, varErr = gorilla.FormDecoder[*wrapperspb.Int64Value](varErr, vars, "wrap_int64", gorilla.GetInt64Value)
+	req.Int64, varErr = gorilla.FormDecoder[int64](varErr, vars, "int64", gorilla.GetInt64)
+	req.Sint64, varErr = gorilla.FormDecoder[int64](varErr, vars, "sint64", gorilla.GetInt64)
+	req.Sfixed64, varErr = gorilla.FormDecoder[int64](varErr, vars, "sfixed64", gorilla.GetInt64)
+	req.OptInt64, varErr = gorilla.FormDecoder[*int64](varErr, vars, "opt_int64", gorilla.GetInt64Ptr)
+	req.OptSint64, varErr = gorilla.FormDecoder[*int64](varErr, vars, "opt_sint64", gorilla.GetInt64Ptr)
+	req.OptSfixed64, varErr = gorilla.FormDecoder[*int64](varErr, vars, "opt_sfixed64", gorilla.GetInt64Ptr)
+	req.WrapInt64, varErr = gorilla.FormDecoder[*wrapperspb.Int64Value](varErr, vars, "wrap_int64", gorilla.GetInt64Value)
 	if varErr != nil {
 		return nil, varErr
 	}
@@ -283,7 +300,7 @@ func AppendUint32PathGorillaRoute(router *mux.Router, service Uint32PathGorillaS
 		Name("/leo.gorilla.example.path.v1.Uint32Path/Uint32Path").
 		Methods("GET").
 		Path("/v1/{uint32}/{fixed32}/{opt_uint32}/{opt_fixed32}/{wrap_uint32}").
-		Handler(handler.Uint32Path())
+		Handler(gorilla.Chain(handler.Uint32Path(), options.Middlewares()...))
 	return router
 }
 
@@ -327,6 +344,11 @@ func (decoder uint32PathGorillaRequestDecoder) Uint32Path(ctx context.Context, r
 	req.OptUint32, varErr = gorilla.FormDecoder[*uint32](varErr, vars, "opt_uint32", gorilla.GetUint32Ptr)
 	req.OptFixed32, varErr = gorilla.FormDecoder[*uint32](varErr, vars, "opt_fixed32", gorilla.GetUint32Ptr)
 	req.WrapUint32, varErr = gorilla.FormDecoder[*wrapperspb.UInt32Value](varErr, vars, "wrap_uint32", gorilla.GetUint32Value)
+	req.Uint32, varErr = gorilla.FormDecoder[uint32](varErr, vars, "uint32", gorilla.GetUint32)
+	req.Fixed32, varErr = gorilla.FormDecoder[uint32](varErr, vars, "fixed32", gorilla.GetUint32)
+	req.OptUint32, varErr = gorilla.FormDecoder[*uint32](varErr, vars, "opt_uint32", gorilla.GetUint32Ptr)
+	req.OptFixed32, varErr = gorilla.FormDecoder[*uint32](varErr, vars, "opt_fixed32", gorilla.GetUint32Ptr)
+	req.WrapUint32, varErr = gorilla.FormDecoder[*wrapperspb.UInt32Value](varErr, vars, "wrap_uint32", gorilla.GetUint32Value)
 	if varErr != nil {
 		return nil, varErr
 	}
@@ -365,7 +387,7 @@ func AppendUint64PathGorillaRoute(router *mux.Router, service Uint64PathGorillaS
 		Name("/leo.gorilla.example.path.v1.Uint64Path/Uint64Path").
 		Methods("GET").
 		Path("/v1/{uint64}/{fixed64}/{opt_uint64}/{opt_fixed64}/{wrap_uint64}").
-		Handler(handler.Uint64Path())
+		Handler(gorilla.Chain(handler.Uint64Path(), options.Middlewares()...))
 	return router
 }
 
@@ -409,6 +431,11 @@ func (decoder uint64PathGorillaRequestDecoder) Uint64Path(ctx context.Context, r
 	req.OptUint64, varErr = gorilla.FormDecoder[*uint64](varErr, vars, "opt_uint64", gorilla.GetUint64Ptr)
 	req.OptFixed64, varErr = gorilla.FormDecoder[*uint64](varErr, vars, "opt_fixed64", gorilla.GetUint64Ptr)
 	req.WrapUint64, varErr = gorilla.FormDecoder[*wrapperspb.UInt64Value](varErr, vars, "wrap_uint64", gorilla.GetUint64Value)
+	req.Uint64, varErr = gorilla.FormDecoder[uint64](varErr, vars, "uint64", gorilla.GetUint64)
+	req.Fixed64, varErr = gorilla.FormDecoder[uint64](varErr, vars, "fixed64", gorilla.GetUint64)
+	req.OptUint64, varErr = gorilla.FormDecoder[*uint64](varErr, vars, "opt_uint64", gorilla.GetUint64Ptr)
+	req.OptFixed64, varErr = gorilla.FormDecoder[*uint64](varErr, vars, "opt_fixed64", gorilla.GetUint64Ptr)
+	req.WrapUint64, varErr = gorilla.FormDecoder[*wrapperspb.UInt64Value](varErr, vars, "wrap_uint64", gorilla.GetUint64Value)
 	if varErr != nil {
 		return nil, varErr
 	}
@@ -447,7 +474,7 @@ func AppendFloatPathGorillaRoute(router *mux.Router, service FloatPathGorillaSer
 		Name("/leo.gorilla.example.path.v1.FloatPath/FloatPath").
 		Methods("GET").
 		Path("/v1/{float}/{opt_float}/{wrap_float}").
-		Handler(handler.FloatPath())
+		Handler(gorilla.Chain(handler.FloatPath(), options.Middlewares()...))
 	return router
 }
 
@@ -489,6 +516,9 @@ func (decoder floatPathGorillaRequestDecoder) FloatPath(ctx context.Context, r *
 	req.Float, varErr = gorilla.FormDecoder[float32](varErr, vars, "float", gorilla.GetFloat32)
 	req.OptFloat, varErr = gorilla.FormDecoder[*float32](varErr, vars, "opt_float", gorilla.GetFloat32Ptr)
 	req.WrapFloat, varErr = gorilla.FormDecoder[*wrapperspb.FloatValue](varErr, vars, "wrap_float", gorilla.GetFloat32Value)
+	req.Float, varErr = gorilla.FormDecoder[float32](varErr, vars, "float", gorilla.GetFloat32)
+	req.OptFloat, varErr = gorilla.FormDecoder[*float32](varErr, vars, "opt_float", gorilla.GetFloat32Ptr)
+	req.WrapFloat, varErr = gorilla.FormDecoder[*wrapperspb.FloatValue](varErr, vars, "wrap_float", gorilla.GetFloat32Value)
 	if varErr != nil {
 		return nil, varErr
 	}
@@ -527,7 +557,7 @@ func AppendDoublePathGorillaRoute(router *mux.Router, service DoublePathGorillaS
 		Name("/leo.gorilla.example.path.v1.DoublePath/DoublePath").
 		Methods("GET").
 		Path("/v1/{double}/{opt_double}/{wrap_double}").
-		Handler(handler.DoublePath())
+		Handler(gorilla.Chain(handler.DoublePath(), options.Middlewares()...))
 	return router
 }
 
@@ -569,6 +599,9 @@ func (decoder doublePathGorillaRequestDecoder) DoublePath(ctx context.Context, r
 	req.Double, varErr = gorilla.FormDecoder[float64](varErr, vars, "double", gorilla.GetFloat64)
 	req.OptDouble, varErr = gorilla.FormDecoder[*float64](varErr, vars, "opt_double", gorilla.GetFloat64Ptr)
 	req.WrapDouble, varErr = gorilla.FormDecoder[*wrapperspb.DoubleValue](varErr, vars, "wrap_double", gorilla.GetFloat64Value)
+	req.Double, varErr = gorilla.FormDecoder[float64](varErr, vars, "double", gorilla.GetFloat64)
+	req.OptDouble, varErr = gorilla.FormDecoder[*float64](varErr, vars, "opt_double", gorilla.GetFloat64Ptr)
+	req.WrapDouble, varErr = gorilla.FormDecoder[*wrapperspb.DoubleValue](varErr, vars, "wrap_double", gorilla.GetFloat64Value)
 	if varErr != nil {
 		return nil, varErr
 	}
@@ -607,7 +640,7 @@ func AppendStringPathGorillaRoute(router *mux.Router, service StringPathGorillaS
 		Name("/leo.gorilla.example.path.v1.StringPath/StringPath").
 		Methods("GET").
 		Path("/v1/{string}/{opt_string}/{wrap_string}").
-		Handler(handler.StringPath())
+		Handler(gorilla.Chain(handler.StringPath(), options.Middlewares()...))
 	return router
 }
 
@@ -649,6 +682,9 @@ func (decoder stringPathGorillaRequestDecoder) StringPath(ctx context.Context, r
 	req.String_ = vars.Get("string")
 	req.OptString = proto.String(vars.Get("opt_string"))
 	req.WrapString = wrapperspb.String(vars.Get("wrap_string"))
+	req.String_ = vars.Get("string")
+	req.OptString = proto.String(vars.Get("opt_string"))
+	req.WrapString = wrapperspb.String(vars.Get("wrap_string"))
 	if varErr != nil {
 		return nil, varErr
 	}
@@ -687,7 +723,7 @@ func AppendEnumPathGorillaRoute(router *mux.Router, service EnumPathGorillaServi
 		Name("/leo.gorilla.example.path.v1.EnumPath/EnumPath").
 		Methods("GET").
 		Path("/v1/{status}/{opt_status}").
-		Handler(handler.EnumPath())
+		Handler(gorilla.Chain(handler.EnumPath(), options.Middlewares()...))
 	return router
 }
 
@@ -726,6 +762,8 @@ func (decoder enumPathGorillaRequestDecoder) EnumPath(ctx context.Context, r *ht
 	req := &EnumPathRequest{}
 	vars := gorilla.FormFromMap(mux.Vars(r))
 	var varErr error
+	req.Status, varErr = gorilla.FormDecoder[EnumPathRequest_Status](varErr, vars, "status", gorilla.GetInt[EnumPathRequest_Status])
+	req.OptStatus, varErr = gorilla.FormDecoder[*EnumPathRequest_Status](varErr, vars, "opt_status", gorilla.GetIntPtr[EnumPathRequest_Status])
 	req.Status, varErr = gorilla.FormDecoder[EnumPathRequest_Status](varErr, vars, "status", gorilla.GetInt[EnumPathRequest_Status])
 	req.OptStatus, varErr = gorilla.FormDecoder[*EnumPathRequest_Status](varErr, vars, "opt_status", gorilla.GetIntPtr[EnumPathRequest_Status])
 	if varErr != nil {

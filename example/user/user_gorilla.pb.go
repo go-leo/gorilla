@@ -37,32 +37,32 @@ func AppendUserGorillaRoute(router *mux.Router, service UserGorillaService, opts
 		Name("/leo.gorilla.example.user.v1.User/CreateUser").
 		Methods("POST").
 		Path("/v1/user").
-		Handler(handler.CreateUser())
+		Handler(gorilla.Chain(handler.CreateUser(), options.Middlewares()...))
 	router.NewRoute().
 		Name("/leo.gorilla.example.user.v1.User/DeleteUser").
 		Methods("DELETE").
 		Path("/v1/user/{id}").
-		Handler(handler.DeleteUser())
+		Handler(gorilla.Chain(handler.DeleteUser(), options.Middlewares()...))
 	router.NewRoute().
 		Name("/leo.gorilla.example.user.v1.User/ModifyUser").
 		Methods("PUT").
 		Path("/v1/user/{id}").
-		Handler(handler.ModifyUser())
+		Handler(gorilla.Chain(handler.ModifyUser(), options.Middlewares()...))
 	router.NewRoute().
 		Name("/leo.gorilla.example.user.v1.User/UpdateUser").
 		Methods("PATCH").
 		Path("/v1/user/{id}").
-		Handler(handler.UpdateUser())
+		Handler(gorilla.Chain(handler.UpdateUser(), options.Middlewares()...))
 	router.NewRoute().
 		Name("/leo.gorilla.example.user.v1.User/GetUser").
 		Methods("GET").
 		Path("/v1/user/{id}").
-		Handler(handler.GetUser())
+		Handler(gorilla.Chain(handler.GetUser(), options.Middlewares()...))
 	router.NewRoute().
 		Name("/leo.gorilla.example.user.v1.User/ListUser").
 		Methods("GET").
 		Path("/v1/users").
-		Handler(handler.ListUser())
+		Handler(gorilla.Chain(handler.ListUser(), options.Middlewares()...))
 	return router
 }
 
@@ -209,6 +209,7 @@ func (decoder userGorillaRequestDecoder) DeleteUser(ctx context.Context, r *http
 	vars := gorilla.FormFromMap(mux.Vars(r))
 	var varErr error
 	req.Id, varErr = gorilla.FormDecoder[int64](varErr, vars, "id", gorilla.GetInt64)
+	req.Id, varErr = gorilla.FormDecoder[int64](varErr, vars, "id", gorilla.GetInt64)
 	if varErr != nil {
 		return nil, varErr
 	}
@@ -221,6 +222,7 @@ func (decoder userGorillaRequestDecoder) ModifyUser(ctx context.Context, r *http
 	}
 	vars := gorilla.FormFromMap(mux.Vars(r))
 	var varErr error
+	req.Id, varErr = gorilla.FormDecoder[int64](varErr, vars, "id", gorilla.GetInt64)
 	req.Id, varErr = gorilla.FormDecoder[int64](varErr, vars, "id", gorilla.GetInt64)
 	if varErr != nil {
 		return nil, varErr
@@ -238,6 +240,7 @@ func (decoder userGorillaRequestDecoder) UpdateUser(ctx context.Context, r *http
 	vars := gorilla.FormFromMap(mux.Vars(r))
 	var varErr error
 	req.Id, varErr = gorilla.FormDecoder[int64](varErr, vars, "id", gorilla.GetInt64)
+	req.Id, varErr = gorilla.FormDecoder[int64](varErr, vars, "id", gorilla.GetInt64)
 	if varErr != nil {
 		return nil, varErr
 	}
@@ -247,6 +250,7 @@ func (decoder userGorillaRequestDecoder) GetUser(ctx context.Context, r *http.Re
 	req := &GetUserRequest{}
 	vars := gorilla.FormFromMap(mux.Vars(r))
 	var varErr error
+	req.Id, varErr = gorilla.FormDecoder[int64](varErr, vars, "id", gorilla.GetInt64)
 	req.Id, varErr = gorilla.FormDecoder[int64](varErr, vars, "id", gorilla.GetInt64)
 	if varErr != nil {
 		return nil, varErr

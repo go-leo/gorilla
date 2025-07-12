@@ -1,6 +1,7 @@
 package gorilla
 
 import (
+	"github.com/gorilla/mux"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
@@ -14,6 +15,8 @@ type Options interface {
 	ErrorEncoder() ErrorEncoder
 	// ResponseTransformer Response transformation handler
 	ResponseTransformer() ResponseTransformer
+	// Middlewares HTTP middlewares
+	Middlewares() []mux.MiddlewareFunc
 }
 
 // options implements the Options interface with concrete configuration values
@@ -26,6 +29,8 @@ type options struct {
 	errorEncoder ErrorEncoder
 	// responseTransformer Response transformation handler
 	responseTransformer ResponseTransformer
+	// middlewares Middlewares
+	middlewares []mux.MiddlewareFunc
 }
 
 // Option defines a function type for modifying options
@@ -59,6 +64,11 @@ func (o *options) ResponseTransformer() ResponseTransformer {
 	return o.responseTransformer
 }
 
+// Middlewares returns the configured middlewares
+func (o *options) Middlewares() []mux.MiddlewareFunc {
+	return o.middlewares
+}
+
 // WithUnmarshalOptions sets the protobuf JSON unmarshal options
 func WithUnmarshalOptions(opts protojson.UnmarshalOptions) Option {
 	return func(o *options) {
@@ -87,6 +97,12 @@ func WithResponseTransformer(transformer ResponseTransformer) Option {
 	}
 }
 
+func WithMiddlewares(middlewares ...mux.MiddlewareFunc) Option {
+	return func(o *options) {
+		o.middlewares = append(o.middlewares, middlewares...)
+	}
+}
+
 // NewOptions creates a new Options instance with default values that can be
 // customized using the provided Option functions
 func NewOptions(opts ...Option) Options {
@@ -95,6 +111,7 @@ func NewOptions(opts ...Option) Options {
 		marshalOptions:      protojson.MarshalOptions{},
 		errorEncoder:        DefaultErrorEncoder,
 		responseTransformer: DefaultResponseTransformer,
+		middlewares:         []mux.MiddlewareFunc{},
 	}
 	o = o.Apply(opts...)
 	return o

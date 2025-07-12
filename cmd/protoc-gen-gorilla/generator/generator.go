@@ -89,7 +89,7 @@ func (f *Generator) GenerateAppendServerFunc(service *gen.Service, g *protogen.G
 		g.P("Name(", strconv.Quote(endpoint.FullName()), ").")
 		g.P("Methods(", strconv.Quote(endpoint.Method()), ").")
 		g.P("Path(", strconv.Quote(endpoint.Path()), ").")
-		g.P("Handler(handler.", endpoint.Name(), "())")
+		g.P("Handler(", gen.ChainIdent, "(handler.", endpoint.Name(), "(), options.Middlewares()...))")
 	}
 	g.P("return router")
 	g.P("}")

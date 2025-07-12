@@ -39,32 +39,32 @@ func AppendResponseBodyGorillaRoute(router *mux.Router, service ResponseBodyGori
 		Name("/leo.gorilla.example.response_body.v1.ResponseBody/OmittedResponse").
 		Methods("GET").
 		Path("/v1/omitted/response").
-		Handler(handler.OmittedResponse())
+		Handler(gorilla.Chain(handler.OmittedResponse(), options.Middlewares()...))
 	router.NewRoute().
 		Name("/leo.gorilla.example.response_body.v1.ResponseBody/StarResponse").
 		Methods("GET").
 		Path("/v1/star/response").
-		Handler(handler.StarResponse())
+		Handler(gorilla.Chain(handler.StarResponse(), options.Middlewares()...))
 	router.NewRoute().
 		Name("/leo.gorilla.example.response_body.v1.ResponseBody/NamedResponse").
 		Methods("GET").
 		Path("/v1/named/response").
-		Handler(handler.NamedResponse())
+		Handler(gorilla.Chain(handler.NamedResponse(), options.Middlewares()...))
 	router.NewRoute().
 		Name("/leo.gorilla.example.response_body.v1.ResponseBody/HttpBodyResponse").
 		Methods("GET").
 		Path("/v1/http/body/omitted/response").
-		Handler(handler.HttpBodyResponse())
+		Handler(gorilla.Chain(handler.HttpBodyResponse(), options.Middlewares()...))
 	router.NewRoute().
 		Name("/leo.gorilla.example.response_body.v1.ResponseBody/HttpBodyNamedResponse").
 		Methods("GET").
 		Path("/v1/http/body/named/response").
-		Handler(handler.HttpBodyNamedResponse())
+		Handler(gorilla.Chain(handler.HttpBodyNamedResponse(), options.Middlewares()...))
 	router.NewRoute().
 		Name("/leo.gorilla.example.response_body.v1.ResponseBody/HttpResponse").
 		Methods("GET").
 		Path("/v1/http/response").
-		Handler(handler.HttpResponse())
+		Handler(gorilla.Chain(handler.HttpResponse(), options.Middlewares()...))
 	return router
 }
 

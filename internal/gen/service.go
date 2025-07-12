@@ -67,7 +67,7 @@ func NewServices(file *protogen.File) ([]*Service, error) {
 			endpoint.SetHttpRule()
 			route := router.NewRoute()
 			route.Methods(endpoint.Method()).Path(endpoint.Path())
-			if err := route.GetError(); err != nil {
+			if err := checkRoute(route, endpoint); err != nil {
 				return nil, fmt.Errorf("gorilla: %s", err)
 			}
 			endpoint.SetRoute(route)
@@ -77,4 +77,9 @@ func NewServices(file *protogen.File) ([]*Service, error) {
 		services = append(services, service)
 	}
 	return services, nil
+}
+
+func checkRoute(route *mux.Route, endpoint *Endpoint) error {
+	route.Methods(endpoint.Method()).Path(endpoint.Path())
+	return route.GetError()
 }
