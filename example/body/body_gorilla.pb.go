@@ -14,12 +14,12 @@ import (
 )
 
 type BodyGorillaService interface {
-	StarBody(ctx context.Context, request *BodyRequest) (*emptypb.Empty, error)
-	NamedBody(ctx context.Context, request *BodyRequest) (*emptypb.Empty, error)
-	NonBody(ctx context.Context, request *emptypb.Empty) (*emptypb.Empty, error)
-	HttpBodyStarBody(ctx context.Context, request *httpbody.HttpBody) (*emptypb.Empty, error)
-	HttpBodyNamedBody(ctx context.Context, request *HttpBodyRequest) (*emptypb.Empty, error)
-	HttpRequest(ctx context.Context, request *http.HttpRequest) (*emptypb.Empty, error)
+	StarBody(ctx context.Context, request *BodyRequest) (*Response, error)
+	NamedBody(ctx context.Context, request *NamedBodyRequest) (*Response, error)
+	NonBody(ctx context.Context, request *emptypb.Empty) (*Response, error)
+	HttpBodyStarBody(ctx context.Context, request *httpbody.HttpBody) (*Response, error)
+	HttpBodyNamedBody(ctx context.Context, request *HttpBodyRequest) (*Response, error)
+	HttpRequest(ctx context.Context, request *http.HttpRequest) (*Response, error)
 }
 
 func AppendBodyGorillaRoute(router *mux.Router, service BodyGorillaService, opts ...gorilla.Option) *mux.Router {
@@ -207,12 +207,12 @@ func (decoder bodyGorillaRequestDecoder) StarBody(ctx context.Context, r *http1.
 	}
 	return req, nil
 }
-func (decoder bodyGorillaRequestDecoder) NamedBody(ctx context.Context, r *http1.Request) (*BodyRequest, error) {
-	req := &BodyRequest{}
-	if req.User == nil {
-		req.User = &BodyRequest_User{}
+func (decoder bodyGorillaRequestDecoder) NamedBody(ctx context.Context, r *http1.Request) (*NamedBodyRequest, error) {
+	req := &NamedBodyRequest{}
+	if req.Body == nil {
+		req.Body = &NamedBodyRequest_Body{}
 	}
-	if err := gorilla.RequestDecoder(ctx, r, req.User, decoder.unmarshalOptions); err != nil {
+	if err := gorilla.RequestDecoder(ctx, r, req.Body, decoder.unmarshalOptions); err != nil {
 		return nil, err
 	}
 	return req, nil
@@ -252,21 +252,21 @@ type bodyGorillaResponseEncoder struct {
 	responseTransformer gorilla.ResponseTransformer
 }
 
-func (encoder bodyGorillaResponseEncoder) StarBody(ctx context.Context, w http1.ResponseWriter, resp *emptypb.Empty) error {
+func (encoder bodyGorillaResponseEncoder) StarBody(ctx context.Context, w http1.ResponseWriter, resp *Response) error {
 	return gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
-func (encoder bodyGorillaResponseEncoder) NamedBody(ctx context.Context, w http1.ResponseWriter, resp *emptypb.Empty) error {
+func (encoder bodyGorillaResponseEncoder) NamedBody(ctx context.Context, w http1.ResponseWriter, resp *Response) error {
 	return gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
-func (encoder bodyGorillaResponseEncoder) NonBody(ctx context.Context, w http1.ResponseWriter, resp *emptypb.Empty) error {
+func (encoder bodyGorillaResponseEncoder) NonBody(ctx context.Context, w http1.ResponseWriter, resp *Response) error {
 	return gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
-func (encoder bodyGorillaResponseEncoder) HttpBodyStarBody(ctx context.Context, w http1.ResponseWriter, resp *emptypb.Empty) error {
+func (encoder bodyGorillaResponseEncoder) HttpBodyStarBody(ctx context.Context, w http1.ResponseWriter, resp *Response) error {
 	return gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
-func (encoder bodyGorillaResponseEncoder) HttpBodyNamedBody(ctx context.Context, w http1.ResponseWriter, resp *emptypb.Empty) error {
+func (encoder bodyGorillaResponseEncoder) HttpBodyNamedBody(ctx context.Context, w http1.ResponseWriter, resp *Response) error {
 	return gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
-func (encoder bodyGorillaResponseEncoder) HttpRequest(ctx context.Context, w http1.ResponseWriter, resp *emptypb.Empty) error {
+func (encoder bodyGorillaResponseEncoder) HttpRequest(ctx context.Context, w http1.ResponseWriter, resp *Response) error {
 	return gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
