@@ -49,10 +49,10 @@ func (f *Generator) GenerateFile() error {
 		if err := f.GenerateHandlers(service, g); err != nil {
 			return err
 		}
-		if err := f.GenerateServerRequestDecoder(service, g); err != nil {
+		if err := f.GenerateServerDecodeRequest(service, g); err != nil {
 			return err
 		}
-		if err := f.GenerateServerResponseEncoder(service, g); err != nil {
+		if err := f.GenerateServerEncodeResponse(service, g); err != nil {
 			return err
 		}
 	}
@@ -76,20 +76,22 @@ func (f *Generator) GenerateAppendServerFunc(service *gen.Service, g *protogen.G
 	g.P("service: service,")
 	g.P("decoder: ", service.Unexported(service.RequestDecoderName()), "{")
 	g.P("unmarshalOptions: options.UnmarshalOptions(),")
+	g.P("shouldFailFast: options.ShouldFailFast(),")
+	g.P("onValidationErrCallback: options.OnValidationErrCallback(),")
 	g.P("},")
-	g.P("encoder: ", service.Unexported(service.ResponseEncoderName()), "{")
+	g.P("encoder: ", service.Unexported(service.EncodeResponseName()), "{")
 	g.P("marshalOptions: options.MarshalOptions(),")
 	g.P("unmarshalOptions: options.UnmarshalOptions(),")
 	g.P("responseTransformer: options.ResponseTransformer(),")
 	g.P("},")
-	g.P("errorEncoder: ", gen.DefaultErrorEncoderIdent, ",")
+	g.P("errorEncoder: ", gen.DefaultEncodeErrorIdent, ",")
 	g.P("}")
 	for _, endpoint := range service.Endpoints {
 		g.P("router.NewRoute().")
 		g.P("Name(", strconv.Quote(endpoint.FullName()), ").")
 		g.P("Methods(", strconv.Quote(endpoint.Method()), ").")
 		g.P("Path(", strconv.Quote(endpoint.Path()), ").")
-		g.P("Handler(handler.", endpoint.Name(), "())")
+		g.P("Handler(", gen.ChainIdent, "(handler.", endpoint.Name(), "(), options.Middlewares()...))")
 	}
 	g.P("return router")
 	g.P("}")
@@ -101,7 +103,7 @@ func (f *Generator) GenerateHandlers(service *gen.Service, g *protogen.Generated
 	g.P("type ", service.Unexported(service.HandlerName()), " struct {")
 	g.P("service ", service.ServiceName())
 	g.P("decoder ", service.Unexported(service.RequestDecoderName()))
-	g.P("encoder ", service.Unexported(service.ResponseEncoderName()))
+	g.P("encoder ", service.Unexported(service.EncodeResponseName()))
 	g.P("errorEncoder ", gen.ErrorEncoderIdent)
 	g.P("}")
 	g.P()

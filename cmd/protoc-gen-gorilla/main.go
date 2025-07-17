@@ -2,6 +2,9 @@ package main
 
 import (
 	"flag"
+	"fmt"
+	"os"
+	"path/filepath"
 
 	"github.com/go-leo/gorilla/cmd/protoc-gen-gorilla/generator"
 	"google.golang.org/protobuf/compiler/protogen"
@@ -11,6 +14,10 @@ import (
 var flags flag.FlagSet
 
 func main() {
+	if len(os.Args) == 2 && os.Args[1] == "--version" {
+		fmt.Fprintf(os.Stdout, "%v %v\n", filepath.Base(os.Args[0]), "v1.0.0")
+		os.Exit(0)
+	}
 	options := &protogen.Options{ParamFunc: flags.Set}
 	options.Run(func(plugin *protogen.Plugin) error {
 		plugin.SupportedFeatures = uint64(pluginpb.CodeGeneratorResponse_FEATURE_PROTO3_OPTIONAL)

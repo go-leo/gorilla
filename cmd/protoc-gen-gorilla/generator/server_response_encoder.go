@@ -8,14 +8,14 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
-func (f *Generator) GenerateServerResponseEncoder(service *gen.Service, g *protogen.GeneratedFile) error {
-	g.P("type ", service.Unexported(service.ResponseEncoderName()), " struct {")
+func (f *Generator) GenerateServerEncodeResponse(service *gen.Service, g *protogen.GeneratedFile) error {
+	g.P("type ", service.Unexported(service.EncodeResponseName()), " struct {")
 	g.P("marshalOptions ", gen.ProtoJsonMarshalOptionsIdent)
 	g.P("unmarshalOptions ", gen.ProtoJsonUnmarshalOptionsIdent)
 	g.P("responseTransformer ", gen.ResponseTransformerIdent)
 	g.P("}")
 	for _, endpoint := range service.Endpoints {
-		g.P("func (encoder ", service.Unexported(service.ResponseEncoderName()), ")", endpoint.Name(), "(ctx ", gen.ContextIdent, ", w ", gen.ResponseWriterIdent, ", resp *", endpoint.OutputGoIdent(), ") error {")
+		g.P("func (encoder ", service.Unexported(service.EncodeResponseName()), ")", endpoint.Name(), "(ctx ", gen.ContextIdent, ", w ", gen.ResponseWriterIdent, ", resp *", endpoint.OutputGoIdent(), ") error {")
 		bodyParameter := endpoint.ResponseBody()
 		switch bodyParameter {
 		case "", "*":
@@ -55,13 +55,13 @@ func (f *Generator) GenerateServerResponseEncoder(service *gen.Service, g *proto
 }
 
 func (f *Generator) PrintHttpBodyEncodeBlock(g *protogen.GeneratedFile, srcValue []any) {
-	g.P(append(append([]any{"return ", gen.HttpBodyEncoderIdent, "(ctx, w, "}, srcValue...), ")")...)
+	g.P(append(append([]any{"return ", gen.EncodeHttpBodyIdent, "(ctx, w, "}, srcValue...), ")")...)
 }
 
 func (f *Generator) PrintHttpResponseEncodeBlock(g *protogen.GeneratedFile, srcValue []any) {
-	g.P(append(append([]any{"return ", gen.HttpResponseEncoderIdent, "(ctx, w, "}, srcValue...), ")")...)
+	g.P(append(append([]any{"return ", gen.EncodeHttpResponseIdent, "(ctx, w, "}, srcValue...), ")")...)
 }
 
 func (f *Generator) PrintResponseEncodeBlock(g *protogen.GeneratedFile, srcValue []any) {
-	g.P(append(append([]any{"return ", gen.ResponseEncoderIdent, "(ctx, w, "}, srcValue...), ", encoder.marshalOptions)")...)
+	g.P(append(append([]any{"return ", gen.EncodeResponseIdent, "(ctx, w, "}, srcValue...), ", encoder.marshalOptions)")...)
 }

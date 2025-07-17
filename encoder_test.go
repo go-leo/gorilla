@@ -51,18 +51,18 @@ func (statusErr) StatusCode() int {
 
 // --- Tests ---
 
-func TestDefaultResponseTransformer(t *testing.T) {
+func TestDefaultTransformResponse(t *testing.T) {
 	ctx := context.Background()
 	msg := &mockProto{}
-	got := DefaultResponseTransformer(ctx, msg)
+	got := DefaultTransformResponse(ctx, msg)
 	if got != msg {
-		t.Errorf("DefaultResponseTransformer should return input message")
+		t.Errorf("DefaultTransformResponse should return input message")
 	}
 }
 
-func TestDefaultErrorEncoder_plain(t *testing.T) {
+func TestDefaultEncodeError_plain(t *testing.T) {
 	rr := httptest.NewRecorder()
-	DefaultErrorEncoder(context.Background(), errors.New("plain error"), rr)
+	DefaultEncodeError(context.Background(), errors.New("plain error"), rr)
 	resp := rr.Result()
 	defer resp.Body.Close()
 	body, _ := io.ReadAll(resp.Body)
@@ -77,9 +77,9 @@ func TestDefaultErrorEncoder_plain(t *testing.T) {
 	}
 }
 
-func TestDefaultErrorEncoder_json(t *testing.T) {
+func TestDefaultEncodeError_json(t *testing.T) {
 	rr := httptest.NewRecorder()
-	DefaultErrorEncoder(context.Background(), jsonErr{}, rr)
+	DefaultEncodeError(context.Background(), jsonErr{}, rr)
 	resp := rr.Result()
 	defer resp.Body.Close()
 	body, _ := io.ReadAll(resp.Body)
@@ -91,9 +91,9 @@ func TestDefaultErrorEncoder_json(t *testing.T) {
 	}
 }
 
-func TestDefaultErrorEncoder_header(t *testing.T) {
+func TestDefaultEncodeError_header(t *testing.T) {
 	rr := httptest.NewRecorder()
-	DefaultErrorEncoder(context.Background(), headerErr{}, rr)
+	DefaultEncodeError(context.Background(), headerErr{}, rr)
 	resp := rr.Result()
 	defer resp.Body.Close()
 	if resp.Header.Get("X-Test") != "1" {
@@ -101,9 +101,9 @@ func TestDefaultErrorEncoder_header(t *testing.T) {
 	}
 }
 
-func TestDefaultErrorEncoder_status(t *testing.T) {
+func TestDefaultEncodeError_status(t *testing.T) {
 	rr := httptest.NewRecorder()
-	DefaultErrorEncoder(context.Background(), statusErr{}, rr)
+	DefaultEncodeError(context.Background(), statusErr{}, rr)
 	resp := rr.Result()
 	defer resp.Body.Close()
 	if resp.StatusCode != 418 {
@@ -111,16 +111,16 @@ func TestDefaultErrorEncoder_status(t *testing.T) {
 	}
 }
 
-func TestResponseEncoder(t *testing.T) {
+func TestEncodeResponse(t *testing.T) {
 	rr := httptest.NewRecorder()
 	msg := &httpbody.HttpBody{
 		ContentType: "application/test",
 		Data:        []byte("hello"),
 	}
 	opts := protojson.MarshalOptions{}
-	err := ResponseEncoder(context.Background(), rr, msg, opts)
+	err := EncodeResponse(context.Background(), rr, msg, opts)
 	if err != nil {
-		t.Fatalf("ResponseEncoder error: %v", err)
+		t.Fatalf("EncodeResponse error: %v", err)
 	}
 	resp := rr.Result()
 	defer resp.Body.Close()
@@ -132,15 +132,15 @@ func TestResponseEncoder(t *testing.T) {
 	}
 }
 
-func TestHttpBodyEncoder(t *testing.T) {
+func TestEncodeHttpBody(t *testing.T) {
 	rr := httptest.NewRecorder()
 	msg := &httpbody.HttpBody{
 		ContentType: "application/test",
 		Data:        []byte("hello"),
 	}
-	err := HttpBodyEncoder(context.Background(), rr, msg)
+	err := EncodeHttpBody(context.Background(), rr, msg)
 	if err != nil {
-		t.Fatalf("HttpBodyEncoder error: %v", err)
+		t.Fatalf("EncodeHttpBody error: %v", err)
 	}
 	resp := rr.Result()
 	defer resp.Body.Close()
@@ -156,7 +156,7 @@ func TestHttpBodyEncoder(t *testing.T) {
 	}
 }
 
-func TestHttpResponseEncoder(t *testing.T) {
+func TestEncodeHttpResponse(t *testing.T) {
 	rr := httptest.NewRecorder()
 	msg := &rpchttp.HttpResponse{
 		Status: 201,
@@ -166,9 +166,9 @@ func TestHttpResponseEncoder(t *testing.T) {
 			{Key: "X-Foo", Value: "baz"},
 		},
 	}
-	err := HttpResponseEncoder(context.Background(), rr, msg)
+	err := EncodeHttpResponse(context.Background(), rr, msg)
 	if err != nil {
-		t.Fatalf("HttpResponseEncoder error: %v", err)
+		t.Fatalf("EncodeHttpResponse error: %v", err)
 	}
 	resp := rr.Result()
 	defer resp.Body.Close()

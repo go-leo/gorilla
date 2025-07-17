@@ -20,7 +20,7 @@ type ErrorEncoder func(ctx context.Context, err error, w http.ResponseWriter)
 // before encoding. Can be used to modify or wrap responses.
 type ResponseTransformer func(ctx context.Context, resp proto.Message) proto.Message
 
-// DefaultResponseTransformer is the default response transformer that returns
+// DefaultTransformResponse is the default response transformer that returns
 // the response unchanged.
 //
 // Parameters:
@@ -31,11 +31,11 @@ type ResponseTransformer func(ctx context.Context, resp proto.Message) proto.Mes
 // Returns:
 //
 //	proto.Message - the same response unchanged
-func DefaultResponseTransformer(ctx context.Context, resp proto.Message) proto.Message {
+func DefaultTransformResponse(ctx context.Context, resp proto.Message) proto.Message {
 	return resp
 }
 
-// DefaultErrorEncoder encodes errors into HTTP responses with appropriate
+// DefaultEncodeError encodes errors into HTTP responses with appropriate
 // status codes and content type. Handles several error types:
 // - json.Marshaler: encodes error as JSON if implemented
 // - Headers() http.Header: adds headers to response if implemented
@@ -46,7 +46,7 @@ func DefaultResponseTransformer(ctx context.Context, resp proto.Message) proto.M
 //	ctx - context.Context for the request
 //	err - error to encode
 //	w - http.ResponseWriter to write the error response
-func DefaultErrorEncoder(ctx context.Context, err error, w http.ResponseWriter) {
+func DefaultEncodeError(ctx context.Context, err error, w http.ResponseWriter) {
 	// Default to plain text content type and error message as body
 	contentType, body := PlainContentType, []byte(err.Error())
 
@@ -83,7 +83,7 @@ func DefaultErrorEncoder(ctx context.Context, err error, w http.ResponseWriter) 
 	}
 }
 
-// ResponseEncoder encodes a protobuf message as JSON into an HTTP response.
+// EncodeResponse encodes a protobuf message as JSON into an HTTP response.
 // Sets Content-Type to application/json and status code to 200 OK.
 //
 // Parameters:
@@ -96,7 +96,7 @@ func DefaultErrorEncoder(ctx context.Context, err error, w http.ResponseWriter) 
 // Returns:
 //
 //	error - if encoding or writing fails
-func ResponseEncoder(ctx context.Context, w http.ResponseWriter, resp proto.Message, marshalOptions protojson.MarshalOptions) error {
+func EncodeResponse(ctx context.Context, w http.ResponseWriter, resp proto.Message, marshalOptions protojson.MarshalOptions) error {
 	// Set response headers for JSON content and HTTP 200 status
 	w.Header().Set(ContentTypeKey, JsonContentType)
 	w.WriteHeader(http.StatusOK)
@@ -115,7 +115,7 @@ func ResponseEncoder(ctx context.Context, w http.ResponseWriter, resp proto.Mess
 	return nil
 }
 
-// HttpBodyEncoder encodes an httpbody.HttpBody into an HTTP response.
+// EncodeHttpBody encodes an httpbody.HttpBody into an HTTP response.
 // Sets Content-Type from the HttpBody and status code to 200 OK.
 //
 // Parameters:
@@ -127,7 +127,7 @@ func ResponseEncoder(ctx context.Context, w http.ResponseWriter, resp proto.Mess
 // Returns:
 //
 //	error - if writing fails
-func HttpBodyEncoder(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
+func EncodeHttpBody(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
 	// Set response headers
 	w.Header().Set(ContentTypeKey, resp.GetContentType())
 	w.WriteHeader(http.StatusOK)
@@ -139,7 +139,7 @@ func HttpBodyEncoder(ctx context.Context, w http.ResponseWriter, resp *httpbody.
 	return nil
 }
 
-// HttpResponseEncoder encodes an rpchttp.HttpResponse into an HTTP response.
+// EncodeHttpResponse encodes an rpchttp.HttpResponse into an HTTP response.
 // Sets headers, status code and body from the HttpResponse.
 //
 // Parameters:
@@ -151,7 +151,7 @@ func HttpBodyEncoder(ctx context.Context, w http.ResponseWriter, resp *httpbody.
 // Returns:
 //
 //	error - if writing fails
-func HttpResponseEncoder(ctx context.Context, w http.ResponseWriter, resp *rpchttp.HttpResponse) error {
+func EncodeHttpResponse(ctx context.Context, w http.ResponseWriter, resp *rpchttp.HttpResponse) error {
 	// Set all headers from the RPC response
 	for _, header := range resp.GetHeaders() {
 		w.Header().Add(header.GetKey(), header.GetValue())
