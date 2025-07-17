@@ -27,52 +27,54 @@ func AppendBodyGorillaRoute(router *mux.Router, service BodyGorillaService, opts
 	handler := bodyGorillaHandler{
 		service: service,
 		decoder: bodyGorillaRequestDecoder{
-			unmarshalOptions: options.UnmarshalOptions(),
+			unmarshalOptions:        options.UnmarshalOptions(),
+			shouldFailFast:          options.ShouldFailFast(),
+			onValidationErrCallback: options.OnValidationErrCallback(),
 		},
-		encoder: bodyGorillaResponseEncoder{
+		encoder: bodyGorillaEncodeResponse{
 			marshalOptions:      options.MarshalOptions(),
 			unmarshalOptions:    options.UnmarshalOptions(),
 			responseTransformer: options.ResponseTransformer(),
 		},
-		errorEncoder: gorilla.DefaultErrorEncoder,
+		errorEncoder: gorilla.DefaultEncodeError,
 	}
 	router.NewRoute().
 		Name("/leo.gorilla.example.body.v1.Body/StarBody").
 		Methods("POST").
 		Path("/v1/star/body").
-		Handler(handler.StarBody())
+		Handler(gorilla.Chain(handler.StarBody(), options.Middlewares()...))
 	router.NewRoute().
 		Name("/leo.gorilla.example.body.v1.Body/NamedBody").
 		Methods("POST").
 		Path("/v1/named/body").
-		Handler(handler.NamedBody())
+		Handler(gorilla.Chain(handler.NamedBody(), options.Middlewares()...))
 	router.NewRoute().
 		Name("/leo.gorilla.example.body.v1.Body/NonBody").
 		Methods("GET").
 		Path("/v1/user_body").
-		Handler(handler.NonBody())
+		Handler(gorilla.Chain(handler.NonBody(), options.Middlewares()...))
 	router.NewRoute().
 		Name("/leo.gorilla.example.body.v1.Body/HttpBodyStarBody").
 		Methods("PUT").
 		Path("/v1/http/body/star/body").
-		Handler(handler.HttpBodyStarBody())
+		Handler(gorilla.Chain(handler.HttpBodyStarBody(), options.Middlewares()...))
 	router.NewRoute().
 		Name("/leo.gorilla.example.body.v1.Body/HttpBodyNamedBody").
 		Methods("PUT").
 		Path("/v1/http/body/named/body").
-		Handler(handler.HttpBodyNamedBody())
+		Handler(gorilla.Chain(handler.HttpBodyNamedBody(), options.Middlewares()...))
 	router.NewRoute().
 		Name("/leo.gorilla.example.body.v1.Body/HttpRequest").
 		Methods("PUT").
 		Path("/v1/http/request").
-		Handler(handler.HttpRequest())
+		Handler(gorilla.Chain(handler.HttpRequest(), options.Middlewares()...))
 	return router
 }
 
 type bodyGorillaHandler struct {
 	service      BodyGorillaService
 	decoder      bodyGorillaRequestDecoder
-	encoder      bodyGorillaResponseEncoder
+	encoder      bodyGorillaEncodeResponse
 	errorEncoder gorilla.ErrorEncoder
 }
 
@@ -197,76 +199,108 @@ func (h bodyGorillaHandler) HttpRequest() http1.Handler {
 }
 
 type bodyGorillaRequestDecoder struct {
-	unmarshalOptions protojson.UnmarshalOptions
+	unmarshalOptions        protojson.UnmarshalOptions
+	shouldFailFast          bool
+	onValidationErrCallback gorilla.OnValidationErrCallback
 }
 
 func (decoder bodyGorillaRequestDecoder) StarBody(ctx context.Context, r *http1.Request) (*BodyRequest, error) {
 	req := &BodyRequest{}
-	if err := gorilla.RequestDecoder(ctx, r, req, decoder.unmarshalOptions); err != nil {
+	if ok, err := gorilla.CustomDecodeRequest(ctx, r, req); ok && err != nil {
+		return nil, err
+	} else if ok && err == nil {
+		return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
+	}
+	if err := gorilla.DecodeRequest(ctx, r, req, decoder.unmarshalOptions); err != nil {
 		return nil, err
 	}
-	return req, nil
+	return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
 }
 func (decoder bodyGorillaRequestDecoder) NamedBody(ctx context.Context, r *http1.Request) (*NamedBodyRequest, error) {
 	req := &NamedBodyRequest{}
+	if ok, err := gorilla.CustomDecodeRequest(ctx, r, req); ok && err != nil {
+		return nil, err
+	} else if ok && err == nil {
+		return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
+	}
 	if req.Body == nil {
 		req.Body = &NamedBodyRequest_Body{}
 	}
-	if err := gorilla.RequestDecoder(ctx, r, req.Body, decoder.unmarshalOptions); err != nil {
+	if err := gorilla.DecodeRequest(ctx, r, req.Body, decoder.unmarshalOptions); err != nil {
 		return nil, err
 	}
-	return req, nil
+	return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
 }
 func (decoder bodyGorillaRequestDecoder) NonBody(ctx context.Context, r *http1.Request) (*emptypb.Empty, error) {
 	req := &emptypb.Empty{}
-	return req, nil
+	if ok, err := gorilla.CustomDecodeRequest(ctx, r, req); ok && err != nil {
+		return nil, err
+	} else if ok && err == nil {
+		return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
+	}
+	return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
 }
 func (decoder bodyGorillaRequestDecoder) HttpBodyStarBody(ctx context.Context, r *http1.Request) (*httpbody.HttpBody, error) {
 	req := &httpbody.HttpBody{}
-	if err := gorilla.HttpBodyDecoder(ctx, r, req); err != nil {
+	if ok, err := gorilla.CustomDecodeRequest(ctx, r, req); ok && err != nil {
+		return nil, err
+	} else if ok && err == nil {
+		return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
+	}
+	if err := gorilla.DecodeHttpBody(ctx, r, req); err != nil {
 		return nil, err
 	}
-	return req, nil
+	return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
 }
 func (decoder bodyGorillaRequestDecoder) HttpBodyNamedBody(ctx context.Context, r *http1.Request) (*HttpBodyRequest, error) {
 	req := &HttpBodyRequest{}
+	if ok, err := gorilla.CustomDecodeRequest(ctx, r, req); ok && err != nil {
+		return nil, err
+	} else if ok && err == nil {
+		return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
+	}
 	if req.Body == nil {
 		req.Body = &httpbody.HttpBody{}
 	}
-	if err := gorilla.HttpBodyDecoder(ctx, r, req.Body); err != nil {
+	if err := gorilla.DecodeHttpBody(ctx, r, req.Body); err != nil {
 		return nil, err
 	}
-	return req, nil
+	return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
 }
 func (decoder bodyGorillaRequestDecoder) HttpRequest(ctx context.Context, r *http1.Request) (*http.HttpRequest, error) {
 	req := &http.HttpRequest{}
-	if err := gorilla.HttpRequestDecoder(ctx, r, req); err != nil {
+	if ok, err := gorilla.CustomDecodeRequest(ctx, r, req); ok && err != nil {
+		return nil, err
+	} else if ok && err == nil {
+		return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
+	}
+	if err := gorilla.DecodeHttpRequest(ctx, r, req); err != nil {
 		return nil, err
 	}
-	return req, nil
+	return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
 }
 
-type bodyGorillaResponseEncoder struct {
+type bodyGorillaEncodeResponse struct {
 	marshalOptions      protojson.MarshalOptions
 	unmarshalOptions    protojson.UnmarshalOptions
 	responseTransformer gorilla.ResponseTransformer
 }
 
-func (encoder bodyGorillaResponseEncoder) StarBody(ctx context.Context, w http1.ResponseWriter, resp *Response) error {
-	return gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
+func (encoder bodyGorillaEncodeResponse) StarBody(ctx context.Context, w http1.ResponseWriter, resp *Response) error {
+	return gorilla.EncodeResponse(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
-func (encoder bodyGorillaResponseEncoder) NamedBody(ctx context.Context, w http1.ResponseWriter, resp *Response) error {
-	return gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
+func (encoder bodyGorillaEncodeResponse) NamedBody(ctx context.Context, w http1.ResponseWriter, resp *Response) error {
+	return gorilla.EncodeResponse(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
-func (encoder bodyGorillaResponseEncoder) NonBody(ctx context.Context, w http1.ResponseWriter, resp *Response) error {
-	return gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
+func (encoder bodyGorillaEncodeResponse) NonBody(ctx context.Context, w http1.ResponseWriter, resp *Response) error {
+	return gorilla.EncodeResponse(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
-func (encoder bodyGorillaResponseEncoder) HttpBodyStarBody(ctx context.Context, w http1.ResponseWriter, resp *Response) error {
-	return gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
+func (encoder bodyGorillaEncodeResponse) HttpBodyStarBody(ctx context.Context, w http1.ResponseWriter, resp *Response) error {
+	return gorilla.EncodeResponse(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
-func (encoder bodyGorillaResponseEncoder) HttpBodyNamedBody(ctx context.Context, w http1.ResponseWriter, resp *Response) error {
-	return gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
+func (encoder bodyGorillaEncodeResponse) HttpBodyNamedBody(ctx context.Context, w http1.ResponseWriter, resp *Response) error {
+	return gorilla.EncodeResponse(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
-func (encoder bodyGorillaResponseEncoder) HttpRequest(ctx context.Context, w http1.ResponseWriter, resp *Response) error {
-	return gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
+func (encoder bodyGorillaEncodeResponse) HttpRequest(ctx context.Context, w http1.ResponseWriter, resp *Response) error {
+	return gorilla.EncodeResponse(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }

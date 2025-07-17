@@ -66,7 +66,7 @@ func TestOptions_Apply(t *testing.T) {
 	o := &options{}
 	opt1 := WithUnmarshalOptions(protojson.UnmarshalOptions{DiscardUnknown: true})
 	opt2 := WithMarshalOptions(protojson.MarshalOptions{UseProtoNames: true})
-	o.Apply(opt1, opt2)
+	o.apply(opt1, opt2)
 
 	if !o.unmarshalOptions.DiscardUnknown {
 		t.Errorf("Apply did not set UnmarshalOptions.DiscardUnknown")

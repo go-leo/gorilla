@@ -7,14 +7,14 @@ import (
 	gorilla "github.com/go-leo/gorilla"
 	mux "github.com/gorilla/mux"
 	protojson "google.golang.org/protobuf/encoding/protojson"
-	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	http "net/http"
 )
 
 type UserGorillaService interface {
 	CreateUser(ctx context.Context, request *CreateUserRequest) (*CreateUserResponse, error)
-	DeleteUser(ctx context.Context, request *DeleteUserRequest) (*emptypb.Empty, error)
-	ModifyUser(ctx context.Context, request *ModifyUserRequest) (*emptypb.Empty, error)
+	DeleteUser(ctx context.Context, request *DeleteUserRequest) (*DeleteUserResponse, error)
+	ModifyUser(ctx context.Context, request *ModifyUserRequest) (*ModifyUserResponse, error)
+	UpdateUser(ctx context.Context, request *UpdateUserRequest) (*UpdateUserResponse, error)
 	GetUser(ctx context.Context, request *GetUserRequest) (*GetUserResponse, error)
 	ListUser(ctx context.Context, request *ListUserRequest) (*ListUserResponse, error)
 }
@@ -24,47 +24,54 @@ func AppendUserGorillaRoute(router *mux.Router, service UserGorillaService, opts
 	handler := userGorillaHandler{
 		service: service,
 		decoder: userGorillaRequestDecoder{
-			unmarshalOptions: options.UnmarshalOptions(),
+			unmarshalOptions:        options.UnmarshalOptions(),
+			shouldFailFast:          options.ShouldFailFast(),
+			onValidationErrCallback: options.OnValidationErrCallback(),
 		},
-		encoder: userGorillaResponseEncoder{
+		encoder: userGorillaEncodeResponse{
 			marshalOptions:      options.MarshalOptions(),
 			unmarshalOptions:    options.UnmarshalOptions(),
 			responseTransformer: options.ResponseTransformer(),
 		},
-		errorEncoder: gorilla.DefaultErrorEncoder,
+		errorEncoder: gorilla.DefaultEncodeError,
 	}
 	router.NewRoute().
 		Name("/leo.gorilla.example.user.v1.User/CreateUser").
 		Methods("POST").
 		Path("/v1/user").
-		Handler(handler.CreateUser())
+		Handler(gorilla.Chain(handler.CreateUser(), options.Middlewares()...))
 	router.NewRoute().
 		Name("/leo.gorilla.example.user.v1.User/DeleteUser").
 		Methods("DELETE").
 		Path("/v1/user/{id}").
-		Handler(handler.DeleteUser())
+		Handler(gorilla.Chain(handler.DeleteUser(), options.Middlewares()...))
 	router.NewRoute().
 		Name("/leo.gorilla.example.user.v1.User/ModifyUser").
 		Methods("PUT").
 		Path("/v1/user/{id}").
-		Handler(handler.ModifyUser())
+		Handler(gorilla.Chain(handler.ModifyUser(), options.Middlewares()...))
+	router.NewRoute().
+		Name("/leo.gorilla.example.user.v1.User/UpdateUser").
+		Methods("PATCH").
+		Path("/v1/user/{id}").
+		Handler(gorilla.Chain(handler.UpdateUser(), options.Middlewares()...))
 	router.NewRoute().
 		Name("/leo.gorilla.example.user.v1.User/GetUser").
 		Methods("GET").
 		Path("/v1/user/{id}").
-		Handler(handler.GetUser())
+		Handler(gorilla.Chain(handler.GetUser(), options.Middlewares()...))
 	router.NewRoute().
 		Name("/leo.gorilla.example.user.v1.User/ListUser").
 		Methods("GET").
 		Path("/v1/users").
-		Handler(handler.ListUser())
+		Handler(gorilla.Chain(handler.ListUser(), options.Middlewares()...))
 	return router
 }
 
 type userGorillaHandler struct {
 	service      UserGorillaService
 	decoder      userGorillaRequestDecoder
-	encoder      userGorillaResponseEncoder
+	encoder      userGorillaEncodeResponse
 	errorEncoder gorilla.ErrorEncoder
 }
 
@@ -128,6 +135,26 @@ func (h userGorillaHandler) ModifyUser() http.Handler {
 	})
 }
 
+func (h userGorillaHandler) UpdateUser() http.Handler {
+	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		ctx := request.Context()
+		in, err := h.decoder.UpdateUser(ctx, request)
+		if err != nil {
+			h.errorEncoder(ctx, err, writer)
+			return
+		}
+		out, err := h.service.UpdateUser(ctx, in)
+		if err != nil {
+			h.errorEncoder(ctx, err, writer)
+			return
+		}
+		if err := h.encoder.UpdateUser(ctx, writer, out); err != nil {
+			h.errorEncoder(ctx, err, writer)
+			return
+		}
+	})
+}
+
 func (h userGorillaHandler) GetUser() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
@@ -169,79 +196,134 @@ func (h userGorillaHandler) ListUser() http.Handler {
 }
 
 type userGorillaRequestDecoder struct {
-	unmarshalOptions protojson.UnmarshalOptions
+	unmarshalOptions        protojson.UnmarshalOptions
+	shouldFailFast          bool
+	onValidationErrCallback gorilla.OnValidationErrCallback
 }
 
 func (decoder userGorillaRequestDecoder) CreateUser(ctx context.Context, r *http.Request) (*CreateUserRequest, error) {
 	req := &CreateUserRequest{}
-	if err := gorilla.RequestDecoder(ctx, r, req, decoder.unmarshalOptions); err != nil {
+	if ok, err := gorilla.CustomDecodeRequest(ctx, r, req); ok && err != nil {
+		return nil, err
+	} else if ok && err == nil {
+		return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
+	}
+	if err := gorilla.DecodeRequest(ctx, r, req, decoder.unmarshalOptions); err != nil {
 		return nil, err
 	}
-	return req, nil
+	return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
 }
 func (decoder userGorillaRequestDecoder) DeleteUser(ctx context.Context, r *http.Request) (*DeleteUserRequest, error) {
 	req := &DeleteUserRequest{}
+	if ok, err := gorilla.CustomDecodeRequest(ctx, r, req); ok && err != nil {
+		return nil, err
+	} else if ok && err == nil {
+		return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
+	}
 	vars := gorilla.FormFromMap(mux.Vars(r))
 	var varErr error
-	req.Id, varErr = gorilla.FormDecoder[int64](varErr, vars, "id", gorilla.GetInt64)
+	req.Id, varErr = gorilla.DecodeForm[int64](varErr, vars, "id", gorilla.GetInt64)
+	req.Id, varErr = gorilla.DecodeForm[int64](varErr, vars, "id", gorilla.GetInt64)
 	if varErr != nil {
 		return nil, varErr
 	}
-	return req, nil
+	return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
 }
 func (decoder userGorillaRequestDecoder) ModifyUser(ctx context.Context, r *http.Request) (*ModifyUserRequest, error) {
 	req := &ModifyUserRequest{}
-	if err := gorilla.RequestDecoder(ctx, r, req, decoder.unmarshalOptions); err != nil {
+	if ok, err := gorilla.CustomDecodeRequest(ctx, r, req); ok && err != nil {
+		return nil, err
+	} else if ok && err == nil {
+		return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
+	}
+	if err := gorilla.DecodeRequest(ctx, r, req, decoder.unmarshalOptions); err != nil {
 		return nil, err
 	}
 	vars := gorilla.FormFromMap(mux.Vars(r))
 	var varErr error
-	req.Id, varErr = gorilla.FormDecoder[int64](varErr, vars, "id", gorilla.GetInt64)
+	req.Id, varErr = gorilla.DecodeForm[int64](varErr, vars, "id", gorilla.GetInt64)
+	req.Id, varErr = gorilla.DecodeForm[int64](varErr, vars, "id", gorilla.GetInt64)
 	if varErr != nil {
 		return nil, varErr
 	}
-	return req, nil
+	return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
+}
+func (decoder userGorillaRequestDecoder) UpdateUser(ctx context.Context, r *http.Request) (*UpdateUserRequest, error) {
+	req := &UpdateUserRequest{}
+	if ok, err := gorilla.CustomDecodeRequest(ctx, r, req); ok && err != nil {
+		return nil, err
+	} else if ok && err == nil {
+		return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
+	}
+	if req.Item == nil {
+		req.Item = &UserItem{}
+	}
+	if err := gorilla.DecodeRequest(ctx, r, req.Item, decoder.unmarshalOptions); err != nil {
+		return nil, err
+	}
+	vars := gorilla.FormFromMap(mux.Vars(r))
+	var varErr error
+	req.Id, varErr = gorilla.DecodeForm[int64](varErr, vars, "id", gorilla.GetInt64)
+	req.Id, varErr = gorilla.DecodeForm[int64](varErr, vars, "id", gorilla.GetInt64)
+	if varErr != nil {
+		return nil, varErr
+	}
+	return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
 }
 func (decoder userGorillaRequestDecoder) GetUser(ctx context.Context, r *http.Request) (*GetUserRequest, error) {
 	req := &GetUserRequest{}
+	if ok, err := gorilla.CustomDecodeRequest(ctx, r, req); ok && err != nil {
+		return nil, err
+	} else if ok && err == nil {
+		return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
+	}
 	vars := gorilla.FormFromMap(mux.Vars(r))
 	var varErr error
-	req.Id, varErr = gorilla.FormDecoder[int64](varErr, vars, "id", gorilla.GetInt64)
+	req.Id, varErr = gorilla.DecodeForm[int64](varErr, vars, "id", gorilla.GetInt64)
+	req.Id, varErr = gorilla.DecodeForm[int64](varErr, vars, "id", gorilla.GetInt64)
 	if varErr != nil {
 		return nil, varErr
 	}
-	return req, nil
+	return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
 }
 func (decoder userGorillaRequestDecoder) ListUser(ctx context.Context, r *http.Request) (*ListUserRequest, error) {
 	req := &ListUserRequest{}
+	if ok, err := gorilla.CustomDecodeRequest(ctx, r, req); ok && err != nil {
+		return nil, err
+	} else if ok && err == nil {
+		return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
+	}
 	queries := r.URL.Query()
 	var queryErr error
-	req.PageNum, queryErr = gorilla.FormDecoder[int64](queryErr, queries, "page_num", gorilla.GetInt64)
-	req.PageSize, queryErr = gorilla.FormDecoder[int64](queryErr, queries, "page_size", gorilla.GetInt64)
+	req.PageNum, queryErr = gorilla.DecodeForm[int64](queryErr, queries, "page_num", gorilla.GetInt64)
+	req.PageSize, queryErr = gorilla.DecodeForm[int64](queryErr, queries, "page_size", gorilla.GetInt64)
 	if queryErr != nil {
 		return nil, queryErr
 	}
-	return req, nil
+	return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
 }
 
-type userGorillaResponseEncoder struct {
+type userGorillaEncodeResponse struct {
 	marshalOptions      protojson.MarshalOptions
 	unmarshalOptions    protojson.UnmarshalOptions
 	responseTransformer gorilla.ResponseTransformer
 }
 
-func (encoder userGorillaResponseEncoder) CreateUser(ctx context.Context, w http.ResponseWriter, resp *CreateUserResponse) error {
-	return gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
+func (encoder userGorillaEncodeResponse) CreateUser(ctx context.Context, w http.ResponseWriter, resp *CreateUserResponse) error {
+	return gorilla.EncodeResponse(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
-func (encoder userGorillaResponseEncoder) DeleteUser(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
+func (encoder userGorillaEncodeResponse) DeleteUser(ctx context.Context, w http.ResponseWriter, resp *DeleteUserResponse) error {
+	return gorilla.EncodeResponse(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
-func (encoder userGorillaResponseEncoder) ModifyUser(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
+func (encoder userGorillaEncodeResponse) ModifyUser(ctx context.Context, w http.ResponseWriter, resp *ModifyUserResponse) error {
+	return gorilla.EncodeResponse(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
-func (encoder userGorillaResponseEncoder) GetUser(ctx context.Context, w http.ResponseWriter, resp *GetUserResponse) error {
-	return gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
+func (encoder userGorillaEncodeResponse) UpdateUser(ctx context.Context, w http.ResponseWriter, resp *UpdateUserResponse) error {
+	return gorilla.EncodeResponse(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
-func (encoder userGorillaResponseEncoder) ListUser(ctx context.Context, w http.ResponseWriter, resp *ListUserResponse) error {
-	return gorilla.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
+func (encoder userGorillaEncodeResponse) GetUser(ctx context.Context, w http.ResponseWriter, resp *GetUserResponse) error {
+	return gorilla.EncodeResponse(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
+}
+func (encoder userGorillaEncodeResponse) ListUser(ctx context.Context, w http.ResponseWriter, resp *ListUserResponse) error {
+	return gorilla.EncodeResponse(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }

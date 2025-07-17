@@ -22,27 +22,29 @@ func AppendBoolPathGorillaRoute(router *mux.Router, service BoolPathGorillaServi
 	handler := boolPathGorillaHandler{
 		service: service,
 		decoder: boolPathGorillaRequestDecoder{
-			unmarshalOptions: options.UnmarshalOptions(),
+			unmarshalOptions:        options.UnmarshalOptions(),
+			shouldFailFast:          options.ShouldFailFast(),
+			onValidationErrCallback: options.OnValidationErrCallback(),
 		},
-		encoder: boolPathGorillaResponseEncoder{
+		encoder: boolPathGorillaEncodeResponse{
 			marshalOptions:      options.MarshalOptions(),
 			unmarshalOptions:    options.UnmarshalOptions(),
 			responseTransformer: options.ResponseTransformer(),
 		},
-		errorEncoder: gorilla.DefaultErrorEncoder,
+		errorEncoder: gorilla.DefaultEncodeError,
 	}
 	router.NewRoute().
 		Name("/leo.gorilla.example.path.v1.BoolPath/BoolPath").
 		Methods("GET").
 		Path("/v1/{bool}/{opt_bool}/{wrap_bool}").
-		Handler(handler.BoolPath())
+		Handler(gorilla.Chain(handler.BoolPath(), options.Middlewares()...))
 	return router
 }
 
 type boolPathGorillaHandler struct {
 	service      BoolPathGorillaService
 	decoder      boolPathGorillaRequestDecoder
-	encoder      boolPathGorillaResponseEncoder
+	encoder      boolPathGorillaEncodeResponse
 	errorEncoder gorilla.ErrorEncoder
 }
 
@@ -67,30 +69,40 @@ func (h boolPathGorillaHandler) BoolPath() http.Handler {
 }
 
 type boolPathGorillaRequestDecoder struct {
-	unmarshalOptions protojson.UnmarshalOptions
+	unmarshalOptions        protojson.UnmarshalOptions
+	shouldFailFast          bool
+	onValidationErrCallback gorilla.OnValidationErrCallback
 }
 
 func (decoder boolPathGorillaRequestDecoder) BoolPath(ctx context.Context, r *http.Request) (*BoolPathRequest, error) {
 	req := &BoolPathRequest{}
+	if ok, err := gorilla.CustomDecodeRequest(ctx, r, req); ok && err != nil {
+		return nil, err
+	} else if ok && err == nil {
+		return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
+	}
 	vars := gorilla.FormFromMap(mux.Vars(r))
 	var varErr error
-	req.Bool, varErr = gorilla.FormDecoder[bool](varErr, vars, "bool", gorilla.GetBool)
-	req.OptBool, varErr = gorilla.FormDecoder[*bool](varErr, vars, "opt_bool", gorilla.GetBoolPtr)
-	req.WrapBool, varErr = gorilla.FormDecoder[*wrapperspb.BoolValue](varErr, vars, "wrap_bool", gorilla.GetBoolValue)
+	req.Bool, varErr = gorilla.DecodeForm[bool](varErr, vars, "bool", gorilla.GetBool)
+	req.OptBool, varErr = gorilla.DecodeForm[*bool](varErr, vars, "opt_bool", gorilla.GetBoolPtr)
+	req.WrapBool, varErr = gorilla.DecodeForm[*wrapperspb.BoolValue](varErr, vars, "wrap_bool", gorilla.GetBoolValue)
+	req.Bool, varErr = gorilla.DecodeForm[bool](varErr, vars, "bool", gorilla.GetBool)
+	req.OptBool, varErr = gorilla.DecodeForm[*bool](varErr, vars, "opt_bool", gorilla.GetBoolPtr)
+	req.WrapBool, varErr = gorilla.DecodeForm[*wrapperspb.BoolValue](varErr, vars, "wrap_bool", gorilla.GetBoolValue)
 	if varErr != nil {
 		return nil, varErr
 	}
-	return req, nil
+	return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
 }
 
-type boolPathGorillaResponseEncoder struct {
+type boolPathGorillaEncodeResponse struct {
 	marshalOptions      protojson.MarshalOptions
 	unmarshalOptions    protojson.UnmarshalOptions
 	responseTransformer gorilla.ResponseTransformer
 }
 
-func (encoder boolPathGorillaResponseEncoder) BoolPath(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
-	return gorilla.HttpBodyEncoder(ctx, w, resp)
+func (encoder boolPathGorillaEncodeResponse) BoolPath(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
+	return gorilla.EncodeHttpBody(ctx, w, resp)
 }
 
 type Int32PathGorillaService interface {
@@ -102,27 +114,29 @@ func AppendInt32PathGorillaRoute(router *mux.Router, service Int32PathGorillaSer
 	handler := int32PathGorillaHandler{
 		service: service,
 		decoder: int32PathGorillaRequestDecoder{
-			unmarshalOptions: options.UnmarshalOptions(),
+			unmarshalOptions:        options.UnmarshalOptions(),
+			shouldFailFast:          options.ShouldFailFast(),
+			onValidationErrCallback: options.OnValidationErrCallback(),
 		},
-		encoder: int32PathGorillaResponseEncoder{
+		encoder: int32PathGorillaEncodeResponse{
 			marshalOptions:      options.MarshalOptions(),
 			unmarshalOptions:    options.UnmarshalOptions(),
 			responseTransformer: options.ResponseTransformer(),
 		},
-		errorEncoder: gorilla.DefaultErrorEncoder,
+		errorEncoder: gorilla.DefaultEncodeError,
 	}
 	router.NewRoute().
 		Name("/leo.gorilla.example.path.v1.Int32Path/Int32Path").
 		Methods("GET").
 		Path("/v1/{int32}/{sint32}/{sfixed32}/{opt_int32}/{opt_sint32}/{opt_sfixed32}/{wrap_int32}").
-		Handler(handler.Int32Path())
+		Handler(gorilla.Chain(handler.Int32Path(), options.Middlewares()...))
 	return router
 }
 
 type int32PathGorillaHandler struct {
 	service      Int32PathGorillaService
 	decoder      int32PathGorillaRequestDecoder
-	encoder      int32PathGorillaResponseEncoder
+	encoder      int32PathGorillaEncodeResponse
 	errorEncoder gorilla.ErrorEncoder
 }
 
@@ -147,34 +161,48 @@ func (h int32PathGorillaHandler) Int32Path() http.Handler {
 }
 
 type int32PathGorillaRequestDecoder struct {
-	unmarshalOptions protojson.UnmarshalOptions
+	unmarshalOptions        protojson.UnmarshalOptions
+	shouldFailFast          bool
+	onValidationErrCallback gorilla.OnValidationErrCallback
 }
 
 func (decoder int32PathGorillaRequestDecoder) Int32Path(ctx context.Context, r *http.Request) (*Int32PathRequest, error) {
 	req := &Int32PathRequest{}
+	if ok, err := gorilla.CustomDecodeRequest(ctx, r, req); ok && err != nil {
+		return nil, err
+	} else if ok && err == nil {
+		return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
+	}
 	vars := gorilla.FormFromMap(mux.Vars(r))
 	var varErr error
-	req.Int32, varErr = gorilla.FormDecoder[int32](varErr, vars, "int32", gorilla.GetInt32)
-	req.Sint32, varErr = gorilla.FormDecoder[int32](varErr, vars, "sint32", gorilla.GetInt32)
-	req.Sfixed32, varErr = gorilla.FormDecoder[int32](varErr, vars, "sfixed32", gorilla.GetInt32)
-	req.OptInt32, varErr = gorilla.FormDecoder[*int32](varErr, vars, "opt_int32", gorilla.GetInt32Ptr)
-	req.OptSint32, varErr = gorilla.FormDecoder[*int32](varErr, vars, "opt_sint32", gorilla.GetInt32Ptr)
-	req.OptSfixed32, varErr = gorilla.FormDecoder[*int32](varErr, vars, "opt_sfixed32", gorilla.GetInt32Ptr)
-	req.WrapInt32, varErr = gorilla.FormDecoder[*wrapperspb.Int32Value](varErr, vars, "wrap_int32", gorilla.GetInt32Value)
+	req.Int32, varErr = gorilla.DecodeForm[int32](varErr, vars, "int32", gorilla.GetInt32)
+	req.Sint32, varErr = gorilla.DecodeForm[int32](varErr, vars, "sint32", gorilla.GetInt32)
+	req.Sfixed32, varErr = gorilla.DecodeForm[int32](varErr, vars, "sfixed32", gorilla.GetInt32)
+	req.OptInt32, varErr = gorilla.DecodeForm[*int32](varErr, vars, "opt_int32", gorilla.GetInt32Ptr)
+	req.OptSint32, varErr = gorilla.DecodeForm[*int32](varErr, vars, "opt_sint32", gorilla.GetInt32Ptr)
+	req.OptSfixed32, varErr = gorilla.DecodeForm[*int32](varErr, vars, "opt_sfixed32", gorilla.GetInt32Ptr)
+	req.WrapInt32, varErr = gorilla.DecodeForm[*wrapperspb.Int32Value](varErr, vars, "wrap_int32", gorilla.GetInt32Value)
+	req.Int32, varErr = gorilla.DecodeForm[int32](varErr, vars, "int32", gorilla.GetInt32)
+	req.Sint32, varErr = gorilla.DecodeForm[int32](varErr, vars, "sint32", gorilla.GetInt32)
+	req.Sfixed32, varErr = gorilla.DecodeForm[int32](varErr, vars, "sfixed32", gorilla.GetInt32)
+	req.OptInt32, varErr = gorilla.DecodeForm[*int32](varErr, vars, "opt_int32", gorilla.GetInt32Ptr)
+	req.OptSint32, varErr = gorilla.DecodeForm[*int32](varErr, vars, "opt_sint32", gorilla.GetInt32Ptr)
+	req.OptSfixed32, varErr = gorilla.DecodeForm[*int32](varErr, vars, "opt_sfixed32", gorilla.GetInt32Ptr)
+	req.WrapInt32, varErr = gorilla.DecodeForm[*wrapperspb.Int32Value](varErr, vars, "wrap_int32", gorilla.GetInt32Value)
 	if varErr != nil {
 		return nil, varErr
 	}
-	return req, nil
+	return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
 }
 
-type int32PathGorillaResponseEncoder struct {
+type int32PathGorillaEncodeResponse struct {
 	marshalOptions      protojson.MarshalOptions
 	unmarshalOptions    protojson.UnmarshalOptions
 	responseTransformer gorilla.ResponseTransformer
 }
 
-func (encoder int32PathGorillaResponseEncoder) Int32Path(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
-	return gorilla.HttpBodyEncoder(ctx, w, resp)
+func (encoder int32PathGorillaEncodeResponse) Int32Path(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
+	return gorilla.EncodeHttpBody(ctx, w, resp)
 }
 
 type Int64PathGorillaService interface {
@@ -186,27 +214,29 @@ func AppendInt64PathGorillaRoute(router *mux.Router, service Int64PathGorillaSer
 	handler := int64PathGorillaHandler{
 		service: service,
 		decoder: int64PathGorillaRequestDecoder{
-			unmarshalOptions: options.UnmarshalOptions(),
+			unmarshalOptions:        options.UnmarshalOptions(),
+			shouldFailFast:          options.ShouldFailFast(),
+			onValidationErrCallback: options.OnValidationErrCallback(),
 		},
-		encoder: int64PathGorillaResponseEncoder{
+		encoder: int64PathGorillaEncodeResponse{
 			marshalOptions:      options.MarshalOptions(),
 			unmarshalOptions:    options.UnmarshalOptions(),
 			responseTransformer: options.ResponseTransformer(),
 		},
-		errorEncoder: gorilla.DefaultErrorEncoder,
+		errorEncoder: gorilla.DefaultEncodeError,
 	}
 	router.NewRoute().
 		Name("/leo.gorilla.example.path.v1.Int64Path/Int64Path").
 		Methods("GET").
 		Path("/v1/{int64}/{sint64}/{sfixed64}/{opt_int64}/{opt_sint64}/{opt_sfixed64}/{wrap_int64}").
-		Handler(handler.Int64Path())
+		Handler(gorilla.Chain(handler.Int64Path(), options.Middlewares()...))
 	return router
 }
 
 type int64PathGorillaHandler struct {
 	service      Int64PathGorillaService
 	decoder      int64PathGorillaRequestDecoder
-	encoder      int64PathGorillaResponseEncoder
+	encoder      int64PathGorillaEncodeResponse
 	errorEncoder gorilla.ErrorEncoder
 }
 
@@ -231,34 +261,48 @@ func (h int64PathGorillaHandler) Int64Path() http.Handler {
 }
 
 type int64PathGorillaRequestDecoder struct {
-	unmarshalOptions protojson.UnmarshalOptions
+	unmarshalOptions        protojson.UnmarshalOptions
+	shouldFailFast          bool
+	onValidationErrCallback gorilla.OnValidationErrCallback
 }
 
 func (decoder int64PathGorillaRequestDecoder) Int64Path(ctx context.Context, r *http.Request) (*Int64PathRequest, error) {
 	req := &Int64PathRequest{}
+	if ok, err := gorilla.CustomDecodeRequest(ctx, r, req); ok && err != nil {
+		return nil, err
+	} else if ok && err == nil {
+		return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
+	}
 	vars := gorilla.FormFromMap(mux.Vars(r))
 	var varErr error
-	req.Int64, varErr = gorilla.FormDecoder[int64](varErr, vars, "int64", gorilla.GetInt64)
-	req.Sint64, varErr = gorilla.FormDecoder[int64](varErr, vars, "sint64", gorilla.GetInt64)
-	req.Sfixed64, varErr = gorilla.FormDecoder[int64](varErr, vars, "sfixed64", gorilla.GetInt64)
-	req.OptInt64, varErr = gorilla.FormDecoder[*int64](varErr, vars, "opt_int64", gorilla.GetInt64Ptr)
-	req.OptSint64, varErr = gorilla.FormDecoder[*int64](varErr, vars, "opt_sint64", gorilla.GetInt64Ptr)
-	req.OptSfixed64, varErr = gorilla.FormDecoder[*int64](varErr, vars, "opt_sfixed64", gorilla.GetInt64Ptr)
-	req.WrapInt64, varErr = gorilla.FormDecoder[*wrapperspb.Int64Value](varErr, vars, "wrap_int64", gorilla.GetInt64Value)
+	req.Int64, varErr = gorilla.DecodeForm[int64](varErr, vars, "int64", gorilla.GetInt64)
+	req.Sint64, varErr = gorilla.DecodeForm[int64](varErr, vars, "sint64", gorilla.GetInt64)
+	req.Sfixed64, varErr = gorilla.DecodeForm[int64](varErr, vars, "sfixed64", gorilla.GetInt64)
+	req.OptInt64, varErr = gorilla.DecodeForm[*int64](varErr, vars, "opt_int64", gorilla.GetInt64Ptr)
+	req.OptSint64, varErr = gorilla.DecodeForm[*int64](varErr, vars, "opt_sint64", gorilla.GetInt64Ptr)
+	req.OptSfixed64, varErr = gorilla.DecodeForm[*int64](varErr, vars, "opt_sfixed64", gorilla.GetInt64Ptr)
+	req.WrapInt64, varErr = gorilla.DecodeForm[*wrapperspb.Int64Value](varErr, vars, "wrap_int64", gorilla.GetInt64Value)
+	req.Int64, varErr = gorilla.DecodeForm[int64](varErr, vars, "int64", gorilla.GetInt64)
+	req.Sint64, varErr = gorilla.DecodeForm[int64](varErr, vars, "sint64", gorilla.GetInt64)
+	req.Sfixed64, varErr = gorilla.DecodeForm[int64](varErr, vars, "sfixed64", gorilla.GetInt64)
+	req.OptInt64, varErr = gorilla.DecodeForm[*int64](varErr, vars, "opt_int64", gorilla.GetInt64Ptr)
+	req.OptSint64, varErr = gorilla.DecodeForm[*int64](varErr, vars, "opt_sint64", gorilla.GetInt64Ptr)
+	req.OptSfixed64, varErr = gorilla.DecodeForm[*int64](varErr, vars, "opt_sfixed64", gorilla.GetInt64Ptr)
+	req.WrapInt64, varErr = gorilla.DecodeForm[*wrapperspb.Int64Value](varErr, vars, "wrap_int64", gorilla.GetInt64Value)
 	if varErr != nil {
 		return nil, varErr
 	}
-	return req, nil
+	return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
 }
 
-type int64PathGorillaResponseEncoder struct {
+type int64PathGorillaEncodeResponse struct {
 	marshalOptions      protojson.MarshalOptions
 	unmarshalOptions    protojson.UnmarshalOptions
 	responseTransformer gorilla.ResponseTransformer
 }
 
-func (encoder int64PathGorillaResponseEncoder) Int64Path(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
-	return gorilla.HttpBodyEncoder(ctx, w, resp)
+func (encoder int64PathGorillaEncodeResponse) Int64Path(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
+	return gorilla.EncodeHttpBody(ctx, w, resp)
 }
 
 type Uint32PathGorillaService interface {
@@ -270,27 +314,29 @@ func AppendUint32PathGorillaRoute(router *mux.Router, service Uint32PathGorillaS
 	handler := uint32PathGorillaHandler{
 		service: service,
 		decoder: uint32PathGorillaRequestDecoder{
-			unmarshalOptions: options.UnmarshalOptions(),
+			unmarshalOptions:        options.UnmarshalOptions(),
+			shouldFailFast:          options.ShouldFailFast(),
+			onValidationErrCallback: options.OnValidationErrCallback(),
 		},
-		encoder: uint32PathGorillaResponseEncoder{
+		encoder: uint32PathGorillaEncodeResponse{
 			marshalOptions:      options.MarshalOptions(),
 			unmarshalOptions:    options.UnmarshalOptions(),
 			responseTransformer: options.ResponseTransformer(),
 		},
-		errorEncoder: gorilla.DefaultErrorEncoder,
+		errorEncoder: gorilla.DefaultEncodeError,
 	}
 	router.NewRoute().
 		Name("/leo.gorilla.example.path.v1.Uint32Path/Uint32Path").
 		Methods("GET").
 		Path("/v1/{uint32}/{fixed32}/{opt_uint32}/{opt_fixed32}/{wrap_uint32}").
-		Handler(handler.Uint32Path())
+		Handler(gorilla.Chain(handler.Uint32Path(), options.Middlewares()...))
 	return router
 }
 
 type uint32PathGorillaHandler struct {
 	service      Uint32PathGorillaService
 	decoder      uint32PathGorillaRequestDecoder
-	encoder      uint32PathGorillaResponseEncoder
+	encoder      uint32PathGorillaEncodeResponse
 	errorEncoder gorilla.ErrorEncoder
 }
 
@@ -315,32 +361,44 @@ func (h uint32PathGorillaHandler) Uint32Path() http.Handler {
 }
 
 type uint32PathGorillaRequestDecoder struct {
-	unmarshalOptions protojson.UnmarshalOptions
+	unmarshalOptions        protojson.UnmarshalOptions
+	shouldFailFast          bool
+	onValidationErrCallback gorilla.OnValidationErrCallback
 }
 
 func (decoder uint32PathGorillaRequestDecoder) Uint32Path(ctx context.Context, r *http.Request) (*Uint32PathRequest, error) {
 	req := &Uint32PathRequest{}
+	if ok, err := gorilla.CustomDecodeRequest(ctx, r, req); ok && err != nil {
+		return nil, err
+	} else if ok && err == nil {
+		return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
+	}
 	vars := gorilla.FormFromMap(mux.Vars(r))
 	var varErr error
-	req.Uint32, varErr = gorilla.FormDecoder[uint32](varErr, vars, "uint32", gorilla.GetUint32)
-	req.Fixed32, varErr = gorilla.FormDecoder[uint32](varErr, vars, "fixed32", gorilla.GetUint32)
-	req.OptUint32, varErr = gorilla.FormDecoder[*uint32](varErr, vars, "opt_uint32", gorilla.GetUint32Ptr)
-	req.OptFixed32, varErr = gorilla.FormDecoder[*uint32](varErr, vars, "opt_fixed32", gorilla.GetUint32Ptr)
-	req.WrapUint32, varErr = gorilla.FormDecoder[*wrapperspb.UInt32Value](varErr, vars, "wrap_uint32", gorilla.GetUint32Value)
+	req.Uint32, varErr = gorilla.DecodeForm[uint32](varErr, vars, "uint32", gorilla.GetUint32)
+	req.Fixed32, varErr = gorilla.DecodeForm[uint32](varErr, vars, "fixed32", gorilla.GetUint32)
+	req.OptUint32, varErr = gorilla.DecodeForm[*uint32](varErr, vars, "opt_uint32", gorilla.GetUint32Ptr)
+	req.OptFixed32, varErr = gorilla.DecodeForm[*uint32](varErr, vars, "opt_fixed32", gorilla.GetUint32Ptr)
+	req.WrapUint32, varErr = gorilla.DecodeForm[*wrapperspb.UInt32Value](varErr, vars, "wrap_uint32", gorilla.GetUint32Value)
+	req.Uint32, varErr = gorilla.DecodeForm[uint32](varErr, vars, "uint32", gorilla.GetUint32)
+	req.Fixed32, varErr = gorilla.DecodeForm[uint32](varErr, vars, "fixed32", gorilla.GetUint32)
+	req.OptUint32, varErr = gorilla.DecodeForm[*uint32](varErr, vars, "opt_uint32", gorilla.GetUint32Ptr)
+	req.OptFixed32, varErr = gorilla.DecodeForm[*uint32](varErr, vars, "opt_fixed32", gorilla.GetUint32Ptr)
+	req.WrapUint32, varErr = gorilla.DecodeForm[*wrapperspb.UInt32Value](varErr, vars, "wrap_uint32", gorilla.GetUint32Value)
 	if varErr != nil {
 		return nil, varErr
 	}
-	return req, nil
+	return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
 }
 
-type uint32PathGorillaResponseEncoder struct {
+type uint32PathGorillaEncodeResponse struct {
 	marshalOptions      protojson.MarshalOptions
 	unmarshalOptions    protojson.UnmarshalOptions
 	responseTransformer gorilla.ResponseTransformer
 }
 
-func (encoder uint32PathGorillaResponseEncoder) Uint32Path(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
-	return gorilla.HttpBodyEncoder(ctx, w, resp)
+func (encoder uint32PathGorillaEncodeResponse) Uint32Path(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
+	return gorilla.EncodeHttpBody(ctx, w, resp)
 }
 
 type Uint64PathGorillaService interface {
@@ -352,27 +410,29 @@ func AppendUint64PathGorillaRoute(router *mux.Router, service Uint64PathGorillaS
 	handler := uint64PathGorillaHandler{
 		service: service,
 		decoder: uint64PathGorillaRequestDecoder{
-			unmarshalOptions: options.UnmarshalOptions(),
+			unmarshalOptions:        options.UnmarshalOptions(),
+			shouldFailFast:          options.ShouldFailFast(),
+			onValidationErrCallback: options.OnValidationErrCallback(),
 		},
-		encoder: uint64PathGorillaResponseEncoder{
+		encoder: uint64PathGorillaEncodeResponse{
 			marshalOptions:      options.MarshalOptions(),
 			unmarshalOptions:    options.UnmarshalOptions(),
 			responseTransformer: options.ResponseTransformer(),
 		},
-		errorEncoder: gorilla.DefaultErrorEncoder,
+		errorEncoder: gorilla.DefaultEncodeError,
 	}
 	router.NewRoute().
 		Name("/leo.gorilla.example.path.v1.Uint64Path/Uint64Path").
 		Methods("GET").
 		Path("/v1/{uint64}/{fixed64}/{opt_uint64}/{opt_fixed64}/{wrap_uint64}").
-		Handler(handler.Uint64Path())
+		Handler(gorilla.Chain(handler.Uint64Path(), options.Middlewares()...))
 	return router
 }
 
 type uint64PathGorillaHandler struct {
 	service      Uint64PathGorillaService
 	decoder      uint64PathGorillaRequestDecoder
-	encoder      uint64PathGorillaResponseEncoder
+	encoder      uint64PathGorillaEncodeResponse
 	errorEncoder gorilla.ErrorEncoder
 }
 
@@ -397,32 +457,44 @@ func (h uint64PathGorillaHandler) Uint64Path() http.Handler {
 }
 
 type uint64PathGorillaRequestDecoder struct {
-	unmarshalOptions protojson.UnmarshalOptions
+	unmarshalOptions        protojson.UnmarshalOptions
+	shouldFailFast          bool
+	onValidationErrCallback gorilla.OnValidationErrCallback
 }
 
 func (decoder uint64PathGorillaRequestDecoder) Uint64Path(ctx context.Context, r *http.Request) (*Uint64PathRequest, error) {
 	req := &Uint64PathRequest{}
+	if ok, err := gorilla.CustomDecodeRequest(ctx, r, req); ok && err != nil {
+		return nil, err
+	} else if ok && err == nil {
+		return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
+	}
 	vars := gorilla.FormFromMap(mux.Vars(r))
 	var varErr error
-	req.Uint64, varErr = gorilla.FormDecoder[uint64](varErr, vars, "uint64", gorilla.GetUint64)
-	req.Fixed64, varErr = gorilla.FormDecoder[uint64](varErr, vars, "fixed64", gorilla.GetUint64)
-	req.OptUint64, varErr = gorilla.FormDecoder[*uint64](varErr, vars, "opt_uint64", gorilla.GetUint64Ptr)
-	req.OptFixed64, varErr = gorilla.FormDecoder[*uint64](varErr, vars, "opt_fixed64", gorilla.GetUint64Ptr)
-	req.WrapUint64, varErr = gorilla.FormDecoder[*wrapperspb.UInt64Value](varErr, vars, "wrap_uint64", gorilla.GetUint64Value)
+	req.Uint64, varErr = gorilla.DecodeForm[uint64](varErr, vars, "uint64", gorilla.GetUint64)
+	req.Fixed64, varErr = gorilla.DecodeForm[uint64](varErr, vars, "fixed64", gorilla.GetUint64)
+	req.OptUint64, varErr = gorilla.DecodeForm[*uint64](varErr, vars, "opt_uint64", gorilla.GetUint64Ptr)
+	req.OptFixed64, varErr = gorilla.DecodeForm[*uint64](varErr, vars, "opt_fixed64", gorilla.GetUint64Ptr)
+	req.WrapUint64, varErr = gorilla.DecodeForm[*wrapperspb.UInt64Value](varErr, vars, "wrap_uint64", gorilla.GetUint64Value)
+	req.Uint64, varErr = gorilla.DecodeForm[uint64](varErr, vars, "uint64", gorilla.GetUint64)
+	req.Fixed64, varErr = gorilla.DecodeForm[uint64](varErr, vars, "fixed64", gorilla.GetUint64)
+	req.OptUint64, varErr = gorilla.DecodeForm[*uint64](varErr, vars, "opt_uint64", gorilla.GetUint64Ptr)
+	req.OptFixed64, varErr = gorilla.DecodeForm[*uint64](varErr, vars, "opt_fixed64", gorilla.GetUint64Ptr)
+	req.WrapUint64, varErr = gorilla.DecodeForm[*wrapperspb.UInt64Value](varErr, vars, "wrap_uint64", gorilla.GetUint64Value)
 	if varErr != nil {
 		return nil, varErr
 	}
-	return req, nil
+	return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
 }
 
-type uint64PathGorillaResponseEncoder struct {
+type uint64PathGorillaEncodeResponse struct {
 	marshalOptions      protojson.MarshalOptions
 	unmarshalOptions    protojson.UnmarshalOptions
 	responseTransformer gorilla.ResponseTransformer
 }
 
-func (encoder uint64PathGorillaResponseEncoder) Uint64Path(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
-	return gorilla.HttpBodyEncoder(ctx, w, resp)
+func (encoder uint64PathGorillaEncodeResponse) Uint64Path(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
+	return gorilla.EncodeHttpBody(ctx, w, resp)
 }
 
 type FloatPathGorillaService interface {
@@ -434,27 +506,29 @@ func AppendFloatPathGorillaRoute(router *mux.Router, service FloatPathGorillaSer
 	handler := floatPathGorillaHandler{
 		service: service,
 		decoder: floatPathGorillaRequestDecoder{
-			unmarshalOptions: options.UnmarshalOptions(),
+			unmarshalOptions:        options.UnmarshalOptions(),
+			shouldFailFast:          options.ShouldFailFast(),
+			onValidationErrCallback: options.OnValidationErrCallback(),
 		},
-		encoder: floatPathGorillaResponseEncoder{
+		encoder: floatPathGorillaEncodeResponse{
 			marshalOptions:      options.MarshalOptions(),
 			unmarshalOptions:    options.UnmarshalOptions(),
 			responseTransformer: options.ResponseTransformer(),
 		},
-		errorEncoder: gorilla.DefaultErrorEncoder,
+		errorEncoder: gorilla.DefaultEncodeError,
 	}
 	router.NewRoute().
 		Name("/leo.gorilla.example.path.v1.FloatPath/FloatPath").
 		Methods("GET").
 		Path("/v1/{float}/{opt_float}/{wrap_float}").
-		Handler(handler.FloatPath())
+		Handler(gorilla.Chain(handler.FloatPath(), options.Middlewares()...))
 	return router
 }
 
 type floatPathGorillaHandler struct {
 	service      FloatPathGorillaService
 	decoder      floatPathGorillaRequestDecoder
-	encoder      floatPathGorillaResponseEncoder
+	encoder      floatPathGorillaEncodeResponse
 	errorEncoder gorilla.ErrorEncoder
 }
 
@@ -479,30 +553,40 @@ func (h floatPathGorillaHandler) FloatPath() http.Handler {
 }
 
 type floatPathGorillaRequestDecoder struct {
-	unmarshalOptions protojson.UnmarshalOptions
+	unmarshalOptions        protojson.UnmarshalOptions
+	shouldFailFast          bool
+	onValidationErrCallback gorilla.OnValidationErrCallback
 }
 
 func (decoder floatPathGorillaRequestDecoder) FloatPath(ctx context.Context, r *http.Request) (*FloatPathRequest, error) {
 	req := &FloatPathRequest{}
+	if ok, err := gorilla.CustomDecodeRequest(ctx, r, req); ok && err != nil {
+		return nil, err
+	} else if ok && err == nil {
+		return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
+	}
 	vars := gorilla.FormFromMap(mux.Vars(r))
 	var varErr error
-	req.Float, varErr = gorilla.FormDecoder[float32](varErr, vars, "float", gorilla.GetFloat32)
-	req.OptFloat, varErr = gorilla.FormDecoder[*float32](varErr, vars, "opt_float", gorilla.GetFloat32Ptr)
-	req.WrapFloat, varErr = gorilla.FormDecoder[*wrapperspb.FloatValue](varErr, vars, "wrap_float", gorilla.GetFloat32Value)
+	req.Float, varErr = gorilla.DecodeForm[float32](varErr, vars, "float", gorilla.GetFloat32)
+	req.OptFloat, varErr = gorilla.DecodeForm[*float32](varErr, vars, "opt_float", gorilla.GetFloat32Ptr)
+	req.WrapFloat, varErr = gorilla.DecodeForm[*wrapperspb.FloatValue](varErr, vars, "wrap_float", gorilla.GetFloat32Value)
+	req.Float, varErr = gorilla.DecodeForm[float32](varErr, vars, "float", gorilla.GetFloat32)
+	req.OptFloat, varErr = gorilla.DecodeForm[*float32](varErr, vars, "opt_float", gorilla.GetFloat32Ptr)
+	req.WrapFloat, varErr = gorilla.DecodeForm[*wrapperspb.FloatValue](varErr, vars, "wrap_float", gorilla.GetFloat32Value)
 	if varErr != nil {
 		return nil, varErr
 	}
-	return req, nil
+	return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
 }
 
-type floatPathGorillaResponseEncoder struct {
+type floatPathGorillaEncodeResponse struct {
 	marshalOptions      protojson.MarshalOptions
 	unmarshalOptions    protojson.UnmarshalOptions
 	responseTransformer gorilla.ResponseTransformer
 }
 
-func (encoder floatPathGorillaResponseEncoder) FloatPath(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
-	return gorilla.HttpBodyEncoder(ctx, w, resp)
+func (encoder floatPathGorillaEncodeResponse) FloatPath(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
+	return gorilla.EncodeHttpBody(ctx, w, resp)
 }
 
 type DoublePathGorillaService interface {
@@ -514,27 +598,29 @@ func AppendDoublePathGorillaRoute(router *mux.Router, service DoublePathGorillaS
 	handler := doublePathGorillaHandler{
 		service: service,
 		decoder: doublePathGorillaRequestDecoder{
-			unmarshalOptions: options.UnmarshalOptions(),
+			unmarshalOptions:        options.UnmarshalOptions(),
+			shouldFailFast:          options.ShouldFailFast(),
+			onValidationErrCallback: options.OnValidationErrCallback(),
 		},
-		encoder: doublePathGorillaResponseEncoder{
+		encoder: doublePathGorillaEncodeResponse{
 			marshalOptions:      options.MarshalOptions(),
 			unmarshalOptions:    options.UnmarshalOptions(),
 			responseTransformer: options.ResponseTransformer(),
 		},
-		errorEncoder: gorilla.DefaultErrorEncoder,
+		errorEncoder: gorilla.DefaultEncodeError,
 	}
 	router.NewRoute().
 		Name("/leo.gorilla.example.path.v1.DoublePath/DoublePath").
 		Methods("GET").
 		Path("/v1/{double}/{opt_double}/{wrap_double}").
-		Handler(handler.DoublePath())
+		Handler(gorilla.Chain(handler.DoublePath(), options.Middlewares()...))
 	return router
 }
 
 type doublePathGorillaHandler struct {
 	service      DoublePathGorillaService
 	decoder      doublePathGorillaRequestDecoder
-	encoder      doublePathGorillaResponseEncoder
+	encoder      doublePathGorillaEncodeResponse
 	errorEncoder gorilla.ErrorEncoder
 }
 
@@ -559,30 +645,40 @@ func (h doublePathGorillaHandler) DoublePath() http.Handler {
 }
 
 type doublePathGorillaRequestDecoder struct {
-	unmarshalOptions protojson.UnmarshalOptions
+	unmarshalOptions        protojson.UnmarshalOptions
+	shouldFailFast          bool
+	onValidationErrCallback gorilla.OnValidationErrCallback
 }
 
 func (decoder doublePathGorillaRequestDecoder) DoublePath(ctx context.Context, r *http.Request) (*DoublePathRequest, error) {
 	req := &DoublePathRequest{}
+	if ok, err := gorilla.CustomDecodeRequest(ctx, r, req); ok && err != nil {
+		return nil, err
+	} else if ok && err == nil {
+		return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
+	}
 	vars := gorilla.FormFromMap(mux.Vars(r))
 	var varErr error
-	req.Double, varErr = gorilla.FormDecoder[float64](varErr, vars, "double", gorilla.GetFloat64)
-	req.OptDouble, varErr = gorilla.FormDecoder[*float64](varErr, vars, "opt_double", gorilla.GetFloat64Ptr)
-	req.WrapDouble, varErr = gorilla.FormDecoder[*wrapperspb.DoubleValue](varErr, vars, "wrap_double", gorilla.GetFloat64Value)
+	req.Double, varErr = gorilla.DecodeForm[float64](varErr, vars, "double", gorilla.GetFloat64)
+	req.OptDouble, varErr = gorilla.DecodeForm[*float64](varErr, vars, "opt_double", gorilla.GetFloat64Ptr)
+	req.WrapDouble, varErr = gorilla.DecodeForm[*wrapperspb.DoubleValue](varErr, vars, "wrap_double", gorilla.GetFloat64Value)
+	req.Double, varErr = gorilla.DecodeForm[float64](varErr, vars, "double", gorilla.GetFloat64)
+	req.OptDouble, varErr = gorilla.DecodeForm[*float64](varErr, vars, "opt_double", gorilla.GetFloat64Ptr)
+	req.WrapDouble, varErr = gorilla.DecodeForm[*wrapperspb.DoubleValue](varErr, vars, "wrap_double", gorilla.GetFloat64Value)
 	if varErr != nil {
 		return nil, varErr
 	}
-	return req, nil
+	return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
 }
 
-type doublePathGorillaResponseEncoder struct {
+type doublePathGorillaEncodeResponse struct {
 	marshalOptions      protojson.MarshalOptions
 	unmarshalOptions    protojson.UnmarshalOptions
 	responseTransformer gorilla.ResponseTransformer
 }
 
-func (encoder doublePathGorillaResponseEncoder) DoublePath(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
-	return gorilla.HttpBodyEncoder(ctx, w, resp)
+func (encoder doublePathGorillaEncodeResponse) DoublePath(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
+	return gorilla.EncodeHttpBody(ctx, w, resp)
 }
 
 type StringPathGorillaService interface {
@@ -594,27 +690,29 @@ func AppendStringPathGorillaRoute(router *mux.Router, service StringPathGorillaS
 	handler := stringPathGorillaHandler{
 		service: service,
 		decoder: stringPathGorillaRequestDecoder{
-			unmarshalOptions: options.UnmarshalOptions(),
+			unmarshalOptions:        options.UnmarshalOptions(),
+			shouldFailFast:          options.ShouldFailFast(),
+			onValidationErrCallback: options.OnValidationErrCallback(),
 		},
-		encoder: stringPathGorillaResponseEncoder{
+		encoder: stringPathGorillaEncodeResponse{
 			marshalOptions:      options.MarshalOptions(),
 			unmarshalOptions:    options.UnmarshalOptions(),
 			responseTransformer: options.ResponseTransformer(),
 		},
-		errorEncoder: gorilla.DefaultErrorEncoder,
+		errorEncoder: gorilla.DefaultEncodeError,
 	}
 	router.NewRoute().
 		Name("/leo.gorilla.example.path.v1.StringPath/StringPath").
 		Methods("GET").
 		Path("/v1/{string}/{opt_string}/{wrap_string}").
-		Handler(handler.StringPath())
+		Handler(gorilla.Chain(handler.StringPath(), options.Middlewares()...))
 	return router
 }
 
 type stringPathGorillaHandler struct {
 	service      StringPathGorillaService
 	decoder      stringPathGorillaRequestDecoder
-	encoder      stringPathGorillaResponseEncoder
+	encoder      stringPathGorillaEncodeResponse
 	errorEncoder gorilla.ErrorEncoder
 }
 
@@ -639,30 +737,40 @@ func (h stringPathGorillaHandler) StringPath() http.Handler {
 }
 
 type stringPathGorillaRequestDecoder struct {
-	unmarshalOptions protojson.UnmarshalOptions
+	unmarshalOptions        protojson.UnmarshalOptions
+	shouldFailFast          bool
+	onValidationErrCallback gorilla.OnValidationErrCallback
 }
 
 func (decoder stringPathGorillaRequestDecoder) StringPath(ctx context.Context, r *http.Request) (*StringPathRequest, error) {
 	req := &StringPathRequest{}
+	if ok, err := gorilla.CustomDecodeRequest(ctx, r, req); ok && err != nil {
+		return nil, err
+	} else if ok && err == nil {
+		return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
+	}
 	vars := gorilla.FormFromMap(mux.Vars(r))
 	var varErr error
+	req.String_ = vars.Get("string")
+	req.OptString = proto.String(vars.Get("opt_string"))
+	req.WrapString = wrapperspb.String(vars.Get("wrap_string"))
 	req.String_ = vars.Get("string")
 	req.OptString = proto.String(vars.Get("opt_string"))
 	req.WrapString = wrapperspb.String(vars.Get("wrap_string"))
 	if varErr != nil {
 		return nil, varErr
 	}
-	return req, nil
+	return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
 }
 
-type stringPathGorillaResponseEncoder struct {
+type stringPathGorillaEncodeResponse struct {
 	marshalOptions      protojson.MarshalOptions
 	unmarshalOptions    protojson.UnmarshalOptions
 	responseTransformer gorilla.ResponseTransformer
 }
 
-func (encoder stringPathGorillaResponseEncoder) StringPath(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
-	return gorilla.HttpBodyEncoder(ctx, w, resp)
+func (encoder stringPathGorillaEncodeResponse) StringPath(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
+	return gorilla.EncodeHttpBody(ctx, w, resp)
 }
 
 type EnumPathGorillaService interface {
@@ -674,27 +782,29 @@ func AppendEnumPathGorillaRoute(router *mux.Router, service EnumPathGorillaServi
 	handler := enumPathGorillaHandler{
 		service: service,
 		decoder: enumPathGorillaRequestDecoder{
-			unmarshalOptions: options.UnmarshalOptions(),
+			unmarshalOptions:        options.UnmarshalOptions(),
+			shouldFailFast:          options.ShouldFailFast(),
+			onValidationErrCallback: options.OnValidationErrCallback(),
 		},
-		encoder: enumPathGorillaResponseEncoder{
+		encoder: enumPathGorillaEncodeResponse{
 			marshalOptions:      options.MarshalOptions(),
 			unmarshalOptions:    options.UnmarshalOptions(),
 			responseTransformer: options.ResponseTransformer(),
 		},
-		errorEncoder: gorilla.DefaultErrorEncoder,
+		errorEncoder: gorilla.DefaultEncodeError,
 	}
 	router.NewRoute().
 		Name("/leo.gorilla.example.path.v1.EnumPath/EnumPath").
 		Methods("GET").
 		Path("/v1/{status}/{opt_status}").
-		Handler(handler.EnumPath())
+		Handler(gorilla.Chain(handler.EnumPath(), options.Middlewares()...))
 	return router
 }
 
 type enumPathGorillaHandler struct {
 	service      EnumPathGorillaService
 	decoder      enumPathGorillaRequestDecoder
-	encoder      enumPathGorillaResponseEncoder
+	encoder      enumPathGorillaEncodeResponse
 	errorEncoder gorilla.ErrorEncoder
 }
 
@@ -719,27 +829,36 @@ func (h enumPathGorillaHandler) EnumPath() http.Handler {
 }
 
 type enumPathGorillaRequestDecoder struct {
-	unmarshalOptions protojson.UnmarshalOptions
+	unmarshalOptions        protojson.UnmarshalOptions
+	shouldFailFast          bool
+	onValidationErrCallback gorilla.OnValidationErrCallback
 }
 
 func (decoder enumPathGorillaRequestDecoder) EnumPath(ctx context.Context, r *http.Request) (*EnumPathRequest, error) {
 	req := &EnumPathRequest{}
+	if ok, err := gorilla.CustomDecodeRequest(ctx, r, req); ok && err != nil {
+		return nil, err
+	} else if ok && err == nil {
+		return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
+	}
 	vars := gorilla.FormFromMap(mux.Vars(r))
 	var varErr error
-	req.Status, varErr = gorilla.FormDecoder[EnumPathRequest_Status](varErr, vars, "status", gorilla.GetInt[EnumPathRequest_Status])
-	req.OptStatus, varErr = gorilla.FormDecoder[*EnumPathRequest_Status](varErr, vars, "opt_status", gorilla.GetIntPtr[EnumPathRequest_Status])
+	req.Status, varErr = gorilla.DecodeForm[EnumPathRequest_Status](varErr, vars, "status", gorilla.GetInt[EnumPathRequest_Status])
+	req.OptStatus, varErr = gorilla.DecodeForm[*EnumPathRequest_Status](varErr, vars, "opt_status", gorilla.GetIntPtr[EnumPathRequest_Status])
+	req.Status, varErr = gorilla.DecodeForm[EnumPathRequest_Status](varErr, vars, "status", gorilla.GetInt[EnumPathRequest_Status])
+	req.OptStatus, varErr = gorilla.DecodeForm[*EnumPathRequest_Status](varErr, vars, "opt_status", gorilla.GetIntPtr[EnumPathRequest_Status])
 	if varErr != nil {
 		return nil, varErr
 	}
-	return req, nil
+	return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
 }
 
-type enumPathGorillaResponseEncoder struct {
+type enumPathGorillaEncodeResponse struct {
 	marshalOptions      protojson.MarshalOptions
 	unmarshalOptions    protojson.UnmarshalOptions
 	responseTransformer gorilla.ResponseTransformer
 }
 
-func (encoder enumPathGorillaResponseEncoder) EnumPath(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
-	return gorilla.HttpBodyEncoder(ctx, w, resp)
+func (encoder enumPathGorillaEncodeResponse) EnumPath(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
+	return gorilla.EncodeHttpBody(ctx, w, resp)
 }

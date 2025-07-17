@@ -1,9 +1,16 @@
-# gorilla 
+# gorilla
 gorilla 参考 Google API 设计方案，通过定义 proto 文件，快速生成Go语言的Restful服务路由。
-gorilla 底层基于 [gorilla/mux](http://github.com/gorilla/mux) 管理http路由。
 
 # 路由规则
-详细定义规则见[gorilla/mux](https://github.com/gorilla/mux)
+gorilla 底层基于 [gorilla/mux](http://github.com/gorilla/mux) 管理http路由。详细定义规则见[gorilla/mux](https://github.com/gorilla/mux)
+
+# 优点
+1. 基于proto文件，快速生成Restful服务路由
+2. 零配置
+3. 低依赖
+4. 非反射取值，效率非常高
+5. 稳定，所有方法经过单元测试
+6. 代码简单，良好的代码设计，减少出错
 
 # 安装
 ```
@@ -13,17 +20,16 @@ go install github.com/go-leo/gorilla/cmd/protoc-gen-gorilla@latest
 # Example
 ```protobuf
 syntax = "proto3";
-package leo.gors.demo.v1;
-option go_package = "github.com/go-leo/gorilla/example/demo/v1;demo";
+package leo.gorilla.example.user.v1;
+option go_package = "github.com/go-leo/gorilla/example/user/v1;user";
 
-import "google/protobuf/empty.proto";
 import "google/api/annotations.proto";
 
-service Demo {
+service User {
 
   // CreateUser 创建用户
   // `POST /v1/user { "name": "Leo" }` | `CreateUserRequest(name: "Leo")`
-  rpc CreateUser (CreateUserRequest) returns (google.protobuf.Empty) {
+  rpc CreateUser (CreateUserRequest) returns (CreateUserResponse) {
     option (google.api.http) = {
       post : "/v1/user"
       body : "*"
@@ -31,8 +37,8 @@ service Demo {
   }
 
   // DeleteUser 删除用户
-  // `DELETE /v1/user/10000 | `DeleteUserRequest(id: 10000)`
-  rpc DeleteUser (DeleteUserRequest) returns (google.protobuf.Empty) {
+    // `DELETE /v1/user/10000 | `DeleteUserRequest(id: 10000)`
+  rpc DeleteUser (DeleteUserRequest) returns (DeleteUserResponse) {
     option (google.api.http) = {
       delete : "/v1/user/{id}"
     };
@@ -40,10 +46,19 @@ service Demo {
 
   // ModifyUser 修改用户
   // `PUT /v1/user/10000 { "name": "Leo" }` | `ModifyUserRequest(id: 10000, name: "Leo")`
-  rpc ModifyUser (ModifyUserRequest) returns (google.protobuf.Empty) {
+  rpc ModifyUser (ModifyUserRequest) returns (ModifyUserResponse) {
     option (google.api.http) = {
       put : "/v1/user/{id}"
       body : "*"
+    };
+  }
+
+  // UpdateUser 更新用户
+  // `PUT /v1/user/10000 { "id": "99999" ,"name": "Leo" }` | `UpdateUserRequest(id: 10000, UserItem(id: 9999, name: "Leo"))`
+  rpc UpdateUser (UpdateUserRequest) returns (UpdateUserResponse) {
+    option (google.api.http) = {
+      patch : "/v1/user/{id}"
+      body : "item"
     };
   }
 
@@ -64,7 +79,7 @@ service Demo {
   }
 }
 
-message User {
+message UserItem {
   int64 id = 1;
   string name = 2;
 }
@@ -73,7 +88,15 @@ message CreateUserRequest {
   string name = 1;
 }
 
+message CreateUserResponse {
+  UserItem item = 1;
+}
+
 message DeleteUserRequest {
+  int64 id = 1;
+}
+
+message DeleteUserResponse {
   int64 id = 1;
 }
 
@@ -82,12 +105,27 @@ message ModifyUserRequest {
   string name = 2;
 }
 
+message ModifyUserResponse {
+    int64 id = 1;
+  string name = 2;
+}
+
+message UpdateUserRequest {
+  int64 id = 1;
+  UserItem item = 2;
+}
+
+message UpdateUserResponse {
+  int64 id = 1;
+  UserItem item = 2;
+}
+
 message GetUserRequest {
   int64 id = 1;
 }
 
 message GetUserResponse {
-  User item = 1;
+  UserItem item = 1;
 }
 
 message ListUserRequest {
@@ -96,11 +134,21 @@ message ListUserRequest {
 }
 
 message ListUserResponse {
-  repeated User list = 1;
+  int64 page_num = 1;
+  int64 page_size = 2;
+  repeated UserItem list = 3;
 }
 ```
+定义了6个接口：分别是
+1. 创建用户，POST请求
+2. 删除用户，DELETE请求
+3. 修改用户，PUT请求
+4. 更新用户，PATCH请求
+5. 获取用户, GET请求
+6. 获取用户列表, GET请求
 
 # 生成路由
+执行命令
 ```
 protoc \
 --proto_path=. \
@@ -108,98 +156,67 @@ protoc \
 --proto_path=../../ \
 --go_out=. \
 --go_opt=paths=source_relative \
---gors-gorilla_out=. \
---gors-gorilla_opt=paths=source_relative \
-demo.proto
+--gorilla_out=. \
+--gorilla_opt=paths=source_relative \
+user/user.proto
+```
+生成一下文件
+```
+user
+├── user_gorilla.pb.go
+├── user_test.go
+├── user.pb.go
+└── user.proto
 ```
 
-```
-demo
-├── demo.pb.go
-├── demo.proto
-└── demo_gors.gorilla.pb.go
-```
-
-# 代码
+# 实现UserService代码：
 ```go
-package demo
 
-import (
-	"context"
-	"fmt"
-	"github.com/gorilla/mux"
-	"google.golang.org/protobuf/types/known/emptypb"
-	"log"
-	"maps"
-	"net/http"
-	"slices"
-	"time"
-)
+type MockUserService struct{}
 
-func Example() {
-	router := mux.NewRouter()
-	router = AppendDemoGorsRoute(router, NewMockDemo())
-	if err := http.ListenAndServe(":8080", router); err != nil {
-		log.Fatal(err)
-	}
+func (m *MockUserService) CreateUser(ctx context.Context, req *CreateUserRequest) (*CreateUserResponse, error) {
+	return &CreateUserResponse{Item: &UserItem{Id: 1, Name: req.Name}}, nil
 }
 
-type MockDemo struct {
-	m map[int64]string
+func (m *MockUserService) DeleteUser(ctx context.Context, req *DeleteUserRequest) (*DeleteUserResponse, error) {
+	return &DeleteUserResponse{Id: req.GetId()}, nil
 }
 
-func (svc *MockDemo) CreateUser(ctx context.Context, request *CreateUserRequest) (*CreateUserResponse, error) {
-	fmt.Println("CreateUser:", request.GetName())
-	id := time.Now().Unix()
-	svc.m[id] = request.GetName()
-	return &CreateUserResponse{
-		Item: &User{
-			Id:   id,
-			Name: request.GetName(),
-		}}, nil
+func (m *MockUserService) ModifyUser(ctx context.Context, req *ModifyUserRequest) (*ModifyUserResponse, error) {
+	return &ModifyUserResponse{Id: req.GetId(), Name: req.GetName()}, nil
 }
 
-func (svc *MockDemo) DeleteUser(ctx context.Context, request *DeleteUserRequest) (*emptypb.Empty, error) {
-	fmt.Println("DeleteUser:", request.GetId())
-	delete(svc.m, request.GetId())
-	return &emptypb.Empty{}, nil
+func (m *MockUserService) UpdateUser(ctx context.Context, req *UpdateUserRequest) (*UpdateUserResponse, error) {
+	return &UpdateUserResponse{Id: req.GetId(), Item: &UserItem{Id: req.GetItem().GetId(), Name: req.GetItem().GetName()}}, nil
 }
 
-func (svc *MockDemo) ModifyUser(ctx context.Context, request *ModifyUserRequest) (*emptypb.Empty, error) {
-	fmt.Println("ModifyUser:", request.GetId(), request.GetName())
-	svc.m[request.GetId()] = request.GetName()
-	return &emptypb.Empty{}, nil
+func (m *MockUserService) GetUser(ctx context.Context, req *GetUserRequest) (*GetUserResponse, error) {
+	return &GetUserResponse{Item: &UserItem{Id: req.Id, Name: "test"}}, nil
 }
 
-func (svc *MockDemo) GetUser(ctx context.Context, request *GetUserRequest) (*GetUserResponse, error) {
-	fmt.Println("GetUser:", request.GetId())
-	return &GetUserResponse{Item: &User{
-		Id:   request.GetId(),
-		Name: svc.m[request.GetId()],
-	}}, nil
-}
-
-func (svc *MockDemo) ListUser(ctx context.Context, request *ListUserRequest) (*ListUserResponse, error) {
-	fmt.Println("ListUser:", request.GetPageNum(), request.GetPageSize())
-	keys := maps.Keys(svc.m)
-	ids := slices.SortedFunc(keys, func(a int64, b int64) int {
-		return int(a - b)
-	})
-	resp := &ListUserResponse{List: make([]*User, 0)}
-	for i := request.GetPageSize() * (request.GetPageNum() - 1); i < int64(len(ids)) && int64(len(resp.List)) < request.GetPageSize(); i++ {
-		id := ids[i]
-		resp.List = append(resp.List, &User{
-			Id:   id,
-			Name: svc.m[id],
-		})
-	}
-	return resp, nil
-}
-
-func NewMockDemo() DemoGorsService {
-	return &MockDemo{m: map[int64]string{}}
+func (m *MockUserService) ListUser(ctx context.Context, req *ListUserRequest) (*ListUserResponse, error) {
+	return &ListUserResponse{
+		PageNum:  req.GetPageNum(),
+		PageSize: req.GetPageSize(),
+		List: []*UserItem{
+			{Id: 1, Name: "a"},
+			{Id: 2, Name: "b"},
+		},
+	}, nil
 }
 ```
 
-更多示例见 [example]https://github.com/go-leo/gors/tree/v2/example
+# 创建Server
+```go
+func main() {
+	router := mux.NewRouter()
+	router = AppendUserGorillaRoute(router, &MockUserService{})
+	server := http.Server{Addr: ":8000", Handler: router}
+	server.ListenAndServe()
+}
+```
 
+更多示例见 [example]https://github.com/go-leo/gorilla/tree/example/user/server
+
+# 子妹项目
+[github.com/go-leo/gonic](https://github.com/go-leo/gonic) 使用 gin-gonic/gin 管理路由。

@@ -8,13 +8,21 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
-func (f *Generator) GenerateServerRequestDecoder(service *gen.Service, g *protogen.GeneratedFile) error {
+func (f *Generator) GenerateServerDecodeRequest(service *gen.Service, g *protogen.GeneratedFile) error {
 	g.P("type ", service.Unexported(service.RequestDecoderName()), " struct {")
 	g.P("unmarshalOptions ", gen.ProtoJsonUnmarshalOptionsIdent)
+	g.P("shouldFailFast bool")
+	g.P("onValidationErrCallback ", gen.OnValidationErrCallbackIdent)
 	g.P("}")
 	for _, endpoint := range service.Endpoints {
 		g.P("func (decoder ", service.Unexported(service.RequestDecoderName()), ")", endpoint.Name(), "(ctx ", gen.ContextIdent, ", r *", gen.RequestIdent, ") (*", endpoint.InputGoIdent(), ", error){")
 		g.P("req := &", endpoint.InputGoIdent(), "{}")
+		g.P("if ok, err := ", gen.CustomDecodeRequestIdent, "(ctx, r, req); ok && err != nil {")
+		g.P("return nil, err")
+		g.P("} else if ok && err == nil {")
+		g.P("return req, ", gen.ValidateRequestIdent, "(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)")
+		g.P("}")
+
 		bodyMessage, bodyField, pathFields, queryFields, err := endpoint.ParseParameters()
 		if err != nil {
 			return err
@@ -59,7 +67,7 @@ func (f *Generator) GenerateServerRequestDecoder(service *gen.Service, g *protog
 			g.P("}")
 		}
 
-		g.P("return req, nil")
+		g.P("return req, ", gen.ValidateRequestIdent, "(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)")
 		g.P("}")
 	}
 	g.P()
@@ -67,19 +75,19 @@ func (f *Generator) GenerateServerRequestDecoder(service *gen.Service, g *protog
 }
 
 func (f *Generator) PrintHttpBodyDecodeBlock(g *protogen.GeneratedFile, tgtValue []any) {
-	g.P(append(append([]any{"if err := ", gen.HttpBodyDecoderIdent, "(ctx, r, "}, tgtValue...), "); err != nil {")...)
+	g.P(append(append([]any{"if err := ", gen.DecodeHttpBodyIdent, "(ctx, r, "}, tgtValue...), "); err != nil {")...)
 	g.P("return nil, err")
 	g.P("}")
 }
 
 func (f *Generator) PrintHttpRequestEncodeBlock(g *protogen.GeneratedFile, tgtValue []any) {
-	g.P(append(append([]any{"if err := ", gen.HttpRequestDecoderIdent, "(ctx, r, "}, tgtValue...), "); err != nil {")...)
+	g.P(append(append([]any{"if err := ", gen.DecodeHttpRequestIdent, "(ctx, r, "}, tgtValue...), "); err != nil {")...)
 	g.P("return nil, err")
 	g.P("}")
 }
 
 func (f *Generator) PrintRequestDecodeBlock(g *protogen.GeneratedFile, tgtValue []any) {
-	g.P(append(append([]any{"if err := ", gen.RequestDecoderIdent, "(ctx, r, "}, tgtValue...), ", decoder.unmarshalOptions); err != nil {")...)
+	g.P(append(append([]any{"if err := ", gen.DecodeRequestIdent, "(ctx, r, "}, tgtValue...), ", decoder.unmarshalOptions); err != nil {")...)
 	g.P("return nil, err")
 	g.P("}")
 }
@@ -342,7 +350,7 @@ func (f *Generator) PrintQueryField(g *protogen.GeneratedFile, queryFields []*pr
 }
 
 func (f *Generator) PrintFieldAssign(g *protogen.GeneratedFile, tgtValue []any, goType []any, getter protogen.GoIdent, key string, form string, errName string) {
-	g.P(append(append([]any{}, tgtValue...), append(append([]any{gen.FormDecoderIdent, "["}, goType...), append([]any{"](", errName, ", ", form, ", ", strconv.Quote(key), ", ", getter}, ")")...)...)...)
+	g.P(append(append([]any{}, tgtValue...), append(append([]any{gen.DecodeFormIdent, "["}, goType...), append([]any{"](", errName, ", ", form, ", ", strconv.Quote(key), ", ", getter}, ")")...)...)...)
 }
 
 func (f *Generator) PrintStringValueAssign(g *protogen.GeneratedFile, tgtValue []any, srcValue []any, hasPresence bool) {
@@ -362,5 +370,5 @@ func (f *Generator) PrintStringListAssign(g *protogen.GeneratedFile, tgtValue []
 }
 
 func (f *Generator) PrintWrapStringListAssign(g *protogen.GeneratedFile, tgtValue []any, srcValue []any) {
-	g.P(append(tgtValue, append(append([]any{ gen.GorillaPackage.Ident("WrapStringSlice"), "("}, srcValue...), ")")...)...)
+	g.P(append(tgtValue, append(append([]any{gen.GorillaPackage.Ident("WrapStringSlice"), "("}, srcValue...), ")")...)...)
 }
