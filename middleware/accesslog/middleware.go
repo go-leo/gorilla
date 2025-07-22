@@ -16,10 +16,11 @@ type options struct {
 	level         slog.Level
 }
 
-func (o *options) apply(opts ...Option) {
+func (o *options) apply(opts ...Option) *options {
 	for _, opt := range opts {
 		opt(o)
 	}
+	return o
 }
 
 type Option func(o *options)
@@ -41,11 +42,10 @@ func WithLevel(level slog.Level) Option {
 }
 
 func Middleware(opts ...Option) mux.MiddlewareFunc {
-	o := defaultOptions()
-	o.apply(opts...)
+	opt := defaultOptions().apply(opts...)
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			if o.loggerFactory == nil {
+			if opt.loggerFactory == nil {
 				next.ServeHTTP(w, r)
 				return
 			}
@@ -53,7 +53,7 @@ func Middleware(opts ...Option) mux.MiddlewareFunc {
 			sw := &statusCodeResponseWriter{ResponseWriter: w}
 			next.ServeHTTP(sw, r)
 			ctx := r.Context()
-			logger := o.loggerFactory(ctx)
+			logger := opt.loggerFactory(ctx)
 			route, _ := mux.CurrentRoute(r).GetPathTemplate()
 			builder := new(builder).
 				System().
@@ -66,7 +66,7 @@ func Middleware(opts ...Option) mux.MiddlewareFunc {
 				RemoteAddress(r.RemoteAddr).
 				Status(sw.statusCode).
 				Latency(time.Since(startTime))
-			logger.Log(ctx, o.level, route, builder.Build()...)
+			logger.LogAttrs(ctx, opt.level, route, builder.Build()...)
 		})
 	}
 }

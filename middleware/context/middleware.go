@@ -13,10 +13,11 @@ type options struct {
 	contextFunc ContextFunc
 }
 
-func (o *options) apply(opts ...Option) {
+func (o *options) apply(opts ...Option) *options {
 	for _, opt := range opts {
 		opt(o)
 	}
+	return o
 }
 
 type Option func(o *options)
@@ -34,12 +35,11 @@ func WithContextFunc(contextFunc ContextFunc) Option {
 }
 
 func Middleware(opts ...Option) mux.MiddlewareFunc {
-	o := defaultOptions()
-	o.apply(opts...)
+	opt := defaultOptions().apply(opts...)
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			ctx := r.Context()
-			ctx = o.contextFunc(ctx)
+			ctx = opt.contextFunc(ctx)
 			r = r.WithContext(ctx)
 			next.ServeHTTP(w, r)
 		})
