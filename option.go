@@ -1,61 +1,79 @@
 package gors
 
 import (
-	"context"
-	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/encoding/protojson"
 )
 
-type Options struct {
-	Tag                   string
-	ResponseWrapper       func(resp any) any
-	ErrorHandler          func(ctx context.Context, err error)
-	IncomingHeaderMatcher func(key string) (string, bool)
-	OutgoingHeaderMatcher func(key string) (string, bool)
-	MetadataAnnotators    []func(ctx context.Context) metadata.MD
+type Options interface {
+	UnmarshalOptions() protojson.UnmarshalOptions
+	MarshalOptions() protojson.MarshalOptions
+	ErrorEncoder() ErrorEncoder
+	ResponseTransformer() ResponseTransformer
 }
 
-type Option func(o *Options)
+type options struct {
+	unmarshalOptions    protojson.UnmarshalOptions
+	marshalOptions      protojson.MarshalOptions
+	errorEncoder        ErrorEncoder
+	responseTransformer ResponseTransformer
+}
 
-func New(opts ...Option) *Options {
-	o := &Options{}
+type Option func(o *options)
+
+func (o *options) Apply(opts ...Option) *options {
 	for _, opt := range opts {
 		opt(o)
 	}
 	return o
 }
 
-func Tag(tag string) Option {
-	return func(o *Options) {
-		o.Tag = tag
+func (o *options) UnmarshalOptions() protojson.UnmarshalOptions {
+	return o.unmarshalOptions
+}
+
+func (o *options) MarshalOptions() protojson.MarshalOptions {
+	return o.marshalOptions
+}
+
+func (o *options) ErrorEncoder() ErrorEncoder {
+	return o.errorEncoder
+}
+
+func (o *options) ResponseTransformer() ResponseTransformer {
+	return o.responseTransformer
+}
+
+func WithUnmarshalOptions(opts protojson.UnmarshalOptions) Option {
+	return func(o *options) {
+		o.unmarshalOptions = opts
 	}
 }
 
-func ResponseWrapper(w func(resp any) any) Option {
-	return func(o *Options) {
-		o.ResponseWrapper = w
+func WithMarshalOptions(opts protojson.MarshalOptions) Option {
+	return func(o *options) {
+		o.marshalOptions = opts
 	}
 }
 
-func ErrorHandler(h func(ctx context.Context, err error)) Option {
-	return func(o *Options) {
-		o.ErrorHandler = h
+func WithErrorEncoder(encoder ErrorEncoder) Option {
+	return func(o *options) {
+		o.errorEncoder = encoder
 	}
 }
 
-func IncomingHeaderMatcher(m func(key string) (string, bool)) Option {
-	return func(o *Options) {
-		o.IncomingHeaderMatcher = m
+func WithResponseTransformer(transformer ResponseTransformer) Option {
+	return func(o *options) {
+		o.responseTransformer = transformer
 	}
 }
 
-func OutgoingHeaderMatcher(m func(key string) (string, bool)) Option {
-	return func(o *Options) {
-		o.OutgoingHeaderMatcher = m
+func NewOptions(opts ...Option) Options {
+	o := &options{
+		unmarshalOptions:    protojson.UnmarshalOptions{},
+		marshalOptions:      protojson.MarshalOptions{},
+		errorEncoder:        DefaultErrorEncoder,
+		responseTransformer: DefaultResponseTransformer,
 	}
-}
-
-func MetadataAnnotator(a ...func(ctx context.Context) metadata.MD) Option {
-	return func(o *Options) {
-		o.MetadataAnnotators = append(o.MetadataAnnotators, a...)
-	}
+	o = o.Apply(opts...)
+	return o
 }
