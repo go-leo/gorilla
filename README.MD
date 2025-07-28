@@ -219,4 +219,5 @@ func main() {
 更多示例见 [example]https://github.com/go-leo/gorilla/tree/example/user/server
 
 # 子妹项目
-[github.com/go-leo/gonic](https://github.com/go-leo/gonic) 使用 gin-gonic/gin 管理路由。
+* [github.com/go-leo/gonic](https://github.com/go-leo/gonic) 使用 gin-gonic/gin 管理路由。
+* [github.com/go-leo/goose](https://github.com/go-leo/goose) 使用 Go 1.22 HTTP Router 管理路由。
