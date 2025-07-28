@@ -22,16 +22,16 @@ func AppendBoolQueryGorillaRoute(router *mux.Router, service BoolQueryGorillaSer
 	handler := boolQueryGorillaHandler{
 		service: service,
 		decoder: boolQueryGorillaRequestDecoder{
-			unmarshalOptions:        options.UnmarshalOptions(),
-			shouldFailFast:          options.ShouldFailFast(),
-			onValidationErrCallback: options.OnValidationErrCallback(),
+			unmarshalOptions: options.UnmarshalOptions(),
 		},
 		encoder: boolQueryGorillaEncodeResponse{
 			marshalOptions:      options.MarshalOptions(),
 			unmarshalOptions:    options.UnmarshalOptions(),
 			responseTransformer: options.ResponseTransformer(),
 		},
-		errorEncoder: gorilla.DefaultEncodeError,
+		errorEncoder:            gorilla.DefaultEncodeError,
+		shouldFailFast:          options.ShouldFailFast(),
+		onValidationErrCallback: options.OnValidationErrCallback(),
 	}
 	router.NewRoute().
 		Name("/leo.gorilla.example.query.v1.BoolQuery/BoolQuery").
@@ -42,10 +42,12 @@ func AppendBoolQueryGorillaRoute(router *mux.Router, service BoolQueryGorillaSer
 }
 
 type boolQueryGorillaHandler struct {
-	service      BoolQueryGorillaService
-	decoder      boolQueryGorillaRequestDecoder
-	encoder      boolQueryGorillaEncodeResponse
-	errorEncoder gorilla.ErrorEncoder
+	service                 BoolQueryGorillaService
+	decoder                 boolQueryGorillaRequestDecoder
+	encoder                 boolQueryGorillaEncodeResponse
+	errorEncoder            gorilla.ErrorEncoder
+	shouldFailFast          bool
+	onValidationErrCallback gorilla.OnValidationErrCallback
 }
 
 func (h boolQueryGorillaHandler) BoolQuery() http.Handler {
@@ -53,6 +55,10 @@ func (h boolQueryGorillaHandler) BoolQuery() http.Handler {
 		ctx := request.Context()
 		in, err := h.decoder.BoolQuery(ctx, request)
 		if err != nil {
+			h.errorEncoder(ctx, err, writer)
+			return
+		}
+		if err := gorilla.ValidateRequest(ctx, in, h.shouldFailFast, h.onValidationErrCallback); err != nil {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
@@ -69,17 +75,17 @@ func (h boolQueryGorillaHandler) BoolQuery() http.Handler {
 }
 
 type boolQueryGorillaRequestDecoder struct {
-	unmarshalOptions        protojson.UnmarshalOptions
-	shouldFailFast          bool
-	onValidationErrCallback gorilla.OnValidationErrCallback
+	unmarshalOptions protojson.UnmarshalOptions
 }
 
 func (decoder boolQueryGorillaRequestDecoder) BoolQuery(ctx context.Context, r *http.Request) (*BoolQueryRequest, error) {
 	req := &BoolQueryRequest{}
-	if ok, err := gorilla.CustomDecodeRequest(ctx, r, req); ok && err != nil {
+	ok, err := gorilla.CustomDecodeRequest(ctx, r, req)
+	if err != nil {
 		return nil, err
-	} else if ok && err == nil {
-		return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
+	}
+	if ok {
+		return req, nil
 	}
 	queries := r.URL.Query()
 	var queryErr error
@@ -91,7 +97,7 @@ func (decoder boolQueryGorillaRequestDecoder) BoolQuery(ctx context.Context, r *
 	if queryErr != nil {
 		return nil, queryErr
 	}
-	return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
+	return req, nil
 }
 
 type boolQueryGorillaEncodeResponse struct {
@@ -113,16 +119,16 @@ func AppendInt32QueryGorillaRoute(router *mux.Router, service Int32QueryGorillaS
 	handler := int32QueryGorillaHandler{
 		service: service,
 		decoder: int32QueryGorillaRequestDecoder{
-			unmarshalOptions:        options.UnmarshalOptions(),
-			shouldFailFast:          options.ShouldFailFast(),
-			onValidationErrCallback: options.OnValidationErrCallback(),
+			unmarshalOptions: options.UnmarshalOptions(),
 		},
 		encoder: int32QueryGorillaEncodeResponse{
 			marshalOptions:      options.MarshalOptions(),
 			unmarshalOptions:    options.UnmarshalOptions(),
 			responseTransformer: options.ResponseTransformer(),
 		},
-		errorEncoder: gorilla.DefaultEncodeError,
+		errorEncoder:            gorilla.DefaultEncodeError,
+		shouldFailFast:          options.ShouldFailFast(),
+		onValidationErrCallback: options.OnValidationErrCallback(),
 	}
 	router.NewRoute().
 		Name("/leo.gorilla.example.query.v1.Int32Query/Int32Query").
@@ -133,10 +139,12 @@ func AppendInt32QueryGorillaRoute(router *mux.Router, service Int32QueryGorillaS
 }
 
 type int32QueryGorillaHandler struct {
-	service      Int32QueryGorillaService
-	decoder      int32QueryGorillaRequestDecoder
-	encoder      int32QueryGorillaEncodeResponse
-	errorEncoder gorilla.ErrorEncoder
+	service                 Int32QueryGorillaService
+	decoder                 int32QueryGorillaRequestDecoder
+	encoder                 int32QueryGorillaEncodeResponse
+	errorEncoder            gorilla.ErrorEncoder
+	shouldFailFast          bool
+	onValidationErrCallback gorilla.OnValidationErrCallback
 }
 
 func (h int32QueryGorillaHandler) Int32Query() http.Handler {
@@ -144,6 +152,10 @@ func (h int32QueryGorillaHandler) Int32Query() http.Handler {
 		ctx := request.Context()
 		in, err := h.decoder.Int32Query(ctx, request)
 		if err != nil {
+			h.errorEncoder(ctx, err, writer)
+			return
+		}
+		if err := gorilla.ValidateRequest(ctx, in, h.shouldFailFast, h.onValidationErrCallback); err != nil {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
@@ -160,17 +172,17 @@ func (h int32QueryGorillaHandler) Int32Query() http.Handler {
 }
 
 type int32QueryGorillaRequestDecoder struct {
-	unmarshalOptions        protojson.UnmarshalOptions
-	shouldFailFast          bool
-	onValidationErrCallback gorilla.OnValidationErrCallback
+	unmarshalOptions protojson.UnmarshalOptions
 }
 
 func (decoder int32QueryGorillaRequestDecoder) Int32Query(ctx context.Context, r *http.Request) (*Int32QueryRequest, error) {
 	req := &Int32QueryRequest{}
-	if ok, err := gorilla.CustomDecodeRequest(ctx, r, req); ok && err != nil {
+	ok, err := gorilla.CustomDecodeRequest(ctx, r, req)
+	if err != nil {
 		return nil, err
-	} else if ok && err == nil {
-		return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
+	}
+	if ok {
+		return req, nil
 	}
 	queries := r.URL.Query()
 	var queryErr error
@@ -188,7 +200,7 @@ func (decoder int32QueryGorillaRequestDecoder) Int32Query(ctx context.Context, r
 	if queryErr != nil {
 		return nil, queryErr
 	}
-	return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
+	return req, nil
 }
 
 type int32QueryGorillaEncodeResponse struct {
@@ -210,16 +222,16 @@ func AppendInt64QueryGorillaRoute(router *mux.Router, service Int64QueryGorillaS
 	handler := int64QueryGorillaHandler{
 		service: service,
 		decoder: int64QueryGorillaRequestDecoder{
-			unmarshalOptions:        options.UnmarshalOptions(),
-			shouldFailFast:          options.ShouldFailFast(),
-			onValidationErrCallback: options.OnValidationErrCallback(),
+			unmarshalOptions: options.UnmarshalOptions(),
 		},
 		encoder: int64QueryGorillaEncodeResponse{
 			marshalOptions:      options.MarshalOptions(),
 			unmarshalOptions:    options.UnmarshalOptions(),
 			responseTransformer: options.ResponseTransformer(),
 		},
-		errorEncoder: gorilla.DefaultEncodeError,
+		errorEncoder:            gorilla.DefaultEncodeError,
+		shouldFailFast:          options.ShouldFailFast(),
+		onValidationErrCallback: options.OnValidationErrCallback(),
 	}
 	router.NewRoute().
 		Name("/leo.gorilla.example.query.v1.Int64Query/Int64Query").
@@ -230,10 +242,12 @@ func AppendInt64QueryGorillaRoute(router *mux.Router, service Int64QueryGorillaS
 }
 
 type int64QueryGorillaHandler struct {
-	service      Int64QueryGorillaService
-	decoder      int64QueryGorillaRequestDecoder
-	encoder      int64QueryGorillaEncodeResponse
-	errorEncoder gorilla.ErrorEncoder
+	service                 Int64QueryGorillaService
+	decoder                 int64QueryGorillaRequestDecoder
+	encoder                 int64QueryGorillaEncodeResponse
+	errorEncoder            gorilla.ErrorEncoder
+	shouldFailFast          bool
+	onValidationErrCallback gorilla.OnValidationErrCallback
 }
 
 func (h int64QueryGorillaHandler) Int64Query() http.Handler {
@@ -241,6 +255,10 @@ func (h int64QueryGorillaHandler) Int64Query() http.Handler {
 		ctx := request.Context()
 		in, err := h.decoder.Int64Query(ctx, request)
 		if err != nil {
+			h.errorEncoder(ctx, err, writer)
+			return
+		}
+		if err := gorilla.ValidateRequest(ctx, in, h.shouldFailFast, h.onValidationErrCallback); err != nil {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
@@ -257,17 +275,17 @@ func (h int64QueryGorillaHandler) Int64Query() http.Handler {
 }
 
 type int64QueryGorillaRequestDecoder struct {
-	unmarshalOptions        protojson.UnmarshalOptions
-	shouldFailFast          bool
-	onValidationErrCallback gorilla.OnValidationErrCallback
+	unmarshalOptions protojson.UnmarshalOptions
 }
 
 func (decoder int64QueryGorillaRequestDecoder) Int64Query(ctx context.Context, r *http.Request) (*Int64QueryRequest, error) {
 	req := &Int64QueryRequest{}
-	if ok, err := gorilla.CustomDecodeRequest(ctx, r, req); ok && err != nil {
+	ok, err := gorilla.CustomDecodeRequest(ctx, r, req)
+	if err != nil {
 		return nil, err
-	} else if ok && err == nil {
-		return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
+	}
+	if ok {
+		return req, nil
 	}
 	queries := r.URL.Query()
 	var queryErr error
@@ -285,7 +303,7 @@ func (decoder int64QueryGorillaRequestDecoder) Int64Query(ctx context.Context, r
 	if queryErr != nil {
 		return nil, queryErr
 	}
-	return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
+	return req, nil
 }
 
 type int64QueryGorillaEncodeResponse struct {
@@ -307,16 +325,16 @@ func AppendUint32QueryGorillaRoute(router *mux.Router, service Uint32QueryGorill
 	handler := uint32QueryGorillaHandler{
 		service: service,
 		decoder: uint32QueryGorillaRequestDecoder{
-			unmarshalOptions:        options.UnmarshalOptions(),
-			shouldFailFast:          options.ShouldFailFast(),
-			onValidationErrCallback: options.OnValidationErrCallback(),
+			unmarshalOptions: options.UnmarshalOptions(),
 		},
 		encoder: uint32QueryGorillaEncodeResponse{
 			marshalOptions:      options.MarshalOptions(),
 			unmarshalOptions:    options.UnmarshalOptions(),
 			responseTransformer: options.ResponseTransformer(),
 		},
-		errorEncoder: gorilla.DefaultEncodeError,
+		errorEncoder:            gorilla.DefaultEncodeError,
+		shouldFailFast:          options.ShouldFailFast(),
+		onValidationErrCallback: options.OnValidationErrCallback(),
 	}
 	router.NewRoute().
 		Name("/leo.gorilla.example.query.v1.Uint32Query/Uint32Query").
@@ -327,10 +345,12 @@ func AppendUint32QueryGorillaRoute(router *mux.Router, service Uint32QueryGorill
 }
 
 type uint32QueryGorillaHandler struct {
-	service      Uint32QueryGorillaService
-	decoder      uint32QueryGorillaRequestDecoder
-	encoder      uint32QueryGorillaEncodeResponse
-	errorEncoder gorilla.ErrorEncoder
+	service                 Uint32QueryGorillaService
+	decoder                 uint32QueryGorillaRequestDecoder
+	encoder                 uint32QueryGorillaEncodeResponse
+	errorEncoder            gorilla.ErrorEncoder
+	shouldFailFast          bool
+	onValidationErrCallback gorilla.OnValidationErrCallback
 }
 
 func (h uint32QueryGorillaHandler) Uint32Query() http.Handler {
@@ -338,6 +358,10 @@ func (h uint32QueryGorillaHandler) Uint32Query() http.Handler {
 		ctx := request.Context()
 		in, err := h.decoder.Uint32Query(ctx, request)
 		if err != nil {
+			h.errorEncoder(ctx, err, writer)
+			return
+		}
+		if err := gorilla.ValidateRequest(ctx, in, h.shouldFailFast, h.onValidationErrCallback); err != nil {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
@@ -354,17 +378,17 @@ func (h uint32QueryGorillaHandler) Uint32Query() http.Handler {
 }
 
 type uint32QueryGorillaRequestDecoder struct {
-	unmarshalOptions        protojson.UnmarshalOptions
-	shouldFailFast          bool
-	onValidationErrCallback gorilla.OnValidationErrCallback
+	unmarshalOptions protojson.UnmarshalOptions
 }
 
 func (decoder uint32QueryGorillaRequestDecoder) Uint32Query(ctx context.Context, r *http.Request) (*Uint32QueryRequest, error) {
 	req := &Uint32QueryRequest{}
-	if ok, err := gorilla.CustomDecodeRequest(ctx, r, req); ok && err != nil {
+	ok, err := gorilla.CustomDecodeRequest(ctx, r, req)
+	if err != nil {
 		return nil, err
-	} else if ok && err == nil {
-		return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
+	}
+	if ok {
+		return req, nil
 	}
 	queries := r.URL.Query()
 	var queryErr error
@@ -379,7 +403,7 @@ func (decoder uint32QueryGorillaRequestDecoder) Uint32Query(ctx context.Context,
 	if queryErr != nil {
 		return nil, queryErr
 	}
-	return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
+	return req, nil
 }
 
 type uint32QueryGorillaEncodeResponse struct {
@@ -401,16 +425,16 @@ func AppendUint64QueryGorillaRoute(router *mux.Router, service Uint64QueryGorill
 	handler := uint64QueryGorillaHandler{
 		service: service,
 		decoder: uint64QueryGorillaRequestDecoder{
-			unmarshalOptions:        options.UnmarshalOptions(),
-			shouldFailFast:          options.ShouldFailFast(),
-			onValidationErrCallback: options.OnValidationErrCallback(),
+			unmarshalOptions: options.UnmarshalOptions(),
 		},
 		encoder: uint64QueryGorillaEncodeResponse{
 			marshalOptions:      options.MarshalOptions(),
 			unmarshalOptions:    options.UnmarshalOptions(),
 			responseTransformer: options.ResponseTransformer(),
 		},
-		errorEncoder: gorilla.DefaultEncodeError,
+		errorEncoder:            gorilla.DefaultEncodeError,
+		shouldFailFast:          options.ShouldFailFast(),
+		onValidationErrCallback: options.OnValidationErrCallback(),
 	}
 	router.NewRoute().
 		Name("/leo.gorilla.example.query.v1.Uint64Query/Uint64Query").
@@ -421,10 +445,12 @@ func AppendUint64QueryGorillaRoute(router *mux.Router, service Uint64QueryGorill
 }
 
 type uint64QueryGorillaHandler struct {
-	service      Uint64QueryGorillaService
-	decoder      uint64QueryGorillaRequestDecoder
-	encoder      uint64QueryGorillaEncodeResponse
-	errorEncoder gorilla.ErrorEncoder
+	service                 Uint64QueryGorillaService
+	decoder                 uint64QueryGorillaRequestDecoder
+	encoder                 uint64QueryGorillaEncodeResponse
+	errorEncoder            gorilla.ErrorEncoder
+	shouldFailFast          bool
+	onValidationErrCallback gorilla.OnValidationErrCallback
 }
 
 func (h uint64QueryGorillaHandler) Uint64Query() http.Handler {
@@ -432,6 +458,10 @@ func (h uint64QueryGorillaHandler) Uint64Query() http.Handler {
 		ctx := request.Context()
 		in, err := h.decoder.Uint64Query(ctx, request)
 		if err != nil {
+			h.errorEncoder(ctx, err, writer)
+			return
+		}
+		if err := gorilla.ValidateRequest(ctx, in, h.shouldFailFast, h.onValidationErrCallback); err != nil {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
@@ -448,17 +478,17 @@ func (h uint64QueryGorillaHandler) Uint64Query() http.Handler {
 }
 
 type uint64QueryGorillaRequestDecoder struct {
-	unmarshalOptions        protojson.UnmarshalOptions
-	shouldFailFast          bool
-	onValidationErrCallback gorilla.OnValidationErrCallback
+	unmarshalOptions protojson.UnmarshalOptions
 }
 
 func (decoder uint64QueryGorillaRequestDecoder) Uint64Query(ctx context.Context, r *http.Request) (*Uint64QueryRequest, error) {
 	req := &Uint64QueryRequest{}
-	if ok, err := gorilla.CustomDecodeRequest(ctx, r, req); ok && err != nil {
+	ok, err := gorilla.CustomDecodeRequest(ctx, r, req)
+	if err != nil {
 		return nil, err
-	} else if ok && err == nil {
-		return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
+	}
+	if ok {
+		return req, nil
 	}
 	queries := r.URL.Query()
 	var queryErr error
@@ -473,7 +503,7 @@ func (decoder uint64QueryGorillaRequestDecoder) Uint64Query(ctx context.Context,
 	if queryErr != nil {
 		return nil, queryErr
 	}
-	return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
+	return req, nil
 }
 
 type uint64QueryGorillaEncodeResponse struct {
@@ -495,16 +525,16 @@ func AppendFloatQueryGorillaRoute(router *mux.Router, service FloatQueryGorillaS
 	handler := floatQueryGorillaHandler{
 		service: service,
 		decoder: floatQueryGorillaRequestDecoder{
-			unmarshalOptions:        options.UnmarshalOptions(),
-			shouldFailFast:          options.ShouldFailFast(),
-			onValidationErrCallback: options.OnValidationErrCallback(),
+			unmarshalOptions: options.UnmarshalOptions(),
 		},
 		encoder: floatQueryGorillaEncodeResponse{
 			marshalOptions:      options.MarshalOptions(),
 			unmarshalOptions:    options.UnmarshalOptions(),
 			responseTransformer: options.ResponseTransformer(),
 		},
-		errorEncoder: gorilla.DefaultEncodeError,
+		errorEncoder:            gorilla.DefaultEncodeError,
+		shouldFailFast:          options.ShouldFailFast(),
+		onValidationErrCallback: options.OnValidationErrCallback(),
 	}
 	router.NewRoute().
 		Name("/leo.gorilla.example.query.v1.FloatQuery/FloatQuery").
@@ -515,10 +545,12 @@ func AppendFloatQueryGorillaRoute(router *mux.Router, service FloatQueryGorillaS
 }
 
 type floatQueryGorillaHandler struct {
-	service      FloatQueryGorillaService
-	decoder      floatQueryGorillaRequestDecoder
-	encoder      floatQueryGorillaEncodeResponse
-	errorEncoder gorilla.ErrorEncoder
+	service                 FloatQueryGorillaService
+	decoder                 floatQueryGorillaRequestDecoder
+	encoder                 floatQueryGorillaEncodeResponse
+	errorEncoder            gorilla.ErrorEncoder
+	shouldFailFast          bool
+	onValidationErrCallback gorilla.OnValidationErrCallback
 }
 
 func (h floatQueryGorillaHandler) FloatQuery() http.Handler {
@@ -526,6 +558,10 @@ func (h floatQueryGorillaHandler) FloatQuery() http.Handler {
 		ctx := request.Context()
 		in, err := h.decoder.FloatQuery(ctx, request)
 		if err != nil {
+			h.errorEncoder(ctx, err, writer)
+			return
+		}
+		if err := gorilla.ValidateRequest(ctx, in, h.shouldFailFast, h.onValidationErrCallback); err != nil {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
@@ -542,17 +578,17 @@ func (h floatQueryGorillaHandler) FloatQuery() http.Handler {
 }
 
 type floatQueryGorillaRequestDecoder struct {
-	unmarshalOptions        protojson.UnmarshalOptions
-	shouldFailFast          bool
-	onValidationErrCallback gorilla.OnValidationErrCallback
+	unmarshalOptions protojson.UnmarshalOptions
 }
 
 func (decoder floatQueryGorillaRequestDecoder) FloatQuery(ctx context.Context, r *http.Request) (*FloatQueryRequest, error) {
 	req := &FloatQueryRequest{}
-	if ok, err := gorilla.CustomDecodeRequest(ctx, r, req); ok && err != nil {
+	ok, err := gorilla.CustomDecodeRequest(ctx, r, req)
+	if err != nil {
 		return nil, err
-	} else if ok && err == nil {
-		return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
+	}
+	if ok {
+		return req, nil
 	}
 	queries := r.URL.Query()
 	var queryErr error
@@ -564,7 +600,7 @@ func (decoder floatQueryGorillaRequestDecoder) FloatQuery(ctx context.Context, r
 	if queryErr != nil {
 		return nil, queryErr
 	}
-	return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
+	return req, nil
 }
 
 type floatQueryGorillaEncodeResponse struct {
@@ -586,16 +622,16 @@ func AppendDoubleQueryGorillaRoute(router *mux.Router, service DoubleQueryGorill
 	handler := doubleQueryGorillaHandler{
 		service: service,
 		decoder: doubleQueryGorillaRequestDecoder{
-			unmarshalOptions:        options.UnmarshalOptions(),
-			shouldFailFast:          options.ShouldFailFast(),
-			onValidationErrCallback: options.OnValidationErrCallback(),
+			unmarshalOptions: options.UnmarshalOptions(),
 		},
 		encoder: doubleQueryGorillaEncodeResponse{
 			marshalOptions:      options.MarshalOptions(),
 			unmarshalOptions:    options.UnmarshalOptions(),
 			responseTransformer: options.ResponseTransformer(),
 		},
-		errorEncoder: gorilla.DefaultEncodeError,
+		errorEncoder:            gorilla.DefaultEncodeError,
+		shouldFailFast:          options.ShouldFailFast(),
+		onValidationErrCallback: options.OnValidationErrCallback(),
 	}
 	router.NewRoute().
 		Name("/leo.gorilla.example.query.v1.DoubleQuery/DoubleQuery").
@@ -606,10 +642,12 @@ func AppendDoubleQueryGorillaRoute(router *mux.Router, service DoubleQueryGorill
 }
 
 type doubleQueryGorillaHandler struct {
-	service      DoubleQueryGorillaService
-	decoder      doubleQueryGorillaRequestDecoder
-	encoder      doubleQueryGorillaEncodeResponse
-	errorEncoder gorilla.ErrorEncoder
+	service                 DoubleQueryGorillaService
+	decoder                 doubleQueryGorillaRequestDecoder
+	encoder                 doubleQueryGorillaEncodeResponse
+	errorEncoder            gorilla.ErrorEncoder
+	shouldFailFast          bool
+	onValidationErrCallback gorilla.OnValidationErrCallback
 }
 
 func (h doubleQueryGorillaHandler) DoubleQuery() http.Handler {
@@ -617,6 +655,10 @@ func (h doubleQueryGorillaHandler) DoubleQuery() http.Handler {
 		ctx := request.Context()
 		in, err := h.decoder.DoubleQuery(ctx, request)
 		if err != nil {
+			h.errorEncoder(ctx, err, writer)
+			return
+		}
+		if err := gorilla.ValidateRequest(ctx, in, h.shouldFailFast, h.onValidationErrCallback); err != nil {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
@@ -633,17 +675,17 @@ func (h doubleQueryGorillaHandler) DoubleQuery() http.Handler {
 }
 
 type doubleQueryGorillaRequestDecoder struct {
-	unmarshalOptions        protojson.UnmarshalOptions
-	shouldFailFast          bool
-	onValidationErrCallback gorilla.OnValidationErrCallback
+	unmarshalOptions protojson.UnmarshalOptions
 }
 
 func (decoder doubleQueryGorillaRequestDecoder) DoubleQuery(ctx context.Context, r *http.Request) (*DoubleQueryRequest, error) {
 	req := &DoubleQueryRequest{}
-	if ok, err := gorilla.CustomDecodeRequest(ctx, r, req); ok && err != nil {
+	ok, err := gorilla.CustomDecodeRequest(ctx, r, req)
+	if err != nil {
 		return nil, err
-	} else if ok && err == nil {
-		return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
+	}
+	if ok {
+		return req, nil
 	}
 	queries := r.URL.Query()
 	var queryErr error
@@ -655,7 +697,7 @@ func (decoder doubleQueryGorillaRequestDecoder) DoubleQuery(ctx context.Context,
 	if queryErr != nil {
 		return nil, queryErr
 	}
-	return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
+	return req, nil
 }
 
 type doubleQueryGorillaEncodeResponse struct {
@@ -677,16 +719,16 @@ func AppendStringQueryGorillaRoute(router *mux.Router, service StringQueryGorill
 	handler := stringQueryGorillaHandler{
 		service: service,
 		decoder: stringQueryGorillaRequestDecoder{
-			unmarshalOptions:        options.UnmarshalOptions(),
-			shouldFailFast:          options.ShouldFailFast(),
-			onValidationErrCallback: options.OnValidationErrCallback(),
+			unmarshalOptions: options.UnmarshalOptions(),
 		},
 		encoder: stringQueryGorillaEncodeResponse{
 			marshalOptions:      options.MarshalOptions(),
 			unmarshalOptions:    options.UnmarshalOptions(),
 			responseTransformer: options.ResponseTransformer(),
 		},
-		errorEncoder: gorilla.DefaultEncodeError,
+		errorEncoder:            gorilla.DefaultEncodeError,
+		shouldFailFast:          options.ShouldFailFast(),
+		onValidationErrCallback: options.OnValidationErrCallback(),
 	}
 	router.NewRoute().
 		Name("/leo.gorilla.example.query.v1.StringQuery/StringQuery").
@@ -697,10 +739,12 @@ func AppendStringQueryGorillaRoute(router *mux.Router, service StringQueryGorill
 }
 
 type stringQueryGorillaHandler struct {
-	service      StringQueryGorillaService
-	decoder      stringQueryGorillaRequestDecoder
-	encoder      stringQueryGorillaEncodeResponse
-	errorEncoder gorilla.ErrorEncoder
+	service                 StringQueryGorillaService
+	decoder                 stringQueryGorillaRequestDecoder
+	encoder                 stringQueryGorillaEncodeResponse
+	errorEncoder            gorilla.ErrorEncoder
+	shouldFailFast          bool
+	onValidationErrCallback gorilla.OnValidationErrCallback
 }
 
 func (h stringQueryGorillaHandler) StringQuery() http.Handler {
@@ -708,6 +752,10 @@ func (h stringQueryGorillaHandler) StringQuery() http.Handler {
 		ctx := request.Context()
 		in, err := h.decoder.StringQuery(ctx, request)
 		if err != nil {
+			h.errorEncoder(ctx, err, writer)
+			return
+		}
+		if err := gorilla.ValidateRequest(ctx, in, h.shouldFailFast, h.onValidationErrCallback); err != nil {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
@@ -724,17 +772,17 @@ func (h stringQueryGorillaHandler) StringQuery() http.Handler {
 }
 
 type stringQueryGorillaRequestDecoder struct {
-	unmarshalOptions        protojson.UnmarshalOptions
-	shouldFailFast          bool
-	onValidationErrCallback gorilla.OnValidationErrCallback
+	unmarshalOptions protojson.UnmarshalOptions
 }
 
 func (decoder stringQueryGorillaRequestDecoder) StringQuery(ctx context.Context, r *http.Request) (*StringQueryRequest, error) {
 	req := &StringQueryRequest{}
-	if ok, err := gorilla.CustomDecodeRequest(ctx, r, req); ok && err != nil {
+	ok, err := gorilla.CustomDecodeRequest(ctx, r, req)
+	if err != nil {
 		return nil, err
-	} else if ok && err == nil {
-		return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
+	}
+	if ok {
+		return req, nil
 	}
 	queries := r.URL.Query()
 	var queryErr error
@@ -746,7 +794,7 @@ func (decoder stringQueryGorillaRequestDecoder) StringQuery(ctx context.Context,
 	if queryErr != nil {
 		return nil, queryErr
 	}
-	return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
+	return req, nil
 }
 
 type stringQueryGorillaEncodeResponse struct {
@@ -768,16 +816,16 @@ func AppendEnumQueryGorillaRoute(router *mux.Router, service EnumQueryGorillaSer
 	handler := enumQueryGorillaHandler{
 		service: service,
 		decoder: enumQueryGorillaRequestDecoder{
-			unmarshalOptions:        options.UnmarshalOptions(),
-			shouldFailFast:          options.ShouldFailFast(),
-			onValidationErrCallback: options.OnValidationErrCallback(),
+			unmarshalOptions: options.UnmarshalOptions(),
 		},
 		encoder: enumQueryGorillaEncodeResponse{
 			marshalOptions:      options.MarshalOptions(),
 			unmarshalOptions:    options.UnmarshalOptions(),
 			responseTransformer: options.ResponseTransformer(),
 		},
-		errorEncoder: gorilla.DefaultEncodeError,
+		errorEncoder:            gorilla.DefaultEncodeError,
+		shouldFailFast:          options.ShouldFailFast(),
+		onValidationErrCallback: options.OnValidationErrCallback(),
 	}
 	router.NewRoute().
 		Name("/leo.gorilla.example.query.v1.EnumQuery/EnumQuery").
@@ -788,10 +836,12 @@ func AppendEnumQueryGorillaRoute(router *mux.Router, service EnumQueryGorillaSer
 }
 
 type enumQueryGorillaHandler struct {
-	service      EnumQueryGorillaService
-	decoder      enumQueryGorillaRequestDecoder
-	encoder      enumQueryGorillaEncodeResponse
-	errorEncoder gorilla.ErrorEncoder
+	service                 EnumQueryGorillaService
+	decoder                 enumQueryGorillaRequestDecoder
+	encoder                 enumQueryGorillaEncodeResponse
+	errorEncoder            gorilla.ErrorEncoder
+	shouldFailFast          bool
+	onValidationErrCallback gorilla.OnValidationErrCallback
 }
 
 func (h enumQueryGorillaHandler) EnumQuery() http.Handler {
@@ -799,6 +849,10 @@ func (h enumQueryGorillaHandler) EnumQuery() http.Handler {
 		ctx := request.Context()
 		in, err := h.decoder.EnumQuery(ctx, request)
 		if err != nil {
+			h.errorEncoder(ctx, err, writer)
+			return
+		}
+		if err := gorilla.ValidateRequest(ctx, in, h.shouldFailFast, h.onValidationErrCallback); err != nil {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
@@ -815,17 +869,17 @@ func (h enumQueryGorillaHandler) EnumQuery() http.Handler {
 }
 
 type enumQueryGorillaRequestDecoder struct {
-	unmarshalOptions        protojson.UnmarshalOptions
-	shouldFailFast          bool
-	onValidationErrCallback gorilla.OnValidationErrCallback
+	unmarshalOptions protojson.UnmarshalOptions
 }
 
 func (decoder enumQueryGorillaRequestDecoder) EnumQuery(ctx context.Context, r *http.Request) (*EnumQueryRequest, error) {
 	req := &EnumQueryRequest{}
-	if ok, err := gorilla.CustomDecodeRequest(ctx, r, req); ok && err != nil {
+	ok, err := gorilla.CustomDecodeRequest(ctx, r, req)
+	if err != nil {
 		return nil, err
-	} else if ok && err == nil {
-		return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
+	}
+	if ok {
+		return req, nil
 	}
 	queries := r.URL.Query()
 	var queryErr error
@@ -835,7 +889,7 @@ func (decoder enumQueryGorillaRequestDecoder) EnumQuery(ctx context.Context, r *
 	if queryErr != nil {
 		return nil, queryErr
 	}
-	return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
+	return req, nil
 }
 
 type enumQueryGorillaEncodeResponse struct {

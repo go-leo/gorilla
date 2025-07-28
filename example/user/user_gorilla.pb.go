@@ -24,16 +24,16 @@ func AppendUserGorillaRoute(router *mux.Router, service UserGorillaService, opts
 	handler := userGorillaHandler{
 		service: service,
 		decoder: userGorillaRequestDecoder{
-			unmarshalOptions:        options.UnmarshalOptions(),
-			shouldFailFast:          options.ShouldFailFast(),
-			onValidationErrCallback: options.OnValidationErrCallback(),
+			unmarshalOptions: options.UnmarshalOptions(),
 		},
 		encoder: userGorillaEncodeResponse{
 			marshalOptions:      options.MarshalOptions(),
 			unmarshalOptions:    options.UnmarshalOptions(),
 			responseTransformer: options.ResponseTransformer(),
 		},
-		errorEncoder: gorilla.DefaultEncodeError,
+		errorEncoder:            gorilla.DefaultEncodeError,
+		shouldFailFast:          options.ShouldFailFast(),
+		onValidationErrCallback: options.OnValidationErrCallback(),
 	}
 	router.NewRoute().
 		Name("/leo.gorilla.example.user.v1.User/CreateUser").
@@ -69,10 +69,12 @@ func AppendUserGorillaRoute(router *mux.Router, service UserGorillaService, opts
 }
 
 type userGorillaHandler struct {
-	service      UserGorillaService
-	decoder      userGorillaRequestDecoder
-	encoder      userGorillaEncodeResponse
-	errorEncoder gorilla.ErrorEncoder
+	service                 UserGorillaService
+	decoder                 userGorillaRequestDecoder
+	encoder                 userGorillaEncodeResponse
+	errorEncoder            gorilla.ErrorEncoder
+	shouldFailFast          bool
+	onValidationErrCallback gorilla.OnValidationErrCallback
 }
 
 func (h userGorillaHandler) CreateUser() http.Handler {
@@ -80,6 +82,10 @@ func (h userGorillaHandler) CreateUser() http.Handler {
 		ctx := request.Context()
 		in, err := h.decoder.CreateUser(ctx, request)
 		if err != nil {
+			h.errorEncoder(ctx, err, writer)
+			return
+		}
+		if err := gorilla.ValidateRequest(ctx, in, h.shouldFailFast, h.onValidationErrCallback); err != nil {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
@@ -103,6 +109,10 @@ func (h userGorillaHandler) DeleteUser() http.Handler {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
+		if err := gorilla.ValidateRequest(ctx, in, h.shouldFailFast, h.onValidationErrCallback); err != nil {
+			h.errorEncoder(ctx, err, writer)
+			return
+		}
 		out, err := h.service.DeleteUser(ctx, in)
 		if err != nil {
 			h.errorEncoder(ctx, err, writer)
@@ -120,6 +130,10 @@ func (h userGorillaHandler) ModifyUser() http.Handler {
 		ctx := request.Context()
 		in, err := h.decoder.ModifyUser(ctx, request)
 		if err != nil {
+			h.errorEncoder(ctx, err, writer)
+			return
+		}
+		if err := gorilla.ValidateRequest(ctx, in, h.shouldFailFast, h.onValidationErrCallback); err != nil {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
@@ -143,6 +157,10 @@ func (h userGorillaHandler) UpdateUser() http.Handler {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
+		if err := gorilla.ValidateRequest(ctx, in, h.shouldFailFast, h.onValidationErrCallback); err != nil {
+			h.errorEncoder(ctx, err, writer)
+			return
+		}
 		out, err := h.service.UpdateUser(ctx, in)
 		if err != nil {
 			h.errorEncoder(ctx, err, writer)
@@ -160,6 +178,10 @@ func (h userGorillaHandler) GetUser() http.Handler {
 		ctx := request.Context()
 		in, err := h.decoder.GetUser(ctx, request)
 		if err != nil {
+			h.errorEncoder(ctx, err, writer)
+			return
+		}
+		if err := gorilla.ValidateRequest(ctx, in, h.shouldFailFast, h.onValidationErrCallback); err != nil {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
@@ -183,6 +205,10 @@ func (h userGorillaHandler) ListUser() http.Handler {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
+		if err := gorilla.ValidateRequest(ctx, in, h.shouldFailFast, h.onValidationErrCallback); err != nil {
+			h.errorEncoder(ctx, err, writer)
+			return
+		}
 		out, err := h.service.ListUser(ctx, in)
 		if err != nil {
 			h.errorEncoder(ctx, err, writer)
@@ -196,29 +222,31 @@ func (h userGorillaHandler) ListUser() http.Handler {
 }
 
 type userGorillaRequestDecoder struct {
-	unmarshalOptions        protojson.UnmarshalOptions
-	shouldFailFast          bool
-	onValidationErrCallback gorilla.OnValidationErrCallback
+	unmarshalOptions protojson.UnmarshalOptions
 }
 
 func (decoder userGorillaRequestDecoder) CreateUser(ctx context.Context, r *http.Request) (*CreateUserRequest, error) {
 	req := &CreateUserRequest{}
-	if ok, err := gorilla.CustomDecodeRequest(ctx, r, req); ok && err != nil {
+	ok, err := gorilla.CustomDecodeRequest(ctx, r, req)
+	if err != nil {
 		return nil, err
-	} else if ok && err == nil {
-		return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
+	}
+	if ok {
+		return req, nil
 	}
 	if err := gorilla.DecodeRequest(ctx, r, req, decoder.unmarshalOptions); err != nil {
 		return nil, err
 	}
-	return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
+	return req, nil
 }
 func (decoder userGorillaRequestDecoder) DeleteUser(ctx context.Context, r *http.Request) (*DeleteUserRequest, error) {
 	req := &DeleteUserRequest{}
-	if ok, err := gorilla.CustomDecodeRequest(ctx, r, req); ok && err != nil {
+	ok, err := gorilla.CustomDecodeRequest(ctx, r, req)
+	if err != nil {
 		return nil, err
-	} else if ok && err == nil {
-		return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
+	}
+	if ok {
+		return req, nil
 	}
 	vars := gorilla.FormFromMap(mux.Vars(r))
 	var varErr error
@@ -227,14 +255,16 @@ func (decoder userGorillaRequestDecoder) DeleteUser(ctx context.Context, r *http
 	if varErr != nil {
 		return nil, varErr
 	}
-	return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
+	return req, nil
 }
 func (decoder userGorillaRequestDecoder) ModifyUser(ctx context.Context, r *http.Request) (*ModifyUserRequest, error) {
 	req := &ModifyUserRequest{}
-	if ok, err := gorilla.CustomDecodeRequest(ctx, r, req); ok && err != nil {
+	ok, err := gorilla.CustomDecodeRequest(ctx, r, req)
+	if err != nil {
 		return nil, err
-	} else if ok && err == nil {
-		return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
+	}
+	if ok {
+		return req, nil
 	}
 	if err := gorilla.DecodeRequest(ctx, r, req, decoder.unmarshalOptions); err != nil {
 		return nil, err
@@ -246,14 +276,16 @@ func (decoder userGorillaRequestDecoder) ModifyUser(ctx context.Context, r *http
 	if varErr != nil {
 		return nil, varErr
 	}
-	return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
+	return req, nil
 }
 func (decoder userGorillaRequestDecoder) UpdateUser(ctx context.Context, r *http.Request) (*UpdateUserRequest, error) {
 	req := &UpdateUserRequest{}
-	if ok, err := gorilla.CustomDecodeRequest(ctx, r, req); ok && err != nil {
+	ok, err := gorilla.CustomDecodeRequest(ctx, r, req)
+	if err != nil {
 		return nil, err
-	} else if ok && err == nil {
-		return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
+	}
+	if ok {
+		return req, nil
 	}
 	if req.Item == nil {
 		req.Item = &UserItem{}
@@ -268,14 +300,16 @@ func (decoder userGorillaRequestDecoder) UpdateUser(ctx context.Context, r *http
 	if varErr != nil {
 		return nil, varErr
 	}
-	return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
+	return req, nil
 }
 func (decoder userGorillaRequestDecoder) GetUser(ctx context.Context, r *http.Request) (*GetUserRequest, error) {
 	req := &GetUserRequest{}
-	if ok, err := gorilla.CustomDecodeRequest(ctx, r, req); ok && err != nil {
+	ok, err := gorilla.CustomDecodeRequest(ctx, r, req)
+	if err != nil {
 		return nil, err
-	} else if ok && err == nil {
-		return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
+	}
+	if ok {
+		return req, nil
 	}
 	vars := gorilla.FormFromMap(mux.Vars(r))
 	var varErr error
@@ -284,14 +318,16 @@ func (decoder userGorillaRequestDecoder) GetUser(ctx context.Context, r *http.Re
 	if varErr != nil {
 		return nil, varErr
 	}
-	return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
+	return req, nil
 }
 func (decoder userGorillaRequestDecoder) ListUser(ctx context.Context, r *http.Request) (*ListUserRequest, error) {
 	req := &ListUserRequest{}
-	if ok, err := gorilla.CustomDecodeRequest(ctx, r, req); ok && err != nil {
+	ok, err := gorilla.CustomDecodeRequest(ctx, r, req)
+	if err != nil {
 		return nil, err
-	} else if ok && err == nil {
-		return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
+	}
+	if ok {
+		return req, nil
 	}
 	queries := r.URL.Query()
 	var queryErr error
@@ -300,7 +336,7 @@ func (decoder userGorillaRequestDecoder) ListUser(ctx context.Context, r *http.R
 	if queryErr != nil {
 		return nil, queryErr
 	}
-	return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
+	return req, nil
 }
 
 type userGorillaEncodeResponse struct {

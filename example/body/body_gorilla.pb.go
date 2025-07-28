@@ -27,16 +27,16 @@ func AppendBodyGorillaRoute(router *mux.Router, service BodyGorillaService, opts
 	handler := bodyGorillaHandler{
 		service: service,
 		decoder: bodyGorillaRequestDecoder{
-			unmarshalOptions:        options.UnmarshalOptions(),
-			shouldFailFast:          options.ShouldFailFast(),
-			onValidationErrCallback: options.OnValidationErrCallback(),
+			unmarshalOptions: options.UnmarshalOptions(),
 		},
 		encoder: bodyGorillaEncodeResponse{
 			marshalOptions:      options.MarshalOptions(),
 			unmarshalOptions:    options.UnmarshalOptions(),
 			responseTransformer: options.ResponseTransformer(),
 		},
-		errorEncoder: gorilla.DefaultEncodeError,
+		errorEncoder:            gorilla.DefaultEncodeError,
+		shouldFailFast:          options.ShouldFailFast(),
+		onValidationErrCallback: options.OnValidationErrCallback(),
 	}
 	router.NewRoute().
 		Name("/leo.gorilla.example.body.v1.Body/StarBody").
@@ -72,10 +72,12 @@ func AppendBodyGorillaRoute(router *mux.Router, service BodyGorillaService, opts
 }
 
 type bodyGorillaHandler struct {
-	service      BodyGorillaService
-	decoder      bodyGorillaRequestDecoder
-	encoder      bodyGorillaEncodeResponse
-	errorEncoder gorilla.ErrorEncoder
+	service                 BodyGorillaService
+	decoder                 bodyGorillaRequestDecoder
+	encoder                 bodyGorillaEncodeResponse
+	errorEncoder            gorilla.ErrorEncoder
+	shouldFailFast          bool
+	onValidationErrCallback gorilla.OnValidationErrCallback
 }
 
 func (h bodyGorillaHandler) StarBody() http1.Handler {
@@ -83,6 +85,10 @@ func (h bodyGorillaHandler) StarBody() http1.Handler {
 		ctx := request.Context()
 		in, err := h.decoder.StarBody(ctx, request)
 		if err != nil {
+			h.errorEncoder(ctx, err, writer)
+			return
+		}
+		if err := gorilla.ValidateRequest(ctx, in, h.shouldFailFast, h.onValidationErrCallback); err != nil {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
@@ -106,6 +112,10 @@ func (h bodyGorillaHandler) NamedBody() http1.Handler {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
+		if err := gorilla.ValidateRequest(ctx, in, h.shouldFailFast, h.onValidationErrCallback); err != nil {
+			h.errorEncoder(ctx, err, writer)
+			return
+		}
 		out, err := h.service.NamedBody(ctx, in)
 		if err != nil {
 			h.errorEncoder(ctx, err, writer)
@@ -123,6 +133,10 @@ func (h bodyGorillaHandler) NonBody() http1.Handler {
 		ctx := request.Context()
 		in, err := h.decoder.NonBody(ctx, request)
 		if err != nil {
+			h.errorEncoder(ctx, err, writer)
+			return
+		}
+		if err := gorilla.ValidateRequest(ctx, in, h.shouldFailFast, h.onValidationErrCallback); err != nil {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
@@ -146,6 +160,10 @@ func (h bodyGorillaHandler) HttpBodyStarBody() http1.Handler {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
+		if err := gorilla.ValidateRequest(ctx, in, h.shouldFailFast, h.onValidationErrCallback); err != nil {
+			h.errorEncoder(ctx, err, writer)
+			return
+		}
 		out, err := h.service.HttpBodyStarBody(ctx, in)
 		if err != nil {
 			h.errorEncoder(ctx, err, writer)
@@ -163,6 +181,10 @@ func (h bodyGorillaHandler) HttpBodyNamedBody() http1.Handler {
 		ctx := request.Context()
 		in, err := h.decoder.HttpBodyNamedBody(ctx, request)
 		if err != nil {
+			h.errorEncoder(ctx, err, writer)
+			return
+		}
+		if err := gorilla.ValidateRequest(ctx, in, h.shouldFailFast, h.onValidationErrCallback); err != nil {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
@@ -186,6 +208,10 @@ func (h bodyGorillaHandler) HttpRequest() http1.Handler {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
+		if err := gorilla.ValidateRequest(ctx, in, h.shouldFailFast, h.onValidationErrCallback); err != nil {
+			h.errorEncoder(ctx, err, writer)
+			return
+		}
 		out, err := h.service.HttpRequest(ctx, in)
 		if err != nil {
 			h.errorEncoder(ctx, err, writer)
@@ -199,29 +225,31 @@ func (h bodyGorillaHandler) HttpRequest() http1.Handler {
 }
 
 type bodyGorillaRequestDecoder struct {
-	unmarshalOptions        protojson.UnmarshalOptions
-	shouldFailFast          bool
-	onValidationErrCallback gorilla.OnValidationErrCallback
+	unmarshalOptions protojson.UnmarshalOptions
 }
 
 func (decoder bodyGorillaRequestDecoder) StarBody(ctx context.Context, r *http1.Request) (*BodyRequest, error) {
 	req := &BodyRequest{}
-	if ok, err := gorilla.CustomDecodeRequest(ctx, r, req); ok && err != nil {
+	ok, err := gorilla.CustomDecodeRequest(ctx, r, req)
+	if err != nil {
 		return nil, err
-	} else if ok && err == nil {
-		return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
+	}
+	if ok {
+		return req, nil
 	}
 	if err := gorilla.DecodeRequest(ctx, r, req, decoder.unmarshalOptions); err != nil {
 		return nil, err
 	}
-	return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
+	return req, nil
 }
 func (decoder bodyGorillaRequestDecoder) NamedBody(ctx context.Context, r *http1.Request) (*NamedBodyRequest, error) {
 	req := &NamedBodyRequest{}
-	if ok, err := gorilla.CustomDecodeRequest(ctx, r, req); ok && err != nil {
+	ok, err := gorilla.CustomDecodeRequest(ctx, r, req)
+	if err != nil {
 		return nil, err
-	} else if ok && err == nil {
-		return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
+	}
+	if ok {
+		return req, nil
 	}
 	if req.Body == nil {
 		req.Body = &NamedBodyRequest_Body{}
@@ -229,35 +257,41 @@ func (decoder bodyGorillaRequestDecoder) NamedBody(ctx context.Context, r *http1
 	if err := gorilla.DecodeRequest(ctx, r, req.Body, decoder.unmarshalOptions); err != nil {
 		return nil, err
 	}
-	return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
+	return req, nil
 }
 func (decoder bodyGorillaRequestDecoder) NonBody(ctx context.Context, r *http1.Request) (*emptypb.Empty, error) {
 	req := &emptypb.Empty{}
-	if ok, err := gorilla.CustomDecodeRequest(ctx, r, req); ok && err != nil {
+	ok, err := gorilla.CustomDecodeRequest(ctx, r, req)
+	if err != nil {
 		return nil, err
-	} else if ok && err == nil {
-		return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
 	}
-	return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
+	if ok {
+		return req, nil
+	}
+	return req, nil
 }
 func (decoder bodyGorillaRequestDecoder) HttpBodyStarBody(ctx context.Context, r *http1.Request) (*httpbody.HttpBody, error) {
 	req := &httpbody.HttpBody{}
-	if ok, err := gorilla.CustomDecodeRequest(ctx, r, req); ok && err != nil {
+	ok, err := gorilla.CustomDecodeRequest(ctx, r, req)
+	if err != nil {
 		return nil, err
-	} else if ok && err == nil {
-		return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
+	}
+	if ok {
+		return req, nil
 	}
 	if err := gorilla.DecodeHttpBody(ctx, r, req); err != nil {
 		return nil, err
 	}
-	return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
+	return req, nil
 }
 func (decoder bodyGorillaRequestDecoder) HttpBodyNamedBody(ctx context.Context, r *http1.Request) (*HttpBodyRequest, error) {
 	req := &HttpBodyRequest{}
-	if ok, err := gorilla.CustomDecodeRequest(ctx, r, req); ok && err != nil {
+	ok, err := gorilla.CustomDecodeRequest(ctx, r, req)
+	if err != nil {
 		return nil, err
-	} else if ok && err == nil {
-		return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
+	}
+	if ok {
+		return req, nil
 	}
 	if req.Body == nil {
 		req.Body = &httpbody.HttpBody{}
@@ -265,19 +299,21 @@ func (decoder bodyGorillaRequestDecoder) HttpBodyNamedBody(ctx context.Context, 
 	if err := gorilla.DecodeHttpBody(ctx, r, req.Body); err != nil {
 		return nil, err
 	}
-	return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
+	return req, nil
 }
 func (decoder bodyGorillaRequestDecoder) HttpRequest(ctx context.Context, r *http1.Request) (*http.HttpRequest, error) {
 	req := &http.HttpRequest{}
-	if ok, err := gorilla.CustomDecodeRequest(ctx, r, req); ok && err != nil {
+	ok, err := gorilla.CustomDecodeRequest(ctx, r, req)
+	if err != nil {
 		return nil, err
-	} else if ok && err == nil {
-		return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
+	}
+	if ok {
+		return req, nil
 	}
 	if err := gorilla.DecodeHttpRequest(ctx, r, req); err != nil {
 		return nil, err
 	}
-	return req, gorilla.ValidateRequest(ctx, req, decoder.shouldFailFast, decoder.onValidationErrCallback)
+	return req, nil
 }
 
 type bodyGorillaEncodeResponse struct {
