@@ -24,7 +24,7 @@ func AppendBoolQueryGorillaRoute(router *mux.Router, service BoolQueryGorillaSer
 		decoder: boolQueryGorillaRequestDecoder{
 			unmarshalOptions: options.UnmarshalOptions(),
 		},
-		encoder: boolQueryGorillaEncodeResponse{
+		encoder: boolQueryGorillaResponseEncoder{
 			marshalOptions:      options.MarshalOptions(),
 			unmarshalOptions:    options.UnmarshalOptions(),
 			responseTransformer: options.ResponseTransformer(),
@@ -44,7 +44,7 @@ func AppendBoolQueryGorillaRoute(router *mux.Router, service BoolQueryGorillaSer
 type boolQueryGorillaHandler struct {
 	service                 BoolQueryGorillaService
 	decoder                 boolQueryGorillaRequestDecoder
-	encoder                 boolQueryGorillaEncodeResponse
+	encoder                 boolQueryGorillaResponseEncoder
 	errorEncoder            gorilla.ErrorEncoder
 	shouldFailFast          bool
 	onValidationErrCallback gorilla.OnValidationErrCallback
@@ -100,13 +100,13 @@ func (decoder boolQueryGorillaRequestDecoder) BoolQuery(ctx context.Context, r *
 	return req, nil
 }
 
-type boolQueryGorillaEncodeResponse struct {
+type boolQueryGorillaResponseEncoder struct {
 	marshalOptions      protojson.MarshalOptions
 	unmarshalOptions    protojson.UnmarshalOptions
 	responseTransformer gorilla.ResponseTransformer
 }
 
-func (encoder boolQueryGorillaEncodeResponse) BoolQuery(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
+func (encoder boolQueryGorillaResponseEncoder) BoolQuery(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
 	return gorilla.EncodeHttpBody(ctx, w, resp)
 }
 
@@ -121,7 +121,7 @@ func AppendInt32QueryGorillaRoute(router *mux.Router, service Int32QueryGorillaS
 		decoder: int32QueryGorillaRequestDecoder{
 			unmarshalOptions: options.UnmarshalOptions(),
 		},
-		encoder: int32QueryGorillaEncodeResponse{
+		encoder: int32QueryGorillaResponseEncoder{
 			marshalOptions:      options.MarshalOptions(),
 			unmarshalOptions:    options.UnmarshalOptions(),
 			responseTransformer: options.ResponseTransformer(),
@@ -141,7 +141,7 @@ func AppendInt32QueryGorillaRoute(router *mux.Router, service Int32QueryGorillaS
 type int32QueryGorillaHandler struct {
 	service                 Int32QueryGorillaService
 	decoder                 int32QueryGorillaRequestDecoder
-	encoder                 int32QueryGorillaEncodeResponse
+	encoder                 int32QueryGorillaResponseEncoder
 	errorEncoder            gorilla.ErrorEncoder
 	shouldFailFast          bool
 	onValidationErrCallback gorilla.OnValidationErrCallback
@@ -203,13 +203,13 @@ func (decoder int32QueryGorillaRequestDecoder) Int32Query(ctx context.Context, r
 	return req, nil
 }
 
-type int32QueryGorillaEncodeResponse struct {
+type int32QueryGorillaResponseEncoder struct {
 	marshalOptions      protojson.MarshalOptions
 	unmarshalOptions    protojson.UnmarshalOptions
 	responseTransformer gorilla.ResponseTransformer
 }
 
-func (encoder int32QueryGorillaEncodeResponse) Int32Query(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
+func (encoder int32QueryGorillaResponseEncoder) Int32Query(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
 	return gorilla.EncodeHttpBody(ctx, w, resp)
 }
 
@@ -224,7 +224,7 @@ func AppendInt64QueryGorillaRoute(router *mux.Router, service Int64QueryGorillaS
 		decoder: int64QueryGorillaRequestDecoder{
 			unmarshalOptions: options.UnmarshalOptions(),
 		},
-		encoder: int64QueryGorillaEncodeResponse{
+		encoder: int64QueryGorillaResponseEncoder{
 			marshalOptions:      options.MarshalOptions(),
 			unmarshalOptions:    options.UnmarshalOptions(),
 			responseTransformer: options.ResponseTransformer(),
@@ -244,7 +244,7 @@ func AppendInt64QueryGorillaRoute(router *mux.Router, service Int64QueryGorillaS
 type int64QueryGorillaHandler struct {
 	service                 Int64QueryGorillaService
 	decoder                 int64QueryGorillaRequestDecoder
-	encoder                 int64QueryGorillaEncodeResponse
+	encoder                 int64QueryGorillaResponseEncoder
 	errorEncoder            gorilla.ErrorEncoder
 	shouldFailFast          bool
 	onValidationErrCallback gorilla.OnValidationErrCallback
@@ -306,13 +306,13 @@ func (decoder int64QueryGorillaRequestDecoder) Int64Query(ctx context.Context, r
 	return req, nil
 }
 
-type int64QueryGorillaEncodeResponse struct {
+type int64QueryGorillaResponseEncoder struct {
 	marshalOptions      protojson.MarshalOptions
 	unmarshalOptions    protojson.UnmarshalOptions
 	responseTransformer gorilla.ResponseTransformer
 }
 
-func (encoder int64QueryGorillaEncodeResponse) Int64Query(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
+func (encoder int64QueryGorillaResponseEncoder) Int64Query(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
 	return gorilla.EncodeHttpBody(ctx, w, resp)
 }
 
@@ -327,7 +327,7 @@ func AppendUint32QueryGorillaRoute(router *mux.Router, service Uint32QueryGorill
 		decoder: uint32QueryGorillaRequestDecoder{
 			unmarshalOptions: options.UnmarshalOptions(),
 		},
-		encoder: uint32QueryGorillaEncodeResponse{
+		encoder: uint32QueryGorillaResponseEncoder{
 			marshalOptions:      options.MarshalOptions(),
 			unmarshalOptions:    options.UnmarshalOptions(),
 			responseTransformer: options.ResponseTransformer(),
@@ -347,7 +347,7 @@ func AppendUint32QueryGorillaRoute(router *mux.Router, service Uint32QueryGorill
 type uint32QueryGorillaHandler struct {
 	service                 Uint32QueryGorillaService
 	decoder                 uint32QueryGorillaRequestDecoder
-	encoder                 uint32QueryGorillaEncodeResponse
+	encoder                 uint32QueryGorillaResponseEncoder
 	errorEncoder            gorilla.ErrorEncoder
 	shouldFailFast          bool
 	onValidationErrCallback gorilla.OnValidationErrCallback
@@ -406,13 +406,13 @@ func (decoder uint32QueryGorillaRequestDecoder) Uint32Query(ctx context.Context,
 	return req, nil
 }
 
-type uint32QueryGorillaEncodeResponse struct {
+type uint32QueryGorillaResponseEncoder struct {
 	marshalOptions      protojson.MarshalOptions
 	unmarshalOptions    protojson.UnmarshalOptions
 	responseTransformer gorilla.ResponseTransformer
 }
 
-func (encoder uint32QueryGorillaEncodeResponse) Uint32Query(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
+func (encoder uint32QueryGorillaResponseEncoder) Uint32Query(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
 	return gorilla.EncodeHttpBody(ctx, w, resp)
 }
 
@@ -427,7 +427,7 @@ func AppendUint64QueryGorillaRoute(router *mux.Router, service Uint64QueryGorill
 		decoder: uint64QueryGorillaRequestDecoder{
 			unmarshalOptions: options.UnmarshalOptions(),
 		},
-		encoder: uint64QueryGorillaEncodeResponse{
+		encoder: uint64QueryGorillaResponseEncoder{
 			marshalOptions:      options.MarshalOptions(),
 			unmarshalOptions:    options.UnmarshalOptions(),
 			responseTransformer: options.ResponseTransformer(),
@@ -447,7 +447,7 @@ func AppendUint64QueryGorillaRoute(router *mux.Router, service Uint64QueryGorill
 type uint64QueryGorillaHandler struct {
 	service                 Uint64QueryGorillaService
 	decoder                 uint64QueryGorillaRequestDecoder
-	encoder                 uint64QueryGorillaEncodeResponse
+	encoder                 uint64QueryGorillaResponseEncoder
 	errorEncoder            gorilla.ErrorEncoder
 	shouldFailFast          bool
 	onValidationErrCallback gorilla.OnValidationErrCallback
@@ -506,13 +506,13 @@ func (decoder uint64QueryGorillaRequestDecoder) Uint64Query(ctx context.Context,
 	return req, nil
 }
 
-type uint64QueryGorillaEncodeResponse struct {
+type uint64QueryGorillaResponseEncoder struct {
 	marshalOptions      protojson.MarshalOptions
 	unmarshalOptions    protojson.UnmarshalOptions
 	responseTransformer gorilla.ResponseTransformer
 }
 
-func (encoder uint64QueryGorillaEncodeResponse) Uint64Query(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
+func (encoder uint64QueryGorillaResponseEncoder) Uint64Query(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
 	return gorilla.EncodeHttpBody(ctx, w, resp)
 }
 
@@ -527,7 +527,7 @@ func AppendFloatQueryGorillaRoute(router *mux.Router, service FloatQueryGorillaS
 		decoder: floatQueryGorillaRequestDecoder{
 			unmarshalOptions: options.UnmarshalOptions(),
 		},
-		encoder: floatQueryGorillaEncodeResponse{
+		encoder: floatQueryGorillaResponseEncoder{
 			marshalOptions:      options.MarshalOptions(),
 			unmarshalOptions:    options.UnmarshalOptions(),
 			responseTransformer: options.ResponseTransformer(),
@@ -547,7 +547,7 @@ func AppendFloatQueryGorillaRoute(router *mux.Router, service FloatQueryGorillaS
 type floatQueryGorillaHandler struct {
 	service                 FloatQueryGorillaService
 	decoder                 floatQueryGorillaRequestDecoder
-	encoder                 floatQueryGorillaEncodeResponse
+	encoder                 floatQueryGorillaResponseEncoder
 	errorEncoder            gorilla.ErrorEncoder
 	shouldFailFast          bool
 	onValidationErrCallback gorilla.OnValidationErrCallback
@@ -603,13 +603,13 @@ func (decoder floatQueryGorillaRequestDecoder) FloatQuery(ctx context.Context, r
 	return req, nil
 }
 
-type floatQueryGorillaEncodeResponse struct {
+type floatQueryGorillaResponseEncoder struct {
 	marshalOptions      protojson.MarshalOptions
 	unmarshalOptions    protojson.UnmarshalOptions
 	responseTransformer gorilla.ResponseTransformer
 }
 
-func (encoder floatQueryGorillaEncodeResponse) FloatQuery(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
+func (encoder floatQueryGorillaResponseEncoder) FloatQuery(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
 	return gorilla.EncodeHttpBody(ctx, w, resp)
 }
 
@@ -624,7 +624,7 @@ func AppendDoubleQueryGorillaRoute(router *mux.Router, service DoubleQueryGorill
 		decoder: doubleQueryGorillaRequestDecoder{
 			unmarshalOptions: options.UnmarshalOptions(),
 		},
-		encoder: doubleQueryGorillaEncodeResponse{
+		encoder: doubleQueryGorillaResponseEncoder{
 			marshalOptions:      options.MarshalOptions(),
 			unmarshalOptions:    options.UnmarshalOptions(),
 			responseTransformer: options.ResponseTransformer(),
@@ -644,7 +644,7 @@ func AppendDoubleQueryGorillaRoute(router *mux.Router, service DoubleQueryGorill
 type doubleQueryGorillaHandler struct {
 	service                 DoubleQueryGorillaService
 	decoder                 doubleQueryGorillaRequestDecoder
-	encoder                 doubleQueryGorillaEncodeResponse
+	encoder                 doubleQueryGorillaResponseEncoder
 	errorEncoder            gorilla.ErrorEncoder
 	shouldFailFast          bool
 	onValidationErrCallback gorilla.OnValidationErrCallback
@@ -700,13 +700,13 @@ func (decoder doubleQueryGorillaRequestDecoder) DoubleQuery(ctx context.Context,
 	return req, nil
 }
 
-type doubleQueryGorillaEncodeResponse struct {
+type doubleQueryGorillaResponseEncoder struct {
 	marshalOptions      protojson.MarshalOptions
 	unmarshalOptions    protojson.UnmarshalOptions
 	responseTransformer gorilla.ResponseTransformer
 }
 
-func (encoder doubleQueryGorillaEncodeResponse) DoubleQuery(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
+func (encoder doubleQueryGorillaResponseEncoder) DoubleQuery(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
 	return gorilla.EncodeHttpBody(ctx, w, resp)
 }
 
@@ -721,7 +721,7 @@ func AppendStringQueryGorillaRoute(router *mux.Router, service StringQueryGorill
 		decoder: stringQueryGorillaRequestDecoder{
 			unmarshalOptions: options.UnmarshalOptions(),
 		},
-		encoder: stringQueryGorillaEncodeResponse{
+		encoder: stringQueryGorillaResponseEncoder{
 			marshalOptions:      options.MarshalOptions(),
 			unmarshalOptions:    options.UnmarshalOptions(),
 			responseTransformer: options.ResponseTransformer(),
@@ -741,7 +741,7 @@ func AppendStringQueryGorillaRoute(router *mux.Router, service StringQueryGorill
 type stringQueryGorillaHandler struct {
 	service                 StringQueryGorillaService
 	decoder                 stringQueryGorillaRequestDecoder
-	encoder                 stringQueryGorillaEncodeResponse
+	encoder                 stringQueryGorillaResponseEncoder
 	errorEncoder            gorilla.ErrorEncoder
 	shouldFailFast          bool
 	onValidationErrCallback gorilla.OnValidationErrCallback
@@ -797,13 +797,13 @@ func (decoder stringQueryGorillaRequestDecoder) StringQuery(ctx context.Context,
 	return req, nil
 }
 
-type stringQueryGorillaEncodeResponse struct {
+type stringQueryGorillaResponseEncoder struct {
 	marshalOptions      protojson.MarshalOptions
 	unmarshalOptions    protojson.UnmarshalOptions
 	responseTransformer gorilla.ResponseTransformer
 }
 
-func (encoder stringQueryGorillaEncodeResponse) StringQuery(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
+func (encoder stringQueryGorillaResponseEncoder) StringQuery(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
 	return gorilla.EncodeHttpBody(ctx, w, resp)
 }
 
@@ -818,7 +818,7 @@ func AppendEnumQueryGorillaRoute(router *mux.Router, service EnumQueryGorillaSer
 		decoder: enumQueryGorillaRequestDecoder{
 			unmarshalOptions: options.UnmarshalOptions(),
 		},
-		encoder: enumQueryGorillaEncodeResponse{
+		encoder: enumQueryGorillaResponseEncoder{
 			marshalOptions:      options.MarshalOptions(),
 			unmarshalOptions:    options.UnmarshalOptions(),
 			responseTransformer: options.ResponseTransformer(),
@@ -838,7 +838,7 @@ func AppendEnumQueryGorillaRoute(router *mux.Router, service EnumQueryGorillaSer
 type enumQueryGorillaHandler struct {
 	service                 EnumQueryGorillaService
 	decoder                 enumQueryGorillaRequestDecoder
-	encoder                 enumQueryGorillaEncodeResponse
+	encoder                 enumQueryGorillaResponseEncoder
 	errorEncoder            gorilla.ErrorEncoder
 	shouldFailFast          bool
 	onValidationErrCallback gorilla.OnValidationErrCallback
@@ -892,12 +892,12 @@ func (decoder enumQueryGorillaRequestDecoder) EnumQuery(ctx context.Context, r *
 	return req, nil
 }
 
-type enumQueryGorillaEncodeResponse struct {
+type enumQueryGorillaResponseEncoder struct {
 	marshalOptions      protojson.MarshalOptions
 	unmarshalOptions    protojson.UnmarshalOptions
 	responseTransformer gorilla.ResponseTransformer
 }
 
-func (encoder enumQueryGorillaEncodeResponse) EnumQuery(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
+func (encoder enumQueryGorillaResponseEncoder) EnumQuery(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
 	return gorilla.EncodeHttpBody(ctx, w, resp)
 }

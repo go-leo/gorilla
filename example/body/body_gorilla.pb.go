@@ -29,7 +29,7 @@ func AppendBodyGorillaRoute(router *mux.Router, service BodyGorillaService, opts
 		decoder: bodyGorillaRequestDecoder{
 			unmarshalOptions: options.UnmarshalOptions(),
 		},
-		encoder: bodyGorillaEncodeResponse{
+		encoder: bodyGorillaResponseEncoder{
 			marshalOptions:      options.MarshalOptions(),
 			unmarshalOptions:    options.UnmarshalOptions(),
 			responseTransformer: options.ResponseTransformer(),
@@ -74,7 +74,7 @@ func AppendBodyGorillaRoute(router *mux.Router, service BodyGorillaService, opts
 type bodyGorillaHandler struct {
 	service                 BodyGorillaService
 	decoder                 bodyGorillaRequestDecoder
-	encoder                 bodyGorillaEncodeResponse
+	encoder                 bodyGorillaResponseEncoder
 	errorEncoder            gorilla.ErrorEncoder
 	shouldFailFast          bool
 	onValidationErrCallback gorilla.OnValidationErrCallback
@@ -316,27 +316,27 @@ func (decoder bodyGorillaRequestDecoder) HttpRequest(ctx context.Context, r *htt
 	return req, nil
 }
 
-type bodyGorillaEncodeResponse struct {
+type bodyGorillaResponseEncoder struct {
 	marshalOptions      protojson.MarshalOptions
 	unmarshalOptions    protojson.UnmarshalOptions
 	responseTransformer gorilla.ResponseTransformer
 }
 
-func (encoder bodyGorillaEncodeResponse) StarBody(ctx context.Context, w http1.ResponseWriter, resp *Response) error {
+func (encoder bodyGorillaResponseEncoder) StarBody(ctx context.Context, w http1.ResponseWriter, resp *Response) error {
 	return gorilla.EncodeResponse(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
-func (encoder bodyGorillaEncodeResponse) NamedBody(ctx context.Context, w http1.ResponseWriter, resp *Response) error {
+func (encoder bodyGorillaResponseEncoder) NamedBody(ctx context.Context, w http1.ResponseWriter, resp *Response) error {
 	return gorilla.EncodeResponse(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
-func (encoder bodyGorillaEncodeResponse) NonBody(ctx context.Context, w http1.ResponseWriter, resp *Response) error {
+func (encoder bodyGorillaResponseEncoder) NonBody(ctx context.Context, w http1.ResponseWriter, resp *Response) error {
 	return gorilla.EncodeResponse(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
-func (encoder bodyGorillaEncodeResponse) HttpBodyStarBody(ctx context.Context, w http1.ResponseWriter, resp *Response) error {
+func (encoder bodyGorillaResponseEncoder) HttpBodyStarBody(ctx context.Context, w http1.ResponseWriter, resp *Response) error {
 	return gorilla.EncodeResponse(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
-func (encoder bodyGorillaEncodeResponse) HttpBodyNamedBody(ctx context.Context, w http1.ResponseWriter, resp *Response) error {
+func (encoder bodyGorillaResponseEncoder) HttpBodyNamedBody(ctx context.Context, w http1.ResponseWriter, resp *Response) error {
 	return gorilla.EncodeResponse(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
-func (encoder bodyGorillaEncodeResponse) HttpRequest(ctx context.Context, w http1.ResponseWriter, resp *Response) error {
+func (encoder bodyGorillaResponseEncoder) HttpRequest(ctx context.Context, w http1.ResponseWriter, resp *Response) error {
 	return gorilla.EncodeResponse(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }

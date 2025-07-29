@@ -24,7 +24,7 @@ func AppendBoolPathGorillaRoute(router *mux.Router, service BoolPathGorillaServi
 		decoder: boolPathGorillaRequestDecoder{
 			unmarshalOptions: options.UnmarshalOptions(),
 		},
-		encoder: boolPathGorillaEncodeResponse{
+		encoder: boolPathGorillaResponseEncoder{
 			marshalOptions:      options.MarshalOptions(),
 			unmarshalOptions:    options.UnmarshalOptions(),
 			responseTransformer: options.ResponseTransformer(),
@@ -44,7 +44,7 @@ func AppendBoolPathGorillaRoute(router *mux.Router, service BoolPathGorillaServi
 type boolPathGorillaHandler struct {
 	service                 BoolPathGorillaService
 	decoder                 boolPathGorillaRequestDecoder
-	encoder                 boolPathGorillaEncodeResponse
+	encoder                 boolPathGorillaResponseEncoder
 	errorEncoder            gorilla.ErrorEncoder
 	shouldFailFast          bool
 	onValidationErrCallback gorilla.OnValidationErrCallback
@@ -101,13 +101,13 @@ func (decoder boolPathGorillaRequestDecoder) BoolPath(ctx context.Context, r *ht
 	return req, nil
 }
 
-type boolPathGorillaEncodeResponse struct {
+type boolPathGorillaResponseEncoder struct {
 	marshalOptions      protojson.MarshalOptions
 	unmarshalOptions    protojson.UnmarshalOptions
 	responseTransformer gorilla.ResponseTransformer
 }
 
-func (encoder boolPathGorillaEncodeResponse) BoolPath(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
+func (encoder boolPathGorillaResponseEncoder) BoolPath(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
 	return gorilla.EncodeHttpBody(ctx, w, resp)
 }
 
@@ -122,7 +122,7 @@ func AppendInt32PathGorillaRoute(router *mux.Router, service Int32PathGorillaSer
 		decoder: int32PathGorillaRequestDecoder{
 			unmarshalOptions: options.UnmarshalOptions(),
 		},
-		encoder: int32PathGorillaEncodeResponse{
+		encoder: int32PathGorillaResponseEncoder{
 			marshalOptions:      options.MarshalOptions(),
 			unmarshalOptions:    options.UnmarshalOptions(),
 			responseTransformer: options.ResponseTransformer(),
@@ -142,7 +142,7 @@ func AppendInt32PathGorillaRoute(router *mux.Router, service Int32PathGorillaSer
 type int32PathGorillaHandler struct {
 	service                 Int32PathGorillaService
 	decoder                 int32PathGorillaRequestDecoder
-	encoder                 int32PathGorillaEncodeResponse
+	encoder                 int32PathGorillaResponseEncoder
 	errorEncoder            gorilla.ErrorEncoder
 	shouldFailFast          bool
 	onValidationErrCallback gorilla.OnValidationErrCallback
@@ -207,13 +207,13 @@ func (decoder int32PathGorillaRequestDecoder) Int32Path(ctx context.Context, r *
 	return req, nil
 }
 
-type int32PathGorillaEncodeResponse struct {
+type int32PathGorillaResponseEncoder struct {
 	marshalOptions      protojson.MarshalOptions
 	unmarshalOptions    protojson.UnmarshalOptions
 	responseTransformer gorilla.ResponseTransformer
 }
 
-func (encoder int32PathGorillaEncodeResponse) Int32Path(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
+func (encoder int32PathGorillaResponseEncoder) Int32Path(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
 	return gorilla.EncodeHttpBody(ctx, w, resp)
 }
 
@@ -228,7 +228,7 @@ func AppendInt64PathGorillaRoute(router *mux.Router, service Int64PathGorillaSer
 		decoder: int64PathGorillaRequestDecoder{
 			unmarshalOptions: options.UnmarshalOptions(),
 		},
-		encoder: int64PathGorillaEncodeResponse{
+		encoder: int64PathGorillaResponseEncoder{
 			marshalOptions:      options.MarshalOptions(),
 			unmarshalOptions:    options.UnmarshalOptions(),
 			responseTransformer: options.ResponseTransformer(),
@@ -248,7 +248,7 @@ func AppendInt64PathGorillaRoute(router *mux.Router, service Int64PathGorillaSer
 type int64PathGorillaHandler struct {
 	service                 Int64PathGorillaService
 	decoder                 int64PathGorillaRequestDecoder
-	encoder                 int64PathGorillaEncodeResponse
+	encoder                 int64PathGorillaResponseEncoder
 	errorEncoder            gorilla.ErrorEncoder
 	shouldFailFast          bool
 	onValidationErrCallback gorilla.OnValidationErrCallback
@@ -313,13 +313,13 @@ func (decoder int64PathGorillaRequestDecoder) Int64Path(ctx context.Context, r *
 	return req, nil
 }
 
-type int64PathGorillaEncodeResponse struct {
+type int64PathGorillaResponseEncoder struct {
 	marshalOptions      protojson.MarshalOptions
 	unmarshalOptions    protojson.UnmarshalOptions
 	responseTransformer gorilla.ResponseTransformer
 }
 
-func (encoder int64PathGorillaEncodeResponse) Int64Path(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
+func (encoder int64PathGorillaResponseEncoder) Int64Path(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
 	return gorilla.EncodeHttpBody(ctx, w, resp)
 }
 
@@ -334,7 +334,7 @@ func AppendUint32PathGorillaRoute(router *mux.Router, service Uint32PathGorillaS
 		decoder: uint32PathGorillaRequestDecoder{
 			unmarshalOptions: options.UnmarshalOptions(),
 		},
-		encoder: uint32PathGorillaEncodeResponse{
+		encoder: uint32PathGorillaResponseEncoder{
 			marshalOptions:      options.MarshalOptions(),
 			unmarshalOptions:    options.UnmarshalOptions(),
 			responseTransformer: options.ResponseTransformer(),
@@ -354,7 +354,7 @@ func AppendUint32PathGorillaRoute(router *mux.Router, service Uint32PathGorillaS
 type uint32PathGorillaHandler struct {
 	service                 Uint32PathGorillaService
 	decoder                 uint32PathGorillaRequestDecoder
-	encoder                 uint32PathGorillaEncodeResponse
+	encoder                 uint32PathGorillaResponseEncoder
 	errorEncoder            gorilla.ErrorEncoder
 	shouldFailFast          bool
 	onValidationErrCallback gorilla.OnValidationErrCallback
@@ -415,13 +415,13 @@ func (decoder uint32PathGorillaRequestDecoder) Uint32Path(ctx context.Context, r
 	return req, nil
 }
 
-type uint32PathGorillaEncodeResponse struct {
+type uint32PathGorillaResponseEncoder struct {
 	marshalOptions      protojson.MarshalOptions
 	unmarshalOptions    protojson.UnmarshalOptions
 	responseTransformer gorilla.ResponseTransformer
 }
 
-func (encoder uint32PathGorillaEncodeResponse) Uint32Path(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
+func (encoder uint32PathGorillaResponseEncoder) Uint32Path(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
 	return gorilla.EncodeHttpBody(ctx, w, resp)
 }
 
@@ -436,7 +436,7 @@ func AppendUint64PathGorillaRoute(router *mux.Router, service Uint64PathGorillaS
 		decoder: uint64PathGorillaRequestDecoder{
 			unmarshalOptions: options.UnmarshalOptions(),
 		},
-		encoder: uint64PathGorillaEncodeResponse{
+		encoder: uint64PathGorillaResponseEncoder{
 			marshalOptions:      options.MarshalOptions(),
 			unmarshalOptions:    options.UnmarshalOptions(),
 			responseTransformer: options.ResponseTransformer(),
@@ -456,7 +456,7 @@ func AppendUint64PathGorillaRoute(router *mux.Router, service Uint64PathGorillaS
 type uint64PathGorillaHandler struct {
 	service                 Uint64PathGorillaService
 	decoder                 uint64PathGorillaRequestDecoder
-	encoder                 uint64PathGorillaEncodeResponse
+	encoder                 uint64PathGorillaResponseEncoder
 	errorEncoder            gorilla.ErrorEncoder
 	shouldFailFast          bool
 	onValidationErrCallback gorilla.OnValidationErrCallback
@@ -517,13 +517,13 @@ func (decoder uint64PathGorillaRequestDecoder) Uint64Path(ctx context.Context, r
 	return req, nil
 }
 
-type uint64PathGorillaEncodeResponse struct {
+type uint64PathGorillaResponseEncoder struct {
 	marshalOptions      protojson.MarshalOptions
 	unmarshalOptions    protojson.UnmarshalOptions
 	responseTransformer gorilla.ResponseTransformer
 }
 
-func (encoder uint64PathGorillaEncodeResponse) Uint64Path(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
+func (encoder uint64PathGorillaResponseEncoder) Uint64Path(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
 	return gorilla.EncodeHttpBody(ctx, w, resp)
 }
 
@@ -538,7 +538,7 @@ func AppendFloatPathGorillaRoute(router *mux.Router, service FloatPathGorillaSer
 		decoder: floatPathGorillaRequestDecoder{
 			unmarshalOptions: options.UnmarshalOptions(),
 		},
-		encoder: floatPathGorillaEncodeResponse{
+		encoder: floatPathGorillaResponseEncoder{
 			marshalOptions:      options.MarshalOptions(),
 			unmarshalOptions:    options.UnmarshalOptions(),
 			responseTransformer: options.ResponseTransformer(),
@@ -558,7 +558,7 @@ func AppendFloatPathGorillaRoute(router *mux.Router, service FloatPathGorillaSer
 type floatPathGorillaHandler struct {
 	service                 FloatPathGorillaService
 	decoder                 floatPathGorillaRequestDecoder
-	encoder                 floatPathGorillaEncodeResponse
+	encoder                 floatPathGorillaResponseEncoder
 	errorEncoder            gorilla.ErrorEncoder
 	shouldFailFast          bool
 	onValidationErrCallback gorilla.OnValidationErrCallback
@@ -615,13 +615,13 @@ func (decoder floatPathGorillaRequestDecoder) FloatPath(ctx context.Context, r *
 	return req, nil
 }
 
-type floatPathGorillaEncodeResponse struct {
+type floatPathGorillaResponseEncoder struct {
 	marshalOptions      protojson.MarshalOptions
 	unmarshalOptions    protojson.UnmarshalOptions
 	responseTransformer gorilla.ResponseTransformer
 }
 
-func (encoder floatPathGorillaEncodeResponse) FloatPath(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
+func (encoder floatPathGorillaResponseEncoder) FloatPath(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
 	return gorilla.EncodeHttpBody(ctx, w, resp)
 }
 
@@ -636,7 +636,7 @@ func AppendDoublePathGorillaRoute(router *mux.Router, service DoublePathGorillaS
 		decoder: doublePathGorillaRequestDecoder{
 			unmarshalOptions: options.UnmarshalOptions(),
 		},
-		encoder: doublePathGorillaEncodeResponse{
+		encoder: doublePathGorillaResponseEncoder{
 			marshalOptions:      options.MarshalOptions(),
 			unmarshalOptions:    options.UnmarshalOptions(),
 			responseTransformer: options.ResponseTransformer(),
@@ -656,7 +656,7 @@ func AppendDoublePathGorillaRoute(router *mux.Router, service DoublePathGorillaS
 type doublePathGorillaHandler struct {
 	service                 DoublePathGorillaService
 	decoder                 doublePathGorillaRequestDecoder
-	encoder                 doublePathGorillaEncodeResponse
+	encoder                 doublePathGorillaResponseEncoder
 	errorEncoder            gorilla.ErrorEncoder
 	shouldFailFast          bool
 	onValidationErrCallback gorilla.OnValidationErrCallback
@@ -713,13 +713,13 @@ func (decoder doublePathGorillaRequestDecoder) DoublePath(ctx context.Context, r
 	return req, nil
 }
 
-type doublePathGorillaEncodeResponse struct {
+type doublePathGorillaResponseEncoder struct {
 	marshalOptions      protojson.MarshalOptions
 	unmarshalOptions    protojson.UnmarshalOptions
 	responseTransformer gorilla.ResponseTransformer
 }
 
-func (encoder doublePathGorillaEncodeResponse) DoublePath(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
+func (encoder doublePathGorillaResponseEncoder) DoublePath(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
 	return gorilla.EncodeHttpBody(ctx, w, resp)
 }
 
@@ -734,7 +734,7 @@ func AppendStringPathGorillaRoute(router *mux.Router, service StringPathGorillaS
 		decoder: stringPathGorillaRequestDecoder{
 			unmarshalOptions: options.UnmarshalOptions(),
 		},
-		encoder: stringPathGorillaEncodeResponse{
+		encoder: stringPathGorillaResponseEncoder{
 			marshalOptions:      options.MarshalOptions(),
 			unmarshalOptions:    options.UnmarshalOptions(),
 			responseTransformer: options.ResponseTransformer(),
@@ -754,7 +754,7 @@ func AppendStringPathGorillaRoute(router *mux.Router, service StringPathGorillaS
 type stringPathGorillaHandler struct {
 	service                 StringPathGorillaService
 	decoder                 stringPathGorillaRequestDecoder
-	encoder                 stringPathGorillaEncodeResponse
+	encoder                 stringPathGorillaResponseEncoder
 	errorEncoder            gorilla.ErrorEncoder
 	shouldFailFast          bool
 	onValidationErrCallback gorilla.OnValidationErrCallback
@@ -811,13 +811,13 @@ func (decoder stringPathGorillaRequestDecoder) StringPath(ctx context.Context, r
 	return req, nil
 }
 
-type stringPathGorillaEncodeResponse struct {
+type stringPathGorillaResponseEncoder struct {
 	marshalOptions      protojson.MarshalOptions
 	unmarshalOptions    protojson.UnmarshalOptions
 	responseTransformer gorilla.ResponseTransformer
 }
 
-func (encoder stringPathGorillaEncodeResponse) StringPath(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
+func (encoder stringPathGorillaResponseEncoder) StringPath(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
 	return gorilla.EncodeHttpBody(ctx, w, resp)
 }
 
@@ -832,7 +832,7 @@ func AppendEnumPathGorillaRoute(router *mux.Router, service EnumPathGorillaServi
 		decoder: enumPathGorillaRequestDecoder{
 			unmarshalOptions: options.UnmarshalOptions(),
 		},
-		encoder: enumPathGorillaEncodeResponse{
+		encoder: enumPathGorillaResponseEncoder{
 			marshalOptions:      options.MarshalOptions(),
 			unmarshalOptions:    options.UnmarshalOptions(),
 			responseTransformer: options.ResponseTransformer(),
@@ -852,7 +852,7 @@ func AppendEnumPathGorillaRoute(router *mux.Router, service EnumPathGorillaServi
 type enumPathGorillaHandler struct {
 	service                 EnumPathGorillaService
 	decoder                 enumPathGorillaRequestDecoder
-	encoder                 enumPathGorillaEncodeResponse
+	encoder                 enumPathGorillaResponseEncoder
 	errorEncoder            gorilla.ErrorEncoder
 	shouldFailFast          bool
 	onValidationErrCallback gorilla.OnValidationErrCallback
@@ -907,12 +907,12 @@ func (decoder enumPathGorillaRequestDecoder) EnumPath(ctx context.Context, r *ht
 	return req, nil
 }
 
-type enumPathGorillaEncodeResponse struct {
+type enumPathGorillaResponseEncoder struct {
 	marshalOptions      protojson.MarshalOptions
 	unmarshalOptions    protojson.UnmarshalOptions
 	responseTransformer gorilla.ResponseTransformer
 }
 
-func (encoder enumPathGorillaEncodeResponse) EnumPath(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
+func (encoder enumPathGorillaResponseEncoder) EnumPath(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
 	return gorilla.EncodeHttpBody(ctx, w, resp)
 }

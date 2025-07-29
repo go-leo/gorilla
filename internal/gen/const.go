@@ -17,10 +17,12 @@ var (
 
 var (
 	HttpPackage          = protogen.GoImportPath("net/http")
+	ClientIdent          = HttpPackage.Ident("Client")
 	HttpHandlerIdent     = HttpPackage.Ident("Handler")
 	HttpHandlerFuncIdent = HttpPackage.Ident("HandlerFunc")
 	ResponseWriterIdent  = HttpPackage.Ident("ResponseWriter")
 	RequestIdent         = HttpPackage.Ident("Request")
+	ResponseIdent        = HttpPackage.Ident("Response")
 )
 
 var (

@@ -26,7 +26,7 @@ func AppendUserGorillaRoute(router *mux.Router, service UserGorillaService, opts
 		decoder: userGorillaRequestDecoder{
 			unmarshalOptions: options.UnmarshalOptions(),
 		},
-		encoder: userGorillaEncodeResponse{
+		encoder: userGorillaResponseEncoder{
 			marshalOptions:      options.MarshalOptions(),
 			unmarshalOptions:    options.UnmarshalOptions(),
 			responseTransformer: options.ResponseTransformer(),
@@ -71,7 +71,7 @@ func AppendUserGorillaRoute(router *mux.Router, service UserGorillaService, opts
 type userGorillaHandler struct {
 	service                 UserGorillaService
 	decoder                 userGorillaRequestDecoder
-	encoder                 userGorillaEncodeResponse
+	encoder                 userGorillaResponseEncoder
 	errorEncoder            gorilla.ErrorEncoder
 	shouldFailFast          bool
 	onValidationErrCallback gorilla.OnValidationErrCallback
@@ -339,27 +339,27 @@ func (decoder userGorillaRequestDecoder) ListUser(ctx context.Context, r *http.R
 	return req, nil
 }
 
-type userGorillaEncodeResponse struct {
+type userGorillaResponseEncoder struct {
 	marshalOptions      protojson.MarshalOptions
 	unmarshalOptions    protojson.UnmarshalOptions
 	responseTransformer gorilla.ResponseTransformer
 }
 
-func (encoder userGorillaEncodeResponse) CreateUser(ctx context.Context, w http.ResponseWriter, resp *CreateUserResponse) error {
+func (encoder userGorillaResponseEncoder) CreateUser(ctx context.Context, w http.ResponseWriter, resp *CreateUserResponse) error {
 	return gorilla.EncodeResponse(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
-func (encoder userGorillaEncodeResponse) DeleteUser(ctx context.Context, w http.ResponseWriter, resp *DeleteUserResponse) error {
+func (encoder userGorillaResponseEncoder) DeleteUser(ctx context.Context, w http.ResponseWriter, resp *DeleteUserResponse) error {
 	return gorilla.EncodeResponse(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
-func (encoder userGorillaEncodeResponse) ModifyUser(ctx context.Context, w http.ResponseWriter, resp *ModifyUserResponse) error {
+func (encoder userGorillaResponseEncoder) ModifyUser(ctx context.Context, w http.ResponseWriter, resp *ModifyUserResponse) error {
 	return gorilla.EncodeResponse(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
-func (encoder userGorillaEncodeResponse) UpdateUser(ctx context.Context, w http.ResponseWriter, resp *UpdateUserResponse) error {
+func (encoder userGorillaResponseEncoder) UpdateUser(ctx context.Context, w http.ResponseWriter, resp *UpdateUserResponse) error {
 	return gorilla.EncodeResponse(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
-func (encoder userGorillaEncodeResponse) GetUser(ctx context.Context, w http.ResponseWriter, resp *GetUserResponse) error {
+func (encoder userGorillaResponseEncoder) GetUser(ctx context.Context, w http.ResponseWriter, resp *GetUserResponse) error {
 	return gorilla.EncodeResponse(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
-func (encoder userGorillaEncodeResponse) ListUser(ctx context.Context, w http.ResponseWriter, resp *ListUserResponse) error {
+func (encoder userGorillaResponseEncoder) ListUser(ctx context.Context, w http.ResponseWriter, resp *ListUserResponse) error {
 	return gorilla.EncodeResponse(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
