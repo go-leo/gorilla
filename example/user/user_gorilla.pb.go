@@ -363,3 +363,179 @@ func (encoder userGorillaResponseEncoder) GetUser(ctx context.Context, w http.Re
 func (encoder userGorillaResponseEncoder) ListUser(ctx context.Context, w http.ResponseWriter, resp *ListUserResponse) error {
 	return gorilla.EncodeResponse(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
+
+type userGorillaClient struct {
+	client                  *http.Client
+	encoder                 userGorillaRequestEncoder
+	decoder                 userGorillaResponseDecoder
+	shouldFailFast          bool
+	onValidationErrCallback gorilla.OnValidationErrCallback
+}
+
+func (c *userGorillaClient) CreateUser(ctx context.Context, in *CreateUserRequest) (*CreateUserResponse, error) {
+	if err := gorilla.ValidateRequest(ctx, in, c.shouldFailFast, c.onValidationErrCallback); err != nil {
+		return nil, err
+	}
+	req, err := c.encoder.CreateUser(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	out, err := c.decoder.CreateUser(ctx, resp)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userGorillaClient) DeleteUser(ctx context.Context, in *DeleteUserRequest) (*DeleteUserResponse, error) {
+	if err := gorilla.ValidateRequest(ctx, in, c.shouldFailFast, c.onValidationErrCallback); err != nil {
+		return nil, err
+	}
+	req, err := c.encoder.DeleteUser(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	out, err := c.decoder.DeleteUser(ctx, resp)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userGorillaClient) ModifyUser(ctx context.Context, in *ModifyUserRequest) (*ModifyUserResponse, error) {
+	if err := gorilla.ValidateRequest(ctx, in, c.shouldFailFast, c.onValidationErrCallback); err != nil {
+		return nil, err
+	}
+	req, err := c.encoder.ModifyUser(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	out, err := c.decoder.ModifyUser(ctx, resp)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userGorillaClient) UpdateUser(ctx context.Context, in *UpdateUserRequest) (*UpdateUserResponse, error) {
+	if err := gorilla.ValidateRequest(ctx, in, c.shouldFailFast, c.onValidationErrCallback); err != nil {
+		return nil, err
+	}
+	req, err := c.encoder.UpdateUser(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	out, err := c.decoder.UpdateUser(ctx, resp)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userGorillaClient) GetUser(ctx context.Context, in *GetUserRequest) (*GetUserResponse, error) {
+	if err := gorilla.ValidateRequest(ctx, in, c.shouldFailFast, c.onValidationErrCallback); err != nil {
+		return nil, err
+	}
+	req, err := c.encoder.GetUser(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	out, err := c.decoder.GetUser(ctx, resp)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userGorillaClient) ListUser(ctx context.Context, in *ListUserRequest) (*ListUserResponse, error) {
+	if err := gorilla.ValidateRequest(ctx, in, c.shouldFailFast, c.onValidationErrCallback); err != nil {
+		return nil, err
+	}
+	req, err := c.encoder.ListUser(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	out, err := c.decoder.ListUser(ctx, resp)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+type userGorillaRequestEncoder struct {
+}
+
+func (c *userGorillaRequestEncoder) CreateUser(ctx context.Context, request *CreateUserRequest) (*http.Request, error) {
+	return nil, nil
+}
+
+func (c *userGorillaRequestEncoder) DeleteUser(ctx context.Context, request *DeleteUserRequest) (*http.Request, error) {
+	return nil, nil
+}
+
+func (c *userGorillaRequestEncoder) ModifyUser(ctx context.Context, request *ModifyUserRequest) (*http.Request, error) {
+	return nil, nil
+}
+
+func (c *userGorillaRequestEncoder) UpdateUser(ctx context.Context, request *UpdateUserRequest) (*http.Request, error) {
+	return nil, nil
+}
+
+func (c *userGorillaRequestEncoder) GetUser(ctx context.Context, request *GetUserRequest) (*http.Request, error) {
+	return nil, nil
+}
+
+func (c *userGorillaRequestEncoder) ListUser(ctx context.Context, request *ListUserRequest) (*http.Request, error) {
+	return nil, nil
+}
+
+type userGorillaResponseDecoder struct {
+}
+
+func (c *userGorillaResponseDecoder) CreateUser(ctx context.Context, response *http.Response) (*CreateUserResponse, error) {
+	return nil, nil
+}
+
+func (c *userGorillaResponseDecoder) DeleteUser(ctx context.Context, response *http.Response) (*DeleteUserResponse, error) {
+	return nil, nil
+}
+
+func (c *userGorillaResponseDecoder) ModifyUser(ctx context.Context, response *http.Response) (*ModifyUserResponse, error) {
+	return nil, nil
+}
+
+func (c *userGorillaResponseDecoder) UpdateUser(ctx context.Context, response *http.Response) (*UpdateUserResponse, error) {
+	return nil, nil
+}
+
+func (c *userGorillaResponseDecoder) GetUser(ctx context.Context, response *http.Response) (*GetUserResponse, error) {
+	return nil, nil
+}
+
+func (c *userGorillaResponseDecoder) ListUser(ctx context.Context, response *http.Response) (*ListUserResponse, error) {
+	return nil, nil
+}

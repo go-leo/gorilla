@@ -340,3 +340,179 @@ func (encoder bodyGorillaResponseEncoder) HttpBodyNamedBody(ctx context.Context,
 func (encoder bodyGorillaResponseEncoder) HttpRequest(ctx context.Context, w http1.ResponseWriter, resp *Response) error {
 	return gorilla.EncodeResponse(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
+
+type bodyGorillaClient struct {
+	client                  *http1.Client
+	encoder                 bodyGorillaRequestEncoder
+	decoder                 bodyGorillaResponseDecoder
+	shouldFailFast          bool
+	onValidationErrCallback gorilla.OnValidationErrCallback
+}
+
+func (c *bodyGorillaClient) StarBody(ctx context.Context, in *BodyRequest) (*Response, error) {
+	if err := gorilla.ValidateRequest(ctx, in, c.shouldFailFast, c.onValidationErrCallback); err != nil {
+		return nil, err
+	}
+	req, err := c.encoder.StarBody(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	out, err := c.decoder.StarBody(ctx, resp)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *bodyGorillaClient) NamedBody(ctx context.Context, in *NamedBodyRequest) (*Response, error) {
+	if err := gorilla.ValidateRequest(ctx, in, c.shouldFailFast, c.onValidationErrCallback); err != nil {
+		return nil, err
+	}
+	req, err := c.encoder.NamedBody(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	out, err := c.decoder.NamedBody(ctx, resp)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *bodyGorillaClient) NonBody(ctx context.Context, in *emptypb.Empty) (*Response, error) {
+	if err := gorilla.ValidateRequest(ctx, in, c.shouldFailFast, c.onValidationErrCallback); err != nil {
+		return nil, err
+	}
+	req, err := c.encoder.NonBody(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	out, err := c.decoder.NonBody(ctx, resp)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *bodyGorillaClient) HttpBodyStarBody(ctx context.Context, in *httpbody.HttpBody) (*Response, error) {
+	if err := gorilla.ValidateRequest(ctx, in, c.shouldFailFast, c.onValidationErrCallback); err != nil {
+		return nil, err
+	}
+	req, err := c.encoder.HttpBodyStarBody(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	out, err := c.decoder.HttpBodyStarBody(ctx, resp)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *bodyGorillaClient) HttpBodyNamedBody(ctx context.Context, in *HttpBodyRequest) (*Response, error) {
+	if err := gorilla.ValidateRequest(ctx, in, c.shouldFailFast, c.onValidationErrCallback); err != nil {
+		return nil, err
+	}
+	req, err := c.encoder.HttpBodyNamedBody(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	out, err := c.decoder.HttpBodyNamedBody(ctx, resp)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *bodyGorillaClient) HttpRequest(ctx context.Context, in *http.HttpRequest) (*Response, error) {
+	if err := gorilla.ValidateRequest(ctx, in, c.shouldFailFast, c.onValidationErrCallback); err != nil {
+		return nil, err
+	}
+	req, err := c.encoder.HttpRequest(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	out, err := c.decoder.HttpRequest(ctx, resp)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+type bodyGorillaRequestEncoder struct {
+}
+
+func (c *bodyGorillaRequestEncoder) StarBody(ctx context.Context, request *BodyRequest) (*http1.Request, error) {
+	return nil, nil
+}
+
+func (c *bodyGorillaRequestEncoder) NamedBody(ctx context.Context, request *NamedBodyRequest) (*http1.Request, error) {
+	return nil, nil
+}
+
+func (c *bodyGorillaRequestEncoder) NonBody(ctx context.Context, request *emptypb.Empty) (*http1.Request, error) {
+	return nil, nil
+}
+
+func (c *bodyGorillaRequestEncoder) HttpBodyStarBody(ctx context.Context, request *httpbody.HttpBody) (*http1.Request, error) {
+	return nil, nil
+}
+
+func (c *bodyGorillaRequestEncoder) HttpBodyNamedBody(ctx context.Context, request *HttpBodyRequest) (*http1.Request, error) {
+	return nil, nil
+}
+
+func (c *bodyGorillaRequestEncoder) HttpRequest(ctx context.Context, request *http.HttpRequest) (*http1.Request, error) {
+	return nil, nil
+}
+
+type bodyGorillaResponseDecoder struct {
+}
+
+func (c *bodyGorillaResponseDecoder) StarBody(ctx context.Context, response *http1.Response) (*Response, error) {
+	return nil, nil
+}
+
+func (c *bodyGorillaResponseDecoder) NamedBody(ctx context.Context, response *http1.Response) (*Response, error) {
+	return nil, nil
+}
+
+func (c *bodyGorillaResponseDecoder) NonBody(ctx context.Context, response *http1.Response) (*Response, error) {
+	return nil, nil
+}
+
+func (c *bodyGorillaResponseDecoder) HttpBodyStarBody(ctx context.Context, response *http1.Response) (*Response, error) {
+	return nil, nil
+}
+
+func (c *bodyGorillaResponseDecoder) HttpBodyNamedBody(ctx context.Context, response *http1.Response) (*Response, error) {
+	return nil, nil
+}
+
+func (c *bodyGorillaResponseDecoder) HttpRequest(ctx context.Context, response *http1.Response) (*Response, error) {
+	return nil, nil
+}

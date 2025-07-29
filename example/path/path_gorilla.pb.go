@@ -111,6 +111,47 @@ func (encoder boolPathGorillaResponseEncoder) BoolPath(ctx context.Context, w ht
 	return gorilla.EncodeHttpBody(ctx, w, resp)
 }
 
+type boolPathGorillaClient struct {
+	client                  *http.Client
+	encoder                 boolPathGorillaRequestEncoder
+	decoder                 boolPathGorillaResponseDecoder
+	shouldFailFast          bool
+	onValidationErrCallback gorilla.OnValidationErrCallback
+}
+
+func (c *boolPathGorillaClient) BoolPath(ctx context.Context, in *BoolPathRequest) (*httpbody.HttpBody, error) {
+	if err := gorilla.ValidateRequest(ctx, in, c.shouldFailFast, c.onValidationErrCallback); err != nil {
+		return nil, err
+	}
+	req, err := c.encoder.BoolPath(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	out, err := c.decoder.BoolPath(ctx, resp)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+type boolPathGorillaRequestEncoder struct {
+}
+
+func (c *boolPathGorillaRequestEncoder) BoolPath(ctx context.Context, request *BoolPathRequest) (*http.Request, error) {
+	return nil, nil
+}
+
+type boolPathGorillaResponseDecoder struct {
+}
+
+func (c *boolPathGorillaResponseDecoder) BoolPath(ctx context.Context, response *http.Response) (*httpbody.HttpBody, error) {
+	return nil, nil
+}
+
 type Int32PathGorillaService interface {
 	Int32Path(ctx context.Context, request *Int32PathRequest) (*httpbody.HttpBody, error)
 }
@@ -215,6 +256,47 @@ type int32PathGorillaResponseEncoder struct {
 
 func (encoder int32PathGorillaResponseEncoder) Int32Path(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
 	return gorilla.EncodeHttpBody(ctx, w, resp)
+}
+
+type int32PathGorillaClient struct {
+	client                  *http.Client
+	encoder                 int32PathGorillaRequestEncoder
+	decoder                 int32PathGorillaResponseDecoder
+	shouldFailFast          bool
+	onValidationErrCallback gorilla.OnValidationErrCallback
+}
+
+func (c *int32PathGorillaClient) Int32Path(ctx context.Context, in *Int32PathRequest) (*httpbody.HttpBody, error) {
+	if err := gorilla.ValidateRequest(ctx, in, c.shouldFailFast, c.onValidationErrCallback); err != nil {
+		return nil, err
+	}
+	req, err := c.encoder.Int32Path(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	out, err := c.decoder.Int32Path(ctx, resp)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+type int32PathGorillaRequestEncoder struct {
+}
+
+func (c *int32PathGorillaRequestEncoder) Int32Path(ctx context.Context, request *Int32PathRequest) (*http.Request, error) {
+	return nil, nil
+}
+
+type int32PathGorillaResponseDecoder struct {
+}
+
+func (c *int32PathGorillaResponseDecoder) Int32Path(ctx context.Context, response *http.Response) (*httpbody.HttpBody, error) {
+	return nil, nil
 }
 
 type Int64PathGorillaService interface {
@@ -323,6 +405,47 @@ func (encoder int64PathGorillaResponseEncoder) Int64Path(ctx context.Context, w 
 	return gorilla.EncodeHttpBody(ctx, w, resp)
 }
 
+type int64PathGorillaClient struct {
+	client                  *http.Client
+	encoder                 int64PathGorillaRequestEncoder
+	decoder                 int64PathGorillaResponseDecoder
+	shouldFailFast          bool
+	onValidationErrCallback gorilla.OnValidationErrCallback
+}
+
+func (c *int64PathGorillaClient) Int64Path(ctx context.Context, in *Int64PathRequest) (*httpbody.HttpBody, error) {
+	if err := gorilla.ValidateRequest(ctx, in, c.shouldFailFast, c.onValidationErrCallback); err != nil {
+		return nil, err
+	}
+	req, err := c.encoder.Int64Path(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	out, err := c.decoder.Int64Path(ctx, resp)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+type int64PathGorillaRequestEncoder struct {
+}
+
+func (c *int64PathGorillaRequestEncoder) Int64Path(ctx context.Context, request *Int64PathRequest) (*http.Request, error) {
+	return nil, nil
+}
+
+type int64PathGorillaResponseDecoder struct {
+}
+
+func (c *int64PathGorillaResponseDecoder) Int64Path(ctx context.Context, response *http.Response) (*httpbody.HttpBody, error) {
+	return nil, nil
+}
+
 type Uint32PathGorillaService interface {
 	Uint32Path(ctx context.Context, request *Uint32PathRequest) (*httpbody.HttpBody, error)
 }
@@ -423,6 +546,47 @@ type uint32PathGorillaResponseEncoder struct {
 
 func (encoder uint32PathGorillaResponseEncoder) Uint32Path(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
 	return gorilla.EncodeHttpBody(ctx, w, resp)
+}
+
+type uint32PathGorillaClient struct {
+	client                  *http.Client
+	encoder                 uint32PathGorillaRequestEncoder
+	decoder                 uint32PathGorillaResponseDecoder
+	shouldFailFast          bool
+	onValidationErrCallback gorilla.OnValidationErrCallback
+}
+
+func (c *uint32PathGorillaClient) Uint32Path(ctx context.Context, in *Uint32PathRequest) (*httpbody.HttpBody, error) {
+	if err := gorilla.ValidateRequest(ctx, in, c.shouldFailFast, c.onValidationErrCallback); err != nil {
+		return nil, err
+	}
+	req, err := c.encoder.Uint32Path(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	out, err := c.decoder.Uint32Path(ctx, resp)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+type uint32PathGorillaRequestEncoder struct {
+}
+
+func (c *uint32PathGorillaRequestEncoder) Uint32Path(ctx context.Context, request *Uint32PathRequest) (*http.Request, error) {
+	return nil, nil
+}
+
+type uint32PathGorillaResponseDecoder struct {
+}
+
+func (c *uint32PathGorillaResponseDecoder) Uint32Path(ctx context.Context, response *http.Response) (*httpbody.HttpBody, error) {
+	return nil, nil
 }
 
 type Uint64PathGorillaService interface {
@@ -527,6 +691,47 @@ func (encoder uint64PathGorillaResponseEncoder) Uint64Path(ctx context.Context, 
 	return gorilla.EncodeHttpBody(ctx, w, resp)
 }
 
+type uint64PathGorillaClient struct {
+	client                  *http.Client
+	encoder                 uint64PathGorillaRequestEncoder
+	decoder                 uint64PathGorillaResponseDecoder
+	shouldFailFast          bool
+	onValidationErrCallback gorilla.OnValidationErrCallback
+}
+
+func (c *uint64PathGorillaClient) Uint64Path(ctx context.Context, in *Uint64PathRequest) (*httpbody.HttpBody, error) {
+	if err := gorilla.ValidateRequest(ctx, in, c.shouldFailFast, c.onValidationErrCallback); err != nil {
+		return nil, err
+	}
+	req, err := c.encoder.Uint64Path(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	out, err := c.decoder.Uint64Path(ctx, resp)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+type uint64PathGorillaRequestEncoder struct {
+}
+
+func (c *uint64PathGorillaRequestEncoder) Uint64Path(ctx context.Context, request *Uint64PathRequest) (*http.Request, error) {
+	return nil, nil
+}
+
+type uint64PathGorillaResponseDecoder struct {
+}
+
+func (c *uint64PathGorillaResponseDecoder) Uint64Path(ctx context.Context, response *http.Response) (*httpbody.HttpBody, error) {
+	return nil, nil
+}
+
 type FloatPathGorillaService interface {
 	FloatPath(ctx context.Context, request *FloatPathRequest) (*httpbody.HttpBody, error)
 }
@@ -623,6 +828,47 @@ type floatPathGorillaResponseEncoder struct {
 
 func (encoder floatPathGorillaResponseEncoder) FloatPath(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
 	return gorilla.EncodeHttpBody(ctx, w, resp)
+}
+
+type floatPathGorillaClient struct {
+	client                  *http.Client
+	encoder                 floatPathGorillaRequestEncoder
+	decoder                 floatPathGorillaResponseDecoder
+	shouldFailFast          bool
+	onValidationErrCallback gorilla.OnValidationErrCallback
+}
+
+func (c *floatPathGorillaClient) FloatPath(ctx context.Context, in *FloatPathRequest) (*httpbody.HttpBody, error) {
+	if err := gorilla.ValidateRequest(ctx, in, c.shouldFailFast, c.onValidationErrCallback); err != nil {
+		return nil, err
+	}
+	req, err := c.encoder.FloatPath(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	out, err := c.decoder.FloatPath(ctx, resp)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+type floatPathGorillaRequestEncoder struct {
+}
+
+func (c *floatPathGorillaRequestEncoder) FloatPath(ctx context.Context, request *FloatPathRequest) (*http.Request, error) {
+	return nil, nil
+}
+
+type floatPathGorillaResponseDecoder struct {
+}
+
+func (c *floatPathGorillaResponseDecoder) FloatPath(ctx context.Context, response *http.Response) (*httpbody.HttpBody, error) {
+	return nil, nil
 }
 
 type DoublePathGorillaService interface {
@@ -723,6 +969,47 @@ func (encoder doublePathGorillaResponseEncoder) DoublePath(ctx context.Context, 
 	return gorilla.EncodeHttpBody(ctx, w, resp)
 }
 
+type doublePathGorillaClient struct {
+	client                  *http.Client
+	encoder                 doublePathGorillaRequestEncoder
+	decoder                 doublePathGorillaResponseDecoder
+	shouldFailFast          bool
+	onValidationErrCallback gorilla.OnValidationErrCallback
+}
+
+func (c *doublePathGorillaClient) DoublePath(ctx context.Context, in *DoublePathRequest) (*httpbody.HttpBody, error) {
+	if err := gorilla.ValidateRequest(ctx, in, c.shouldFailFast, c.onValidationErrCallback); err != nil {
+		return nil, err
+	}
+	req, err := c.encoder.DoublePath(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	out, err := c.decoder.DoublePath(ctx, resp)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+type doublePathGorillaRequestEncoder struct {
+}
+
+func (c *doublePathGorillaRequestEncoder) DoublePath(ctx context.Context, request *DoublePathRequest) (*http.Request, error) {
+	return nil, nil
+}
+
+type doublePathGorillaResponseDecoder struct {
+}
+
+func (c *doublePathGorillaResponseDecoder) DoublePath(ctx context.Context, response *http.Response) (*httpbody.HttpBody, error) {
+	return nil, nil
+}
+
 type StringPathGorillaService interface {
 	StringPath(ctx context.Context, request *StringPathRequest) (*httpbody.HttpBody, error)
 }
@@ -821,6 +1108,47 @@ func (encoder stringPathGorillaResponseEncoder) StringPath(ctx context.Context, 
 	return gorilla.EncodeHttpBody(ctx, w, resp)
 }
 
+type stringPathGorillaClient struct {
+	client                  *http.Client
+	encoder                 stringPathGorillaRequestEncoder
+	decoder                 stringPathGorillaResponseDecoder
+	shouldFailFast          bool
+	onValidationErrCallback gorilla.OnValidationErrCallback
+}
+
+func (c *stringPathGorillaClient) StringPath(ctx context.Context, in *StringPathRequest) (*httpbody.HttpBody, error) {
+	if err := gorilla.ValidateRequest(ctx, in, c.shouldFailFast, c.onValidationErrCallback); err != nil {
+		return nil, err
+	}
+	req, err := c.encoder.StringPath(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	out, err := c.decoder.StringPath(ctx, resp)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+type stringPathGorillaRequestEncoder struct {
+}
+
+func (c *stringPathGorillaRequestEncoder) StringPath(ctx context.Context, request *StringPathRequest) (*http.Request, error) {
+	return nil, nil
+}
+
+type stringPathGorillaResponseDecoder struct {
+}
+
+func (c *stringPathGorillaResponseDecoder) StringPath(ctx context.Context, response *http.Response) (*httpbody.HttpBody, error) {
+	return nil, nil
+}
+
 type EnumPathGorillaService interface {
 	EnumPath(ctx context.Context, request *EnumPathRequest) (*httpbody.HttpBody, error)
 }
@@ -915,4 +1243,45 @@ type enumPathGorillaResponseEncoder struct {
 
 func (encoder enumPathGorillaResponseEncoder) EnumPath(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
 	return gorilla.EncodeHttpBody(ctx, w, resp)
+}
+
+type enumPathGorillaClient struct {
+	client                  *http.Client
+	encoder                 enumPathGorillaRequestEncoder
+	decoder                 enumPathGorillaResponseDecoder
+	shouldFailFast          bool
+	onValidationErrCallback gorilla.OnValidationErrCallback
+}
+
+func (c *enumPathGorillaClient) EnumPath(ctx context.Context, in *EnumPathRequest) (*httpbody.HttpBody, error) {
+	if err := gorilla.ValidateRequest(ctx, in, c.shouldFailFast, c.onValidationErrCallback); err != nil {
+		return nil, err
+	}
+	req, err := c.encoder.EnumPath(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	out, err := c.decoder.EnumPath(ctx, resp)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+type enumPathGorillaRequestEncoder struct {
+}
+
+func (c *enumPathGorillaRequestEncoder) EnumPath(ctx context.Context, request *EnumPathRequest) (*http.Request, error) {
+	return nil, nil
+}
+
+type enumPathGorillaResponseDecoder struct {
+}
+
+func (c *enumPathGorillaResponseDecoder) EnumPath(ctx context.Context, response *http.Response) (*httpbody.HttpBody, error) {
+	return nil, nil
 }

@@ -49,6 +49,18 @@ func (s *Service) ResponseEncoderName() string {
 	return s.GorillaName() + "ResponseEncoder"
 }
 
+func (s *Service) RequestEncoderName() string {
+	return s.GorillaName() + "RequestEncoder"
+}
+
+func (s *Service) ResponseDecoderName() string {
+	return s.GorillaName() + "ResponseDecoder"
+}
+
+func (s *Service) ClientName() string {
+	return s.GorillaName() + "Client"
+}
+
 func NewServices(file *protogen.File) ([]*Service, error) {
 	var services []*Service
 	for _, pbService := range file.Services {

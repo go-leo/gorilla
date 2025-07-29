@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/go-leo/gorilla/cmd/protoc-gen-gorilla/client"
 	"github.com/go-leo/gorilla/cmd/protoc-gen-gorilla/server"
 	"github.com/go-leo/gorilla/internal/gen"
 	"google.golang.org/protobuf/compiler/protogen"
@@ -60,6 +61,17 @@ func generate(plugin *protogen.Plugin) error {
 				return err
 			}
 			if err := srvGen.GenerateEncodeResponse(service, g); err != nil {
+				return err
+			}
+
+			cliGen := new(client.Generator)
+			if err := cliGen.GenerateClient(service, g); err != nil {
+				return err
+			}
+			if err := cliGen.GenerateRequestEncoder(service, g); err != nil {
+				return err
+			}
+			if err := cliGen.GenerateResponseDecoder(service, g); err != nil {
 				return err
 			}
 		}

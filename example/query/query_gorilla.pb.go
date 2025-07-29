@@ -110,6 +110,47 @@ func (encoder boolQueryGorillaResponseEncoder) BoolQuery(ctx context.Context, w 
 	return gorilla.EncodeHttpBody(ctx, w, resp)
 }
 
+type boolQueryGorillaClient struct {
+	client                  *http.Client
+	encoder                 boolQueryGorillaRequestEncoder
+	decoder                 boolQueryGorillaResponseDecoder
+	shouldFailFast          bool
+	onValidationErrCallback gorilla.OnValidationErrCallback
+}
+
+func (c *boolQueryGorillaClient) BoolQuery(ctx context.Context, in *BoolQueryRequest) (*httpbody.HttpBody, error) {
+	if err := gorilla.ValidateRequest(ctx, in, c.shouldFailFast, c.onValidationErrCallback); err != nil {
+		return nil, err
+	}
+	req, err := c.encoder.BoolQuery(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	out, err := c.decoder.BoolQuery(ctx, resp)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+type boolQueryGorillaRequestEncoder struct {
+}
+
+func (c *boolQueryGorillaRequestEncoder) BoolQuery(ctx context.Context, request *BoolQueryRequest) (*http.Request, error) {
+	return nil, nil
+}
+
+type boolQueryGorillaResponseDecoder struct {
+}
+
+func (c *boolQueryGorillaResponseDecoder) BoolQuery(ctx context.Context, response *http.Response) (*httpbody.HttpBody, error) {
+	return nil, nil
+}
+
 type Int32QueryGorillaService interface {
 	Int32Query(ctx context.Context, request *Int32QueryRequest) (*httpbody.HttpBody, error)
 }
@@ -211,6 +252,47 @@ type int32QueryGorillaResponseEncoder struct {
 
 func (encoder int32QueryGorillaResponseEncoder) Int32Query(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
 	return gorilla.EncodeHttpBody(ctx, w, resp)
+}
+
+type int32QueryGorillaClient struct {
+	client                  *http.Client
+	encoder                 int32QueryGorillaRequestEncoder
+	decoder                 int32QueryGorillaResponseDecoder
+	shouldFailFast          bool
+	onValidationErrCallback gorilla.OnValidationErrCallback
+}
+
+func (c *int32QueryGorillaClient) Int32Query(ctx context.Context, in *Int32QueryRequest) (*httpbody.HttpBody, error) {
+	if err := gorilla.ValidateRequest(ctx, in, c.shouldFailFast, c.onValidationErrCallback); err != nil {
+		return nil, err
+	}
+	req, err := c.encoder.Int32Query(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	out, err := c.decoder.Int32Query(ctx, resp)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+type int32QueryGorillaRequestEncoder struct {
+}
+
+func (c *int32QueryGorillaRequestEncoder) Int32Query(ctx context.Context, request *Int32QueryRequest) (*http.Request, error) {
+	return nil, nil
+}
+
+type int32QueryGorillaResponseDecoder struct {
+}
+
+func (c *int32QueryGorillaResponseDecoder) Int32Query(ctx context.Context, response *http.Response) (*httpbody.HttpBody, error) {
+	return nil, nil
 }
 
 type Int64QueryGorillaService interface {
@@ -316,6 +398,47 @@ func (encoder int64QueryGorillaResponseEncoder) Int64Query(ctx context.Context, 
 	return gorilla.EncodeHttpBody(ctx, w, resp)
 }
 
+type int64QueryGorillaClient struct {
+	client                  *http.Client
+	encoder                 int64QueryGorillaRequestEncoder
+	decoder                 int64QueryGorillaResponseDecoder
+	shouldFailFast          bool
+	onValidationErrCallback gorilla.OnValidationErrCallback
+}
+
+func (c *int64QueryGorillaClient) Int64Query(ctx context.Context, in *Int64QueryRequest) (*httpbody.HttpBody, error) {
+	if err := gorilla.ValidateRequest(ctx, in, c.shouldFailFast, c.onValidationErrCallback); err != nil {
+		return nil, err
+	}
+	req, err := c.encoder.Int64Query(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	out, err := c.decoder.Int64Query(ctx, resp)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+type int64QueryGorillaRequestEncoder struct {
+}
+
+func (c *int64QueryGorillaRequestEncoder) Int64Query(ctx context.Context, request *Int64QueryRequest) (*http.Request, error) {
+	return nil, nil
+}
+
+type int64QueryGorillaResponseDecoder struct {
+}
+
+func (c *int64QueryGorillaResponseDecoder) Int64Query(ctx context.Context, response *http.Response) (*httpbody.HttpBody, error) {
+	return nil, nil
+}
+
 type Uint32QueryGorillaService interface {
 	Uint32Query(ctx context.Context, request *Uint32QueryRequest) (*httpbody.HttpBody, error)
 }
@@ -414,6 +537,47 @@ type uint32QueryGorillaResponseEncoder struct {
 
 func (encoder uint32QueryGorillaResponseEncoder) Uint32Query(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
 	return gorilla.EncodeHttpBody(ctx, w, resp)
+}
+
+type uint32QueryGorillaClient struct {
+	client                  *http.Client
+	encoder                 uint32QueryGorillaRequestEncoder
+	decoder                 uint32QueryGorillaResponseDecoder
+	shouldFailFast          bool
+	onValidationErrCallback gorilla.OnValidationErrCallback
+}
+
+func (c *uint32QueryGorillaClient) Uint32Query(ctx context.Context, in *Uint32QueryRequest) (*httpbody.HttpBody, error) {
+	if err := gorilla.ValidateRequest(ctx, in, c.shouldFailFast, c.onValidationErrCallback); err != nil {
+		return nil, err
+	}
+	req, err := c.encoder.Uint32Query(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	out, err := c.decoder.Uint32Query(ctx, resp)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+type uint32QueryGorillaRequestEncoder struct {
+}
+
+func (c *uint32QueryGorillaRequestEncoder) Uint32Query(ctx context.Context, request *Uint32QueryRequest) (*http.Request, error) {
+	return nil, nil
+}
+
+type uint32QueryGorillaResponseDecoder struct {
+}
+
+func (c *uint32QueryGorillaResponseDecoder) Uint32Query(ctx context.Context, response *http.Response) (*httpbody.HttpBody, error) {
+	return nil, nil
 }
 
 type Uint64QueryGorillaService interface {
@@ -516,6 +680,47 @@ func (encoder uint64QueryGorillaResponseEncoder) Uint64Query(ctx context.Context
 	return gorilla.EncodeHttpBody(ctx, w, resp)
 }
 
+type uint64QueryGorillaClient struct {
+	client                  *http.Client
+	encoder                 uint64QueryGorillaRequestEncoder
+	decoder                 uint64QueryGorillaResponseDecoder
+	shouldFailFast          bool
+	onValidationErrCallback gorilla.OnValidationErrCallback
+}
+
+func (c *uint64QueryGorillaClient) Uint64Query(ctx context.Context, in *Uint64QueryRequest) (*httpbody.HttpBody, error) {
+	if err := gorilla.ValidateRequest(ctx, in, c.shouldFailFast, c.onValidationErrCallback); err != nil {
+		return nil, err
+	}
+	req, err := c.encoder.Uint64Query(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	out, err := c.decoder.Uint64Query(ctx, resp)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+type uint64QueryGorillaRequestEncoder struct {
+}
+
+func (c *uint64QueryGorillaRequestEncoder) Uint64Query(ctx context.Context, request *Uint64QueryRequest) (*http.Request, error) {
+	return nil, nil
+}
+
+type uint64QueryGorillaResponseDecoder struct {
+}
+
+func (c *uint64QueryGorillaResponseDecoder) Uint64Query(ctx context.Context, response *http.Response) (*httpbody.HttpBody, error) {
+	return nil, nil
+}
+
 type FloatQueryGorillaService interface {
 	FloatQuery(ctx context.Context, request *FloatQueryRequest) (*httpbody.HttpBody, error)
 }
@@ -611,6 +816,47 @@ type floatQueryGorillaResponseEncoder struct {
 
 func (encoder floatQueryGorillaResponseEncoder) FloatQuery(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
 	return gorilla.EncodeHttpBody(ctx, w, resp)
+}
+
+type floatQueryGorillaClient struct {
+	client                  *http.Client
+	encoder                 floatQueryGorillaRequestEncoder
+	decoder                 floatQueryGorillaResponseDecoder
+	shouldFailFast          bool
+	onValidationErrCallback gorilla.OnValidationErrCallback
+}
+
+func (c *floatQueryGorillaClient) FloatQuery(ctx context.Context, in *FloatQueryRequest) (*httpbody.HttpBody, error) {
+	if err := gorilla.ValidateRequest(ctx, in, c.shouldFailFast, c.onValidationErrCallback); err != nil {
+		return nil, err
+	}
+	req, err := c.encoder.FloatQuery(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	out, err := c.decoder.FloatQuery(ctx, resp)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+type floatQueryGorillaRequestEncoder struct {
+}
+
+func (c *floatQueryGorillaRequestEncoder) FloatQuery(ctx context.Context, request *FloatQueryRequest) (*http.Request, error) {
+	return nil, nil
+}
+
+type floatQueryGorillaResponseDecoder struct {
+}
+
+func (c *floatQueryGorillaResponseDecoder) FloatQuery(ctx context.Context, response *http.Response) (*httpbody.HttpBody, error) {
+	return nil, nil
 }
 
 type DoubleQueryGorillaService interface {
@@ -710,6 +956,47 @@ func (encoder doubleQueryGorillaResponseEncoder) DoubleQuery(ctx context.Context
 	return gorilla.EncodeHttpBody(ctx, w, resp)
 }
 
+type doubleQueryGorillaClient struct {
+	client                  *http.Client
+	encoder                 doubleQueryGorillaRequestEncoder
+	decoder                 doubleQueryGorillaResponseDecoder
+	shouldFailFast          bool
+	onValidationErrCallback gorilla.OnValidationErrCallback
+}
+
+func (c *doubleQueryGorillaClient) DoubleQuery(ctx context.Context, in *DoubleQueryRequest) (*httpbody.HttpBody, error) {
+	if err := gorilla.ValidateRequest(ctx, in, c.shouldFailFast, c.onValidationErrCallback); err != nil {
+		return nil, err
+	}
+	req, err := c.encoder.DoubleQuery(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	out, err := c.decoder.DoubleQuery(ctx, resp)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+type doubleQueryGorillaRequestEncoder struct {
+}
+
+func (c *doubleQueryGorillaRequestEncoder) DoubleQuery(ctx context.Context, request *DoubleQueryRequest) (*http.Request, error) {
+	return nil, nil
+}
+
+type doubleQueryGorillaResponseDecoder struct {
+}
+
+func (c *doubleQueryGorillaResponseDecoder) DoubleQuery(ctx context.Context, response *http.Response) (*httpbody.HttpBody, error) {
+	return nil, nil
+}
+
 type StringQueryGorillaService interface {
 	StringQuery(ctx context.Context, request *StringQueryRequest) (*httpbody.HttpBody, error)
 }
@@ -807,6 +1094,47 @@ func (encoder stringQueryGorillaResponseEncoder) StringQuery(ctx context.Context
 	return gorilla.EncodeHttpBody(ctx, w, resp)
 }
 
+type stringQueryGorillaClient struct {
+	client                  *http.Client
+	encoder                 stringQueryGorillaRequestEncoder
+	decoder                 stringQueryGorillaResponseDecoder
+	shouldFailFast          bool
+	onValidationErrCallback gorilla.OnValidationErrCallback
+}
+
+func (c *stringQueryGorillaClient) StringQuery(ctx context.Context, in *StringQueryRequest) (*httpbody.HttpBody, error) {
+	if err := gorilla.ValidateRequest(ctx, in, c.shouldFailFast, c.onValidationErrCallback); err != nil {
+		return nil, err
+	}
+	req, err := c.encoder.StringQuery(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	out, err := c.decoder.StringQuery(ctx, resp)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+type stringQueryGorillaRequestEncoder struct {
+}
+
+func (c *stringQueryGorillaRequestEncoder) StringQuery(ctx context.Context, request *StringQueryRequest) (*http.Request, error) {
+	return nil, nil
+}
+
+type stringQueryGorillaResponseDecoder struct {
+}
+
+func (c *stringQueryGorillaResponseDecoder) StringQuery(ctx context.Context, response *http.Response) (*httpbody.HttpBody, error) {
+	return nil, nil
+}
+
 type EnumQueryGorillaService interface {
 	EnumQuery(ctx context.Context, request *EnumQueryRequest) (*httpbody.HttpBody, error)
 }
@@ -900,4 +1228,45 @@ type enumQueryGorillaResponseEncoder struct {
 
 func (encoder enumQueryGorillaResponseEncoder) EnumQuery(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
 	return gorilla.EncodeHttpBody(ctx, w, resp)
+}
+
+type enumQueryGorillaClient struct {
+	client                  *http.Client
+	encoder                 enumQueryGorillaRequestEncoder
+	decoder                 enumQueryGorillaResponseDecoder
+	shouldFailFast          bool
+	onValidationErrCallback gorilla.OnValidationErrCallback
+}
+
+func (c *enumQueryGorillaClient) EnumQuery(ctx context.Context, in *EnumQueryRequest) (*httpbody.HttpBody, error) {
+	if err := gorilla.ValidateRequest(ctx, in, c.shouldFailFast, c.onValidationErrCallback); err != nil {
+		return nil, err
+	}
+	req, err := c.encoder.EnumQuery(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	out, err := c.decoder.EnumQuery(ctx, resp)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+type enumQueryGorillaRequestEncoder struct {
+}
+
+func (c *enumQueryGorillaRequestEncoder) EnumQuery(ctx context.Context, request *EnumQueryRequest) (*http.Request, error) {
+	return nil, nil
+}
+
+type enumQueryGorillaResponseDecoder struct {
+}
+
+func (c *enumQueryGorillaResponseDecoder) EnumQuery(ctx context.Context, response *http.Response) (*httpbody.HttpBody, error) {
+	return nil, nil
 }
